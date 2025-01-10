@@ -1,9 +1,16 @@
 import { Hono } from "hono";
 import { basicAuth } from "hono/basic-auth";
 
-const app = new Hono();
+type Bindings = {
+  PASSWORD: string;
+};
+
+const app = new Hono<{ Bindings: Bindings }>();
 
 app.get("/", (c) => {
+  console.log(c.env);
+  const PASSWORD = c.env.PASSWORD;
+  console.log({ PASSWORD });
   return new Response("Good morining");
 });
 
