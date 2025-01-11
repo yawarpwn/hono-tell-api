@@ -2,6 +2,13 @@ name = "hono-tell-api"
 main = "src/index.ts"
 compatibility_date = "2025-01-10"
 assets = { directory = "public" }
+node_compat = true
+
+[[d1_databases]]
+binding = "DB_TELL"
+database_name = "db-tellsenales"
+database_id = "d8d72db1-b9ec-41e4-bb50-1bcd3d2514d0"
+migrations_dir = "migrations"
 
 # compatibility_flags = [ "nodejs_compat" ]
 

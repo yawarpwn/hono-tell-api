@@ -1,21 +1,34 @@
 import { Hono } from "hono";
 import { jwt } from "hono/jwt";
+import { cors } from "hono/cors";
+import { prettyJSON } from "hono/pretty-json";
+import { drizzle } from "drizzle-orm/d1";
+import * as schema from "./db/schemas";
+import type { App } from "./types";
 import { basicAuth } from "hono/basic-auth";
 
-type Bindings = {
-  PASSWORD: string;
-  JWT_SECRET: string;
-};
+const app = new Hono<App>();
 
-const app = new Hono<{ Bindings: Bindings }>();
+app.use("*", cors());
+app.use("*", prettyJSON());
 
-//private paths
-app.use("/api/*", (c, next) => {
-  const jwtMiddleware = jwt({ secret: c.env.JWT_SECRET });
-  return jwtMiddleware(c, next);
+//DatabaseMiddleware
+app.use("/api/*", async (c, next) => {
+  const db = drizzle(c.env.DB_TELL, { schema });
+  c.set("db", db);
+  await next();
 });
 
-app.get("/api", (c) => c.text("star api"));
+//JWTMiddleware
+// app.use("/api/*", (c, next) => {
+//   const jwtMiddleware = jwt({ secret: c.env.JWT_SECRET });
+//   return jwtMiddleware(c, next);
+// });
+
+app.get("/api/auth", async (c) => {
+  console.log("in /api/auth success");
+  return c.text("sucess");
+});
 
 app.notFound((c) => c.json({ message: "not found", ok: false }, 404));
 
