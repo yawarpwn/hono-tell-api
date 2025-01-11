@@ -2,7 +2,10 @@ name = "hono-tell-api"
 main = "src/index.ts"
 compatibility_date = "2025-01-10"
 assets = { directory = "public" }
-node_compat = true
+
+[placement]
+mode = "smart"
+# node_compat = true
 
 [[d1_databases]]
 binding = "DB_TELL"
