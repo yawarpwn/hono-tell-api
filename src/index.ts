@@ -31,7 +31,7 @@ app.get("/api/auth", async (c) => {
   const result = await db.select().from(schemas.usersTable).all();
   console.log(result);
 
-  return c.text("sucess");
+  return c.json(result);
 });
 
 app.notFound((c) => c.json({ message: "not found", ok: false }, 404));
