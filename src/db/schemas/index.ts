@@ -7,7 +7,7 @@ export const usersTable = sqliteTable("users", {
   password: text().notNull(),
 });
 
-export const todoTable = sqliteTable("todo", {
+export const todosTable = sqliteTable("todo", {
   id: int({ mode: "number" }).primaryKey({ autoIncrement: true }),
   complete: int({ mode: "boolean" }).default(false),
   text: text().notNull(),

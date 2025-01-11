@@ -2,6 +2,8 @@ import * as schemas from "../db/schemas";
 
 import type { DrizzleD1Database } from "drizzle-orm/d1";
 
+export type DB = DrizzleD1Database<typeof schema>;
+
 type Bindings = {
   PASSWORD: string;
   JWT_SECRET: string;
@@ -10,7 +12,7 @@ type Bindings = {
 
 type Variables = {
   mam: number;
-  db: DrizzleD1Database<typeof schema>;
+  db: DB;
 };
 
 type App = {
