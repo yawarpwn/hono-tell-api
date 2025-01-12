@@ -18,8 +18,12 @@ app.use("*", prettyJSON());
 app.use("/api/*", async (c, next) => {
   const db = drizzle(c.env.DB_TELL, { schema: schemas });
   c.set("db", db);
-  await seed(db);
+  // await seed(db);
   await next();
+});
+
+app.get("/", async (c) => {
+  return c.json({ message: "success" });
 });
 
 //JWTMiddleware
@@ -27,16 +31,6 @@ app.use("/api/*", async (c, next) => {
 //   const jwtMiddleware = jwt({ secret: c.env.JWT_SECRET });
 //   return jwtMiddleware(c, next);
 // });
-
-app.get("/api/auth", async (c) => {
-  return c.json({ ok: true, message: "success" });
-});
-
-app.get("/api/users", async (c) => {
-  const db = c.get("db");
-  const users = await db.select().from(schemas.usersTable);
-  return c.json(users);
-});
 
 app.route("/api/todos", todoRoute);
 

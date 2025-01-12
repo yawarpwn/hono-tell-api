@@ -13,6 +13,7 @@ type Bindings = {
 type Variables = {
   mam: number;
   db: DB;
+  MY_VAR: string;
 };
 
 type App = {

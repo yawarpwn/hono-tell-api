@@ -28,10 +28,8 @@ todoRoute.get("/:id", async (c) => {
 
 todoRoute.post(
   "/",
-  validator("json", (value, c) => {
-    const body = value["body"];
-
-    if (!body || body !== typeof "string") {
+  validator("json", (body, c) => {
+    if (!body) {
       return c.json({ ok: false, message: "Invalid" });
     }
 

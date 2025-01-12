@@ -7,16 +7,17 @@ assets = { directory = "public" }
 # mode = "smart"
 # node_compat = true
 
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+MY_VAR = "my-variable"
+
 [[d1_databases]]
 binding = "DB_TELL"
 database_name = "db-tellsenales"
 database_id = "d8d72db1-b9ec-41e4-bb50-1bcd3d2514d0"
 migrations_dir = "migrations"
 
-# compatibility_flags = [ "nodejs_compat" ]
-
-# [vars]
-# MY_VAR = "my-variable"
 
 # [[kv_namespaces]]
 # binding = "MY_KV_NAMESPACE"
