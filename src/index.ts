@@ -6,6 +6,7 @@ import { drizzle } from "drizzle-orm/d1";
 import * as schemas from "./db/schemas";
 import type { App } from "./types";
 import { todoRoute } from "./routes/todo";
+import { seed } from "./utils/seed";
 import { basicAuth } from "hono/basic-auth";
 
 const app = new Hono<App>();
@@ -17,6 +18,7 @@ app.use("*", prettyJSON());
 app.use("/api/*", async (c, next) => {
   const db = drizzle(c.env.DB_TELL, { schema: schemas });
   c.set("db", db);
+  await seed(db);
   await next();
 });
 
@@ -27,16 +29,13 @@ app.use("/api/*", async (c, next) => {
 // });
 
 app.get("/api/auth", async (c) => {
-  console.log("in /api/auth success");
-  const db = c.get("db");
-  await db.insert(schemas.usersTable).values({
-    email: "neyda@uii.com",
-    password: "123456",
-  });
-  const result = await db.select().from(schemas.usersTable).all();
-  console.log(result);
+  return c.json({ ok: true, message: "success" });
+});
 
-  return c.json(result);
+app.get("/api/users", async (c) => {
+  const db = c.get("db");
+  const users = await db.select().from(schemas.usersTable);
+  return c.json(users);
 });
 
 app.route("/api/todos", todoRoute);

@@ -5,9 +5,12 @@ export const usersTable = sqliteTable("users", {
   id: int().primaryKey({ autoIncrement: true }),
   email: text().notNull().unique(),
   password: text().notNull(),
+  role: text({ enum: ["user", "admin"] })
+    .notNull()
+    .default("user"),
 });
 
-export const todosTable = sqliteTable("todo", {
+export const todosTable = sqliteTable("todos", {
   id: int({ mode: "number" }).primaryKey({ autoIncrement: true }),
   complete: int({ mode: "boolean" }).default(false),
   text: text().notNull(),
