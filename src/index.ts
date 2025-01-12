@@ -6,7 +6,7 @@ import { drizzle } from "drizzle-orm/d1";
 import * as schemas from "./db/schemas";
 import type { App } from "./types";
 import { todoRoute } from "./routes/todo";
-import { seed } from "./utils/seed";
+// import { seed } from "./utils/seed";
 import { basicAuth } from "hono/basic-auth";
 
 const app = new Hono<App>();
@@ -16,7 +16,7 @@ app.use("*", prettyJSON());
 
 //DatabaseMiddleware
 app.use("/api/*", async (c, next) => {
-  const db = drizzle(c.env.DB_TELL, { schema: schemas });
+  const db = drizzle(c.env.TELLAPP_DB, { schema: schemas });
   c.set("db", db);
   // await seed(db);
   await next();

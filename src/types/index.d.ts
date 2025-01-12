@@ -7,7 +7,7 @@ export type DB = DrizzleD1Database<typeof schema>;
 type Bindings = {
   PASSWORD: string;
   JWT_SECRET: string;
-  DB_TELL: D1Database;
+  TELLAPP_DB: D1Database;
 };
 
 type Variables = {

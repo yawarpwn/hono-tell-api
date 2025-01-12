@@ -16,3 +16,8 @@ export const todosTable = sqliteTable("todos", {
   text: text().notNull(),
   createAt: text().default(sql`(CURRENT_DATE)`),
 });
+
+export const categoriesTable = sqliteTable("categories", {
+  id: text(),
+  name: text().notNull(),
+});
