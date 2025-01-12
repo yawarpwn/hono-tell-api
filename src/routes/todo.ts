@@ -18,13 +18,12 @@ todoRoute.get("/:id", async (c) => {
   return c.json(results);
 });
 
-// todoRoute.put("/:id", async (c) => {
-//   const db = c.get("db");
-//   const id = c.req.param("id");
-//   const dto = c.req.valid("json");
-//   const results = await TodoService.update(db, +id, dto);
-//   return c.json(results);
-// });
+todoRoute.put("/:id", async (c) => {
+  const db = c.get("db");
+  const id = c.req.param("id");
+  const results = await TodoService.delete(db, +id);
+  return c.json(results);
+});
 
 todoRoute.post(
   "/",
@@ -39,7 +38,6 @@ todoRoute.post(
     const db = c.get("db");
     const dto = await c.req.valid("json");
     const result = await TodoService.create(db, dto);
-    console.log({ result });
     return c.json({ ok: true, data: result });
   },
 );
