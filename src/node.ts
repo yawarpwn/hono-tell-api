@@ -1,7 +1,10 @@
+const credentials = btoa("ney:caca");
+
 fetch("http://localhost:8787/api/todos", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
+    Authorization: `Basic ${credentials}`,
   },
   body: JSON.stringify({ text: "test" }),
 })
@@ -9,7 +12,7 @@ fetch("http://localhost:8787/api/todos", {
     if (!res.ok) {
       throw new Error("Network response was not ok");
     }
-    return res.json();
+
+    console.log("autorhized");
   })
-  .then((res) => console.log(res))
   .catch((err) => console.log(err));

@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import type { App } from "@/types";
 import { TodoService } from "@/services";
 import { validator } from "hono/validator";
+import { STATUS_CODE } from "@/constants";
 
 export const todoRoute = new Hono<App>();
 
@@ -38,7 +39,7 @@ todoRoute.post(
     const db = c.get("db");
     const dto = await c.req.valid("json");
     const result = await TodoService.create(db, dto);
-    return c.json({ ok: true, data: result });
+    return c.json({ ok: true, data: result }, STATUS_CODE.Created);
   },
 );
 
