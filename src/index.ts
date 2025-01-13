@@ -23,7 +23,7 @@ app.use('*', async (c, next) => {
 })
 
 //DatabaseMiddleware
-app.use('*', async (c, next) => {
+app.use('/api/*', async (c, next) => {
   const db = drizzle(c.env.TELLAPP_DB, { schema: schemas })
   c.set('db', db)
   // await seed(db);
@@ -31,14 +31,14 @@ app.use('*', async (c, next) => {
 })
 
 //Auth Middleware
-app.use(
-  '/api/*',
-  basicAuth({
-    verifyUser(username, password, c) {
-      return username === c.env.USERNAME && password === c.env.PASSWORD
-    },
-  }),
-)
+// app.use(
+//   '/api/*',
+//   basicAuth({
+//     verifyUser(username, password, c) {
+//       return username === c.env.USERNAME && password === c.env.PASSWORD
+//     },
+//   }),
+// )
 
 //JWTMiddleware
 // app.use("/api/*", (c, next) => {
@@ -54,9 +54,8 @@ app.get('/', async (c) => {
 
 app.route('/api/todos', todoRoute)
 
-app.get('/seed', async (c) => {
+app.get('/api/seed', async (c) => {
   const db = c.get('db')
-  console.log(db)
   const info = await seed(db)
   return c.json(info)
 })

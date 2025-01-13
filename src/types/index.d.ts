@@ -1,4 +1,4 @@
-import type { customersTable, quotationsTable } from '../db/schemas'
+import type { customersTable, quotationsTable, todosTable } from '../db/schemas'
 
 import type { DrizzleD1Database } from 'drizzle-orm/d1'
 

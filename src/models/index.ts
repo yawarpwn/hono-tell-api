@@ -4,7 +4,7 @@ import { HTTPException } from 'hono/http-exception'
 import type { CreateTodoDto, UpdateTodoDto } from '@/dtos'
 import type { DB } from '@/types'
 
-export class TodoService {
+export class TodoModel {
   static async getAll(db: DB) {
     const todos = await db.select().from(todosTable)
     return todos
