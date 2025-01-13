@@ -9,14 +9,11 @@ export const usersTable = sqliteTable('users', {
   role: text({ enum: userRoles }).notNull().default('user'),
 })
 
-const InserUser = usersTable.$inferInsert
-const InsertUserResult = usersTable.$inferSelect
-
 export const todosTable = sqliteTable('todos', {
   id: integer({ mode: 'number' }).primaryKey({ autoIncrement: true }),
   complete: integer({ mode: 'boolean' }).default(false),
   text: text().notNull(),
-  createAt: integer('create_at', { mode: 'timestamp' })
+  createdAt: integer('create_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
   updatedAt: integer('updated_at', { mode: 'timestamp' })
@@ -34,7 +31,7 @@ export const customersTable = sqliteTable('customers', {
   isRegular: integer('is_regular', { mode: 'boolean' })
     .notNull()
     .default(false),
-  createAt: integer('create_at', { mode: 'timestamp' })
+  createdAt: integer('create_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
   updatedAt: integer('updated_at', { mode: 'timestamp' })
@@ -58,7 +55,7 @@ export const quotationsTable = sqliteTable('quotations', {
     .default(false)
     .notNull(),
   // items: text('items').$type<QuotationItem[]>().notNull(),
-  createAt: integer('create_at', { mode: 'timestamp' })
+  createdAt: integer('create_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
   updatedAt: integer('updated_at', { mode: 'timestamp' })

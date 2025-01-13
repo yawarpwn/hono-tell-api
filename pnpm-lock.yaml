@@ -17,6 +17,9 @@ importers:
       drizzle-orm:
         specifier: ^0.38.3
         version: 0.38.3(@cloudflare/workers-types@4.20250109.0)
+      drizzle-zod:
+        specifier: 0.6.1
+        version: 0.6.1(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20250109.0))(zod@3.24.1)
       hono:
         specifier: ^4.6.16
         version: 4.6.16
@@ -39,9 +42,6 @@ importers:
       drizzle-seed:
         specifier: ^0.3.0
         version: 0.3.0(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20250109.0))
-      faker-js:
-        specifier: ^1.0.0
-        version: 1.0.0
       miniflare:
         specifier: ^3.20241230.1
         version: 3.20241230.1
@@ -1131,6 +1131,12 @@ packages:
       drizzle-orm:
         optional: true
 
+  drizzle-zod@0.6.1:
+    resolution: {integrity: sha512-huEbUgnsuR8tupnmLiyB2F1I2H9dswI3GfM36IbIqx9i0YUeYjRsDpJVyFVeziUvI1ogT9JHRL2Q03cC4QmvxA==}
+    peerDependencies:
+      drizzle-orm: '>=0.36.0'
+      zod: '>=3.0.0'
+
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
 
@@ -1164,9 +1170,6 @@ packages:
   exit-hook@2.2.1:
     resolution: {integrity: sha512-eNTPlAD67BmP31LDINZ3U7HSF8l57TxOY2PmBJ1shpCvpnxBF93mWCE8YHBnXs8qiUZJc9WDcWIeC3a2HIAMfw==}
     engines: {node: '>=6'}
-
-  faker-js@1.0.0:
-    resolution: {integrity: sha512-kaToadbN63LWhHjl69pqG+YHlxAK0aZAPhQDUpVP7v7+RG//ZpK0OzXjCwaAQq98awOii0WSHxtJmIz0X7/UqQ==}
 
   fast-xml-parser@4.4.1:
     resolution: {integrity: sha512-xkjOecfnKGkSsOwtZ5Pz7Us/T6mrbPQrq0nh+aCO5V9nk5NLWmasAHumTKjiPJPWANe+kAZ84Jc8ooJkzZ88Sw==}
@@ -2749,6 +2752,11 @@ snapshots:
     optionalDependencies:
       drizzle-orm: 0.38.3(@cloudflare/workers-types@4.20250109.0)
 
+  drizzle-zod@0.6.1(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20250109.0))(zod@3.24.1):
+    dependencies:
+      drizzle-orm: 0.38.3(@cloudflare/workers-types@4.20250109.0)
+      zod: 3.24.1
+
   emoji-regex@8.0.0: {}
 
   esbuild-register@3.6.0(esbuild@0.19.12):
@@ -2839,8 +2847,6 @@ snapshots:
   estree-walker@0.6.1: {}
 
   exit-hook@2.2.1: {}
-
-  faker-js@1.0.0: {}
 
   fast-xml-parser@4.4.1:
     dependencies:

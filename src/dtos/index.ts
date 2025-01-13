@@ -1,6 +1,11 @@
+import { customersTable } from '@/db/schemas'
 import { z } from 'zod'
+import {
+  createSelectSchema,
+  createInsertSchema,
+  createUpdateSchema,
+} from 'drizzle-zod'
 
-//Todo
 const TodoSchema = z.object({
   id: z.string(),
   text: z.string(),
@@ -25,3 +30,17 @@ const UserSchema = z.object({
 })
 
 export type UserDto = z.infer<typeof UserSchema>
+
+// Customers
+export const CustomerSchema = createSelectSchema(customersTable)
+export const InsertCustomerSchema = createInsertSchema(customersTable, {
+  ruc: () => z.coerce.string().length(11),
+  phone: () => z.coerce.string().length(9).nullable().optional(),
+}).omit({
+  id: true,
+})
+export const UpdateCustomerSchema = createUpdateSchema(customersTable)
+
+export type CustomerDto = z.infer<typeof CustomerSchema>
+export type CreateCustomerDto = z.infer<typeof InsertCustomerSchema>
+export type UpdateCustomerDto = z.infer<typeof InsertCustomerSchema>
