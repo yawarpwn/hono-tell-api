@@ -1,9 +1,33 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "c9a679bf-b4cb-444a-b11e-8656e5c67843",
+  "id": "1645558e-cdf8-44f8-a41c-a460799e7e2e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "categories": {
+      "name": "categories",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "todos": {
       "name": "todos",
       "columns": {
@@ -29,13 +53,13 @@
           "notNull": true,
           "autoincrement": false
         },
-        "createAt": {
-          "name": "createAt",
-          "type": "text",
+        "create_at": {
+          "name": "create_at",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "(CURRENT_DATE)"
+          "default": "CURRENT_TIMESTAMP"
         }
       },
       "indexes": {},

@@ -1,18 +1,15 @@
-const credentials = btoa("ney:caca");
+import * as schemas from "./db/schemas/index";
+import { drizzle } from "drizzle-orm/d1";
+import * as wrangler from "wrangler";
 
-fetch("http://localhost:8787/api/todos", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Basic ${credentials}`,
-  },
-  body: JSON.stringify({ text: "test" }),
-})
-  .then((res) => {
-    if (!res.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    console.log("autorhized");
-  })
-  .catch((err) => console.log(err));
+async function main() {
+  const worker = await wrangler.unstable_dev("src/index.ts", {
+    experimental: {
+      disableExperimentalWarning: true,
+    },
+  });
+  console.log(worker);
+  // console.log(schemas);
+  // drizzle(schemas);
+}
+main();
