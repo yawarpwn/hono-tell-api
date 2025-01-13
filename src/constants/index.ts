@@ -6,4 +6,4 @@ export const STATUS_CODE = {
   Forbidden: 403,
   NotFound: 404,
   ServerError: 500,
-} as const;
+} as const

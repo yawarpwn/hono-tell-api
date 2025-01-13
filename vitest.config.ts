@@ -1,15 +1,15 @@
-import { defineWorkersProject } from "@cloudflare/vitest-pool-workers/config";
+import { defineWorkersProject } from '@cloudflare/vitest-pool-workers/config'
 
 export default defineWorkersProject(() => {
   return {
     test: {
       globals: true,
       poolOptions: {
-        workers: { wrangler: { configPath: "./wrangler.toml" } },
+        workers: { wrangler: { configPath: './wrangler.toml' } },
       },
       alias: {
-        "@/": new URL("./src/", import.meta.url).pathname,
+        '@/': new URL('./src/', import.meta.url).pathname,
       },
     },
-  };
-});
+  }
+})

@@ -23,7 +23,7 @@ app.use('*', async (c, next) => {
 })
 
 //DatabaseMiddleware
-app.use('/api/*', async (c, next) => {
+app.use('*', async (c, next) => {
   const db = drizzle(c.env.TELLAPP_DB, { schema: schemas })
   c.set('db', db)
   // await seed(db);
@@ -53,10 +53,12 @@ app.get('/', async (c) => {
 })
 
 app.route('/api/todos', todoRoute)
+
 app.get('/seed', async (c) => {
   const db = c.get('db')
-  await seed(db)
-  return c.text('seed complete')
+  console.log(db)
+  const info = await seed(db)
+  return c.json(info)
 })
 
 // Custom Not Found Message
