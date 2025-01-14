@@ -1,6 +1,6 @@
 import type { ItemQuotation } from '@/types'
 import { sql } from 'drizzle-orm'
-import { integer, sqliteTable, text, real } from 'drizzle-orm/sqlite-core'
+import { integer, sqliteTable, text, real, blob } from 'drizzle-orm/sqlite-core'
 
 const userRoles = ['admin', 'user'] as const
 export const usersTable = sqliteTable('users', {
@@ -33,7 +33,7 @@ export const quotationsTable = sqliteTable('quotations', {
     onUpdate: 'no action',
   }),
   isPaymentPending: integer('is_payment_pending', { mode: 'boolean' }).default(false).notNull(),
-  items: text('items').$type<ItemQuotation[]>().notNull(),
+  items: text('items', { mode: 'json' }).notNull().default({ data: false }),
   createdAt: integer('create_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
 })

@@ -16,7 +16,7 @@ export class QuotationsModel {
         credit: quotationsTable.credit,
         includeIgv: quotationsTable.includeIgv,
         isPaymentPending: quotationsTable.isPaymentPending,
-        // items: quotationsTable.items,
+        items: quotationsTable.items,
         createdAt: quotationsTable.createdAt,
         updatedAt: quotationsTable.updatedAt,
         customer: {
@@ -61,7 +61,30 @@ export class QuotationsModel {
 
     const results = await db
       .insert(quotationsTable)
-      .values({ ...data, id })
+      .values({
+        ...data,
+        id,
+        items: [
+          {
+            id: 'adad',
+            price: 10,
+            cost: 5,
+            qty: 1,
+            link: 'https://google.com',
+            unit_size: 'und',
+            description: 'product prueba llll',
+          },
+          {
+            id: 'azzzdad',
+            price: 10,
+            cost: 5,
+            qty: 1,
+            link: 'https://google.com',
+            unit_size: 'und',
+            description: 'product prueba llll',
+          },
+        ],
+      })
       .returning({ insertedId: quotationsTable.id })
 
     if (results.length === 0) {
