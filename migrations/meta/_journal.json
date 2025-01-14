@@ -8,6 +8,13 @@
       "when": 1736746003688,
       "tag": "0000_cooing_thunderbolts",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1736821639782,
+      "tag": "0001_tricky_stryfe",
+      "breakpoints": true
     }
   ]
 }

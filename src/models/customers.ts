@@ -1,4 +1,4 @@
-import { eq, and, type SQL } from 'drizzle-orm'
+import { eq, and, type SQL, ilike, like } from 'drizzle-orm'
 import { customersTable } from '@/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateCustomerDto, UpdateCustomerDto, CustomerDto } from '@/dtos'
@@ -7,8 +7,13 @@ import type { DB } from '@/types'
 import { STATUS_CODE } from '@/constants'
 
 export class CustomersModel {
-  static async getAll(db: DB) {
-    const customers = await db.select().from(customersTable)
+  static async getAll(db: DB, { page = 1, pageSize = 2, name = '' }) {
+    const customers = await db
+      .select()
+      .from(customersTable)
+      .where(name ? like(customersTable.name, `%${name}%`) : undefined)
+    // .limit(pageSize)
+    // .offset((page - 1) * pageSize)
     return customers
   }
 
@@ -26,9 +31,9 @@ export class CustomersModel {
   }
 
   static async create(db: DB, dto: CreateCustomerDto) {
-    const { data, error } = InsertCustomerSchema.safeParse(dto)
+    const { data, success } = InsertCustomerSchema.safeParse(dto)
 
-    if (error) {
+    if (!success) {
       throw new HTTPException(STATUS_CODE.BadRequest, {
         message: 'Invalid customer',
       })
@@ -52,9 +57,9 @@ export class CustomersModel {
   }
 
   static async update(db: DB, id: CustomerDto['id'], dto: UpdateCustomerDto) {
-    const { data, error } = UpdateCustomerSchema.safeParse(dto)
+    const { data, success } = UpdateCustomerSchema.safeParse(dto)
 
-    if (error) {
+    if (!success) {
       throw new HTTPException(STATUS_CODE.BadRequest, {
         message: 'Invalid customer',
       })

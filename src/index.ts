@@ -3,7 +3,7 @@ import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
 import { drizzle } from 'drizzle-orm/d1'
 import * as schemas from './db/schemas'
-import { todoRoutes, customersRoute } from './routes'
+import { customersRoute, quotationsRoute } from './routes'
 import { seed } from './utils/seed'
 import { basicAuth } from 'hono/basic-auth'
 import type { App } from './types'
@@ -24,7 +24,7 @@ app.use('*', async (c, next) => {
 
 //DatabaseMiddleware
 app.use('/api/*', async (c, next) => {
-  const db = drizzle(c.env.TELLAPP_DB, { schema: schemas })
+  const db = drizzle(c.env.TELLAPP_DB)
   c.set('db', db)
   // await seed(db);
   await next()
@@ -52,8 +52,8 @@ app.get('/', async (c) => {
   return c.json({ message: 'success' })
 })
 
-app.route('/api/todos', todoRoutes)
 app.route('/api/customers', customersRoute)
+app.route('/api/quotations', quotationsRoute)
 
 app.get('/api/seed', async (c) => {
   const db = c.get('db')

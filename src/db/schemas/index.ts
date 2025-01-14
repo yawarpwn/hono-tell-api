@@ -1,5 +1,6 @@
-import { sql, relations } from 'drizzle-orm'
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import type { ItemQuotation } from '@/types'
+import { sql } from 'drizzle-orm'
+import { integer, sqliteTable, text, real } from 'drizzle-orm/sqlite-core'
 
 const userRoles = ['admin', 'user'] as const
 export const usersTable = sqliteTable('users', {
@@ -9,18 +10,6 @@ export const usersTable = sqliteTable('users', {
   role: text({ enum: userRoles }).notNull().default('user'),
 })
 
-export const todosTable = sqliteTable('todos', {
-  id: integer({ mode: 'number' }).primaryKey({ autoIncrement: true }),
-  complete: integer({ mode: 'boolean' }).default(false),
-  text: text().notNull(),
-  createdAt: integer('create_at', { mode: 'timestamp' })
-    .notNull()
-    .default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
-    .notNull()
-    .default(sql`(unixepoch())`),
-})
-
 export const customersTable = sqliteTable('customers', {
   id: text('id').primaryKey().notNull(),
   name: text('name').notNull().unique(),
@@ -28,15 +17,9 @@ export const customersTable = sqliteTable('customers', {
   phone: text('phone'),
   address: text('address'),
   email: text('email').unique(),
-  isRegular: integer('is_regular', { mode: 'boolean' })
-    .notNull()
-    .default(false),
-  createdAt: integer('create_at', { mode: 'timestamp' })
-    .notNull()
-    .default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
-    .notNull()
-    .default(sql`(unixepoch())`),
+  isRegular: integer('is_regular', { mode: 'boolean' }).notNull().default(false),
+  createdAt: integer('create_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
 })
 
 export const quotationsTable = sqliteTable('quotations', {
@@ -44,21 +27,33 @@ export const quotationsTable = sqliteTable('quotations', {
   number: integer('number').notNull().unique(),
   deadline: integer('deadline').notNull(),
   credit: integer('credit'),
-  includeIgv: integer('include_igv', { mode: 'boolean' })
-    .default(false)
-    .notNull(),
+  includeIgv: integer('include_igv', { mode: 'boolean' }).default(false).notNull(),
   customerId: text('customer_id').references(() => customersTable.id, {
     onDelete: 'set null',
     onUpdate: 'no action',
   }),
-  isPaymentPending: integer('is_payment_pending', { mode: 'boolean' })
-    .default(false)
-    .notNull(),
-  // items: text('items').$type<QuotationItem[]>().notNull(),
-  createdAt: integer('create_at', { mode: 'timestamp' })
-    .notNull()
-    .default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
-    .notNull()
-    .default(sql`(unixepoch())`),
+  isPaymentPending: integer('is_payment_pending', { mode: 'boolean' }).default(false).notNull(),
+  items: text('items').$type<ItemQuotation[]>().notNull(),
+  createdAt: integer('create_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+})
+
+export const productsTable = sqliteTable('products', {
+  id: text('id').primaryKey().notNull(),
+  description: text('description').notNull(),
+  code: text('code').unique().notNull(),
+  unitSize: text('unit_size').notNull(),
+  // category: text('category').$type<Categories>().notNull(),
+  link: text('link'),
+  rank: real('rank').default(0).notNull(),
+  price: real('price').notNull(), //must be 1, 2,  0.5, 5.5
+  cost: real('cost').notNull(), //must be 1, 2, 0.5. 55
+  createdAt: integer('create_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+})
+
+export const categoriesTable = sqliteTable('categories', {
+  id: integer().primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  createdAt: integer('create_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
 })

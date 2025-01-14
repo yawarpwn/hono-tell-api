@@ -1,6 +1,6 @@
 import type { App } from '@/types'
 import { Hono } from 'hono'
-import { CustomersModel } from '@/models'
+import { QuotationsModel } from '@/models'
 import { validator } from 'hono/validator'
 import { STATUS_CODE } from '@/constants'
 
@@ -21,22 +21,21 @@ const jsonValidator = validator('json', (body, c) => {
 
 app.get('/', async (c) => {
   const db = c.get('db')
-  const name = c.req.query('name')
-  const todos = await CustomersModel.getAll(db, { name })
+  const todos = await QuotationsModel.getAll(db)
   return c.json(todos, STATUS_CODE.Ok)
 })
 
 app.get('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
-  const results = await CustomersModel.getById(db, id)
+  const results = await QuotationsModel.getById(db, id)
   return c.json(results)
 })
 
 app.post('/', jsonValidator, async (c) => {
   const db = c.get('db')
   const dto = await c.req.valid('json')
-  const result = await CustomersModel.create(db, dto)
+  const result = await QuotationsModel.create(db, dto)
   return c.json({ ok: true, data: result }, STATUS_CODE.Created)
 })
 
@@ -44,15 +43,15 @@ app.put('/:id', jsonValidator, async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
   const dto = await c.req.valid('json')
-  const results = await CustomersModel.update(db, id, dto)
+  const results = await QuotationsModel.update(db, id, dto)
   return c.json(results)
 })
 
 app.delete('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
-  const results = await CustomersModel.delete(db, id)
+  const results = await QuotationsModel.delete(db, id)
   return c.json(results)
 })
 
-export { app as customersRoute }
+export { app as quotationsRoute }
