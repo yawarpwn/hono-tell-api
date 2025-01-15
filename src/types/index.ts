@@ -1,5 +1,12 @@
 import type { customersTable, quotationsTable } from '../db/schemas'
-import type { InsertCustomerSchema, InsertQuotationSchema, ItemQuotationSchema, CustomerSchema, QuotationSchema } from '@/dtos'
+import type {
+  InsertCustomerSchema,
+  InsertQuotationSchema,
+  UpdateQuotationSchema,
+  ItemQuotationSchema,
+  CustomerSchema,
+  QuotationSchema,
+} from '@/dtos'
 
 import type { DrizzleD1Database } from 'drizzle-orm/d1'
 import type { z } from 'zod'
@@ -34,5 +41,5 @@ export type UpdateCustomerDto = z.infer<typeof InsertCustomerSchema>
 
 export type QuotationDto = z.infer<typeof QuotationSchema>
 export type CreateQuotationDto = z.infer<typeof InsertQuotationSchema>
-export type UpdateQuotationDto = z.infer<typeof InsertQuotationSchema>
+export type UpdateQuotationDto = z.infer<typeof UpdateQuotationSchema>
 export type ItemQuotation = z.infer<typeof ItemQuotationSchema>

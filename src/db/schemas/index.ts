@@ -11,31 +11,37 @@ export const usersTable = sqliteTable('users', {
 })
 
 export const customersTable = sqliteTable('customers', {
-  id: text('id').primaryKey().notNull(),
+  id: text('id')
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => crypto.randomUUID()),
   name: text('name').notNull().unique(),
   ruc: text('ruc').notNull().unique(),
   phone: text('phone'),
   address: text('address'),
   email: text('email').unique(),
-  isRegular: integer('is_regular', { mode: 'boolean' }).notNull().default(false),
-  createdAt: integer('create_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  isRegular: integer('is_regular', { mode: 'boolean' }).default(false),
+  createdAt: integer('create_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
 })
 
 export const quotationsTable = sqliteTable('quotations', {
-  id: text('id').primaryKey().notNull(),
+  id: text('id')
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => crypto.randomUUID()),
   number: integer('number').notNull().unique(),
   deadline: integer('deadline').notNull(),
   credit: integer('credit'),
-  includeIgv: integer('include_igv', { mode: 'boolean' }).default(false).notNull(),
+  includeIgv: integer('include_igv', { mode: 'boolean' }).default(false),
   customerId: text('customer_id').references(() => customersTable.id, {
     onDelete: 'set null',
     onUpdate: 'no action',
   }),
-  isPaymentPending: integer('is_payment_pending', { mode: 'boolean' }).default(false).notNull(),
-  items: text('items', { mode: 'json' }).notNull().default({ data: false }),
-  createdAt: integer('create_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  isPaymentPending: integer('is_payment_pending', { mode: 'boolean' }).default(false),
+  items: text('items', { mode: 'json' }).$type<ItemQuotation[]>().notNull(),
+  createdAt: integer('create_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
 })
 
 export const productsTable = sqliteTable('products', {
@@ -48,12 +54,12 @@ export const productsTable = sqliteTable('products', {
   rank: real('rank').default(0).notNull(),
   price: real('price').notNull(), //must be 1, 2,  0.5, 5.5
   cost: real('cost').notNull(), //must be 1, 2, 0.5. 55
-  createdAt: integer('create_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  createdAt: integer('create_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
 })
 
 export const categoriesTable = sqliteTable('categories', {
   id: integer().primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
-  createdAt: integer('create_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  createdAt: integer('create_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
 })
