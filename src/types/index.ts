@@ -6,6 +6,10 @@ import type {
   ItemQuotationSchema,
   CustomerSchema,
   QuotationSchema,
+  UpdateCustomerSchema,
+  InsertProductSchema,
+  UpdateProductSchema,
+  ProductSchema,
 } from '@/dtos'
 
 import type { DrizzleD1Database } from 'drizzle-orm/d1'
@@ -35,11 +39,18 @@ export type App = {
 export type InsertCustomer = typeof customersTable.$inferInsert
 export type InsertQuotation = typeof quotationsTable.$inferInsert
 
+//Customers
 export type CustomerDto = z.infer<typeof CustomerSchema>
 export type CreateCustomerDto = z.infer<typeof InsertCustomerSchema>
-export type UpdateCustomerDto = z.infer<typeof InsertCustomerSchema>
+export type UpdateCustomerDto = z.infer<typeof UpdateCustomerSchema>
 
+//Quotations
 export type QuotationDto = z.infer<typeof QuotationSchema>
 export type CreateQuotationDto = z.infer<typeof InsertQuotationSchema>
 export type UpdateQuotationDto = z.infer<typeof UpdateQuotationSchema>
 export type ItemQuotation = z.infer<typeof ItemQuotationSchema>
+
+//Products
+export type ProductDto = z.infer<typeof ProductSchema>
+export type CreateProductDto = z.infer<typeof InsertProductSchema>
+export type UpdateProductDto = z.infer<typeof UpdateProductSchema>

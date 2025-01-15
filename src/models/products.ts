@@ -1,0 +1,83 @@
+import { eq, and, type SQL, ilike, like, asc, desc } from 'drizzle-orm'
+import { productsTable } from '@/db/schemas'
+import { HTTPException } from 'hono/http-exception'
+import type { CreateProductDto, UpdateProductDto, ProductDto } from '@/types'
+import { InsertProductSchema, UpdateProductSchema } from '@/dtos'
+import type { DB } from '@/types'
+import { STATUS_CODE } from '@/constants'
+
+export class ProductsModel {
+  static async getAll(db: DB) {
+    const products = await db.select().from(productsTable).limit(1000).orderBy(desc(productsTable.updatedAt))
+    return products
+  }
+
+  static async getById(db: DB, id: ProductDto['id']) {
+    const products = await db.select().from(productsTable).where(eq(productsTable.id, id))
+    if (products.length === 0) {
+      throw new HTTPException(STATUS_CODE.NotFound, {
+        message: `product with id ${id} not found`,
+      })
+    }
+    return products[0]
+  }
+
+  static async create(db: DB, dto: CreateProductDto) {
+    const { data, success, error } = InsertProductSchema.safeParse(dto)
+
+    if (!success) {
+      console.log(error.errors)
+      throw new HTTPException(STATUS_CODE.BadRequest, {
+        message: 'Invalid product',
+      })
+    }
+    const results = await db.insert(productsTable).values(data).returning({ insertedId: productsTable.id })
+
+    if (results.length === 0) {
+      throw new HTTPException(STATUS_CODE.BadRequest, {
+        message: 'Failed to create product',
+      })
+    }
+
+    const [product] = results
+    return product
+  }
+
+  static async update(db: DB, id: ProductDto['id'], dto: UpdateProductDto) {
+    const { data, success, error } = UpdateProductSchema.safeParse(dto)
+
+    if (!success) {
+      console.log(error.errors)
+      throw new HTTPException(STATUS_CODE.BadRequest, {
+        message: 'Invalid product',
+      })
+    }
+
+    if (Object.values(data).length === 0) {
+      throw new HTTPException(STATUS_CODE.BadRequest, {
+        message: 'Invalid product',
+      })
+    }
+
+    const results = await db.update(productsTable).set(data).where(eq(productsTable.id, id)).returning()
+
+    if (results.length === 0) {
+      throw new HTTPException(STATUS_CODE.NotFound, {
+        message: `product with id ${id} not found`,
+      })
+    }
+
+    return results[0]
+  }
+
+  static async delete(db: DB, id: ProductDto['id']) {
+    const results = await db.delete(productsTable).where(eq(productsTable.id, id)).returning()
+
+    if (results.length === 0) {
+      throw new HTTPException(STATUS_CODE.NotFound, {
+        message: `product with id ${id} not found`,
+      })
+    }
+    return results[0]
+  }
+}

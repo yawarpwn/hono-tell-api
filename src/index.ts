@@ -3,7 +3,7 @@ import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
 import { drizzle } from 'drizzle-orm/d1'
 import * as schemas from './db/schemas'
-import { customersRoute, quotationsRoute } from './routes'
+import { customersRoute, quotationsRoute, productsRoute } from './routes'
 import { seed } from './utils/seed'
 import { basicAuth } from 'hono/basic-auth'
 import type { App } from './types'
@@ -54,6 +54,7 @@ app.get('/', async (c) => {
 
 app.route('/api/customers', customersRoute)
 app.route('/api/quotations', quotationsRoute)
+app.route('/api/products', productsRoute)
 
 app.get('/api/seed', async (c) => {
   const db = c.get('db')
