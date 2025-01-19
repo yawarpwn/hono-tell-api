@@ -37,7 +37,7 @@ export async function seed(db: DB) {
     createAt: faker.date.past(),
     updatedAt: faker.date.soon(),
     items: Array.from({ length: 3 }).map(() => ({
-      id: crypto.randomUUID(),
+      id: faker.string.uuid(),
       description: faker.commerce.productDescription(),
       price: Number(faker.commerce.price()),
       cost: Number(faker.commerce.price()),
@@ -53,9 +53,9 @@ export async function seed(db: DB) {
     name: category,
   }))
 
-  const fakeProducts = Array.from({ length: 20 }).map(() => ({
+  const fakeProducts = Array.from({ length: 10 }).map((_, index) => ({
     description: faker.commerce.productDescription(),
-    code: faker.commerce.product(),
+    code: 'Fhp40-' + index,
     unitSize: 'und',
     categoryId: categoriesToInsert[Math.floor(Math.random() * categoriesToInsert.length + 1)].id,
     price: Number(faker.commerce.price()),

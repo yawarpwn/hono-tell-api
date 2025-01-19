@@ -1,5 +1,5 @@
 import { eq, and, type SQL, ilike, like, asc, desc } from 'drizzle-orm'
-import { productsTable } from '@/db/schemas'
+import { productsTable, productCategoriesTable } from '@/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateProductDto, UpdateProductDto, ProductDto } from '@/types'
 import { InsertProductSchema, UpdateProductSchema } from '@/dtos'
@@ -8,12 +8,45 @@ import { STATUS_CODE } from '@/constants'
 
 export class ProductsModel {
   static async getAll(db: DB) {
-    const products = await db.select().from(productsTable).limit(1000).orderBy(desc(productsTable.updatedAt))
+    const products = await db
+      .select({
+        id: productsTable.id,
+        description: productsTable.description,
+        code: productsTable.code,
+        unitSize: productsTable.unitSize,
+        category: productCategoriesTable.name,
+        link: productsTable.link,
+        rank: productsTable.rank,
+        price: productsTable.price,
+        cost: productsTable.cost,
+        createdAt: productsTable.createdAt,
+        updatedAt: productsTable.updatedAt,
+      })
+      .from(productsTable)
+      .limit(1000)
+      .orderBy(desc(productsTable.updatedAt))
+      .leftJoin(productCategoriesTable, eq(productsTable.categoryId, productCategoriesTable.id))
     return products
   }
 
   static async getById(db: DB, id: ProductDto['id']) {
-    const products = await db.select().from(productsTable).where(eq(productsTable.id, id))
+    const products = await db
+      .select({
+        id: productsTable.id,
+        description: productsTable.description,
+        code: productsTable.code,
+        unitSize: productsTable.unitSize,
+        category: productCategoriesTable.name,
+        link: productsTable.link,
+        rank: productsTable.rank,
+        price: productsTable.price,
+        cost: productsTable.cost,
+        createdAt: productsTable.createdAt,
+        updatedAt: productsTable.updatedAt,
+      })
+      .from(productsTable)
+      .where(eq(productsTable.id, id))
+      .leftJoin(productCategoriesTable, eq(productsTable.categoryId, productCategoriesTable.id))
     if (products.length === 0) {
       throw new HTTPException(STATUS_CODE.NotFound, {
         message: `product with id ${id} not found`,

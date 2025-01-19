@@ -39,7 +39,32 @@ export class QuotationsModel {
   }
 
   static async getById(db: DB, id: QuotationDto['id']) {
-    const quotations = await db.select().from(quotationsTable).where(eq(quotationsTable.id, id))
+    const quotations = await db
+      .select({
+        id: quotationsTable.id,
+        number: quotationsTable.number,
+        deadline: quotationsTable.deadline,
+        credit: quotationsTable.credit,
+        includeIgv: quotationsTable.includeIgv,
+        isPaymentPending: quotationsTable.isPaymentPending,
+        items: quotationsTable.items,
+        createdAt: quotationsTable.createdAt,
+        updatedAt: quotationsTable.updatedAt,
+        customer: {
+          id: customersTable.id,
+          name: customersTable.name,
+          ruc: customersTable.ruc,
+          phone: customersTable.phone,
+          address: customersTable.address,
+          email: customersTable.email,
+          isRegular: customersTable.isRegular,
+          createdAt: customersTable.createdAt,
+          updatedAt: customersTable.updatedAt,
+        },
+      })
+      .from(quotationsTable)
+      .where(eq(quotationsTable.id, id))
+      .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
     if (quotations.length === 0) {
       throw new HTTPException(STATUS_CODE.NotFound, {
         message: `quotation with id ${id} not found`,
