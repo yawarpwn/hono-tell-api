@@ -1,6 +1,7 @@
-import type { ItemQuotation } from '@/types'
+import type { ItemQuotation, ProductCategory } from '@/types'
 import { sql } from 'drizzle-orm'
 import { integer, sqliteTable, text, real, blob } from 'drizzle-orm/sqlite-core'
+import { productCategories } from '@/constants'
 
 const userRoles = ['admin', 'user'] as const
 export const usersTable = sqliteTable('users', {
@@ -45,11 +46,16 @@ export const quotationsTable = sqliteTable('quotations', {
 })
 
 export const productsTable = sqliteTable('products', {
-  id: text('id').primaryKey().notNull(),
+  id: text('id')
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => crypto.randomUUID()),
   description: text('description').notNull(),
   code: text('code').unique().notNull(),
   unitSize: text('unit_size').notNull(),
-  // category: text('category').$type<Categories>().notNull(),
+  categoryId: integer('category_id')
+    .references(() => productCategoriesTable.id)
+    .notNull(),
   link: text('link'),
   rank: real('rank').default(0).notNull(),
   price: real('price').notNull(), //must be 1, 2,  0.5, 5.5
@@ -58,8 +64,10 @@ export const productsTable = sqliteTable('products', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
 })
 
-export const categoriesTable = sqliteTable('categories', {
+// const userRoles = ['admin', 'user'] as const
+
+export const productCategoriesTable = sqliteTable('product_categories', {
   id: integer().primaryKey({ autoIncrement: true }),
-  name: text('name').notNull(),
+  name: text({ enum: productCategories }).notNull(),
   createdAt: integer('create_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
 })

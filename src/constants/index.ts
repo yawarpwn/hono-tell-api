@@ -24,3 +24,20 @@ export const PRODUCT_CATEGORIES = {
   CONVENCIONALES: 'convencionales',
   ACRILICOs: 'acrilicos',
 } as const
+
+export const productCategories = [
+  'cintas seguridad',
+  'obras',
+  'proteccion vial',
+  'fotoluminiscente',
+  'seguridad',
+  'viales',
+  'viniles',
+  'lucha contra incendio',
+  'articulos seguridad',
+  'epp',
+  'servicio',
+  'ropa seguridad',
+  'convencionales',
+  'acrilicos',
+] as const

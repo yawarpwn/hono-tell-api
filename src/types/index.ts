@@ -1,19 +1,20 @@
-import type { customersTable, quotationsTable } from '../db/schemas'
 import type {
-  InsertCustomerSchema,
-  InsertQuotationSchema,
-  UpdateQuotationSchema,
-  ItemQuotationSchema,
   CustomerSchema,
+  InsertCustomerSchema,
+  InsertProductSchema,
+  InsertQuotationSchema,
+  ItemQuotationSchema,
+  ProductSchema,
   QuotationSchema,
   UpdateCustomerSchema,
-  InsertProductSchema,
   UpdateProductSchema,
-  ProductSchema,
+  UpdateQuotationSchema,
 } from '@/dtos'
+import type { customersTable, quotationsTable } from '../db/schemas'
 
 import type { DrizzleD1Database } from 'drizzle-orm/d1'
 import type { z } from 'zod'
+import type { PRODUCT_CATEGORIES } from '@/constants'
 
 export type DB = DrizzleD1Database
 
@@ -54,3 +55,4 @@ export type ItemQuotation = z.infer<typeof ItemQuotationSchema>
 export type ProductDto = z.infer<typeof ProductSchema>
 export type CreateProductDto = z.infer<typeof InsertProductSchema>
 export type UpdateProductDto = z.infer<typeof UpdateProductSchema>
+export type ProductCategory = (typeof PRODUCT_CATEGORIES)[keyof typeof PRODUCT_CATEGORIES]
