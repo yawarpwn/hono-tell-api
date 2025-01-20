@@ -14,7 +14,13 @@ export class CustomersModel {
       .where(name ? like(customersTable.name, `%${name}%`) : undefined)
     // .limit(pageSize)
     // .offset((page - 1) * pageSize)
-    return customers
+    return {
+      items: customers,
+      meta: {
+        totalItems: customers.length,
+      },
+      links: {},
+    }
   }
 
   static async getById(db: DB, id: CustomerDto['id']) {

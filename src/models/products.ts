@@ -26,7 +26,13 @@ export class ProductsModel {
       .limit(1000)
       .orderBy(desc(productsTable.updatedAt))
       .leftJoin(productCategoriesTable, eq(productsTable.categoryId, productCategoriesTable.id))
-    return products
+    return {
+      items: products,
+      meta: {
+        totalItems: products.length,
+      },
+      links: {},
+    }
   }
 
   static async getById(db: DB, id: ProductDto['id']) {

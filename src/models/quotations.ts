@@ -35,7 +35,13 @@ export class QuotationsModel {
       .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
       .limit(2000)
       .orderBy(desc(quotationsTable.updatedAt))
-    return quotations
+    return {
+      items: quotations,
+      meta: {
+        totalItems: quotations.length,
+      },
+      links: {},
+    }
   }
 
   static async getById(db: DB, id: QuotationDto['id']) {
