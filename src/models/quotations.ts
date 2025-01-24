@@ -79,6 +79,42 @@ export class QuotationsModel {
     return quotations[0]
   }
 
+  static async getByNumber(db: DB, quotationNumber: QuotationDto['number']) {
+    const quotations = await db
+      .select({
+        id: quotationsTable.id,
+        number: quotationsTable.number,
+        deadline: quotationsTable.deadline,
+        credit: quotationsTable.credit,
+        includeIgv: quotationsTable.includeIgv,
+        isPaymentPending: quotationsTable.isPaymentPending,
+        items: quotationsTable.items,
+        customer: {
+          id: customersTable.id,
+          name: customersTable.name,
+          ruc: customersTable.ruc,
+          phone: customersTable.phone,
+          address: customersTable.address,
+          email: customersTable.email,
+          isRegular: customersTable.isRegular,
+          createdAt: customersTable.createdAt,
+          updatedAt: customersTable.updatedAt,
+        },
+        customerId: customersTable.id,
+        createdAt: quotationsTable.createdAt,
+        updatedAt: quotationsTable.updatedAt,
+      })
+      .from(quotationsTable)
+      .where(eq(quotationsTable.number, quotationNumber))
+      .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
+    if (quotations.length === 0) {
+      throw new HTTPException(STATUS_CODE.NotFound, {
+        message: `quotation with Number:${quotationNumber} not found`,
+      })
+    }
+    return quotations[0]
+  }
+
   static async create(db: DB, dto: CreateQuotationDto) {
     const { data, success, error } = InsertQuotationSchema.safeParse(dto)
 
@@ -98,7 +134,10 @@ export class QuotationsModel {
     const results = await db
       .insert(quotationsTable)
       .values({ ...data, number: lastQuotationNumber + 1 })
-      .returning({ insertedId: quotationsTable.id })
+      .returning({
+        insertedId: quotationsTable.id,
+        insertedNumber: quotationsTable.number,
+      })
 
     if (results.length === 0) {
       throw new HTTPException(STATUS_CODE.BadRequest, {
@@ -137,12 +176,12 @@ export class QuotationsModel {
     return results[0]
   }
 
-  static async delete(db: DB, id: QuotationDto['id']) {
-    const results = await db.delete(quotationsTable).where(eq(quotationsTable.id, id)).returning()
+  static async delete(db: DB, quotationNumber: QuotationDto['number']) {
+    const results = await db.delete(quotationsTable).where(eq(quotationsTable.number, quotationNumber)).returning()
 
     if (results.length === 0) {
       throw new HTTPException(STATUS_CODE.NotFound, {
-        message: `quotation with id ${id} not found`,
+        message: `quotation with id ${quotationNumber} not found`,
       })
     }
     return results[0]
