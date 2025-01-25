@@ -1,4 +1,4 @@
-name = "hono-tell-api"
+name = "api"
 main = "src/index.ts"
 compatibility_date = "2025-01-10"
 assets = { directory = "public" }
