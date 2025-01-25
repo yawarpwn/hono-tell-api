@@ -11,13 +11,7 @@ import type { App } from './types'
 const app = new Hono<App>()
 
 /**------- Middlewares----- */
-app.use(
-  '*',
-  cors({
-    origin: 'https://app.tellsenales.workers.dev',
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-  }),
-)
+app.use('*', cors())
 app.use('*', prettyJSON())
 app.use('*', async (c, next) => {
   console.log(c.req.method, c.req.url)
