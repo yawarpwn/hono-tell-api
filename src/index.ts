@@ -11,8 +11,19 @@ import type { App } from './types'
 const app = new Hono<App>()
 
 /**------- Middlewares----- */
-app.use('*', cors())
+app.use(
+  '*',
+  cors({
+    origin: 'https://tellapp.tellsenales.workers.dev',
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+  }),
+)
 app.use('*', prettyJSON())
+app.use('*', async (c, next) => {
+  console.log(c.req.method, c.req.url)
+  await next()
+  console.log(c.res.status)
+})
 
 // Add X-Response-Time header
 app.use('*', async (c, next) => {
