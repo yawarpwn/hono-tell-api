@@ -2,20 +2,26 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
 import { drizzle } from 'drizzle-orm/d1'
-import * as schemas from './db/schemas'
 import { customersRoute, quotationsRoute, productsRoute } from './routes'
 import { seed } from './utils/seed'
-import { basicAuth } from 'hono/basic-auth'
 import type { App } from './types'
 
 const app = new Hono<App>()
 
 /**------- Middlewares----- */
-app.use('*', cors())
+app.use(
+  '*',
+  cors({
+    origin: ['https://app.tellsenales.workers.dev'], // Dominio de tu app Remix
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  }),
+)
 app.use('*', prettyJSON())
 app.use('*', async (c, next) => {
   console.log(c.req.method, c.req.url, c.req.header('User-Agent'))
-  // console.log(c.req.header('Content-Type'))
+  console.log('HEADERS:', c.req.raw.headers)
   await next()
   console.log(`[${c.req.method}] ${c.req.url} - ${c.res.status}`)
 })
