@@ -14,7 +14,7 @@ const app = new Hono<App>()
 app.use('*', cors())
 app.use('*', prettyJSON())
 app.use('*', async (c, next) => {
-  console.log(c.req.method, c.req.url)
+  console.log(c.req.method, c.req.url, c.req.header('User-Agent'))
   await next()
   console.log(c.res.status)
 })
