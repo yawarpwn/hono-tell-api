@@ -87,4 +87,7 @@ app.notFound((c) => c.json({ message: 'not found', ok: false }, 404))
 //   return c.text("custom erorr ", 500);
 // });
 
-export default app
+export default {
+  fetch: app.fetch,
+  sum: (a: number, b: number) => a + b,
+}
