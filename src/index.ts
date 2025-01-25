@@ -1,3 +1,4 @@
+import { WorkerEntrypoint } from 'cloudflare:workers'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
@@ -87,7 +88,12 @@ app.notFound((c) => c.json({ message: 'not found', ok: false }, 404))
 //   return c.text("custom erorr ", 500);
 // });
 
-export default {
-  fetch: app.fetch,
-  sum: (a: number, b: number) => a + b,
+export default class API extends WorkerEntrypoint {
+  async fetch() {
+    return new Response(null, { status: 404 })
+  }
+
+  async sum(a: number, b: number) {
+    return a + b
+  }
 }
