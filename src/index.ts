@@ -14,7 +14,7 @@ const app = new Hono<App>()
 app.use(
   '*',
   cors({
-    origin: 'https://tellapp.tellsenales.workers.dev',
+    origin: 'https://app.tellsenales.workers.dev',
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
   }),
 )
