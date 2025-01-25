@@ -15,6 +15,8 @@ app.use('*', cors())
 app.use('*', prettyJSON())
 app.use('*', async (c, next) => {
   console.log(c.req.method, c.req.url, c.req.header('User-Agent'))
+  // console.log(c.req.header('Content-Type'))
+  console.log(c.req.raw)
   await next()
   console.log(c.res.status)
 })
