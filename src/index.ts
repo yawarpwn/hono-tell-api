@@ -16,9 +16,8 @@ app.use('*', prettyJSON())
 app.use('*', async (c, next) => {
   console.log(c.req.method, c.req.url, c.req.header('User-Agent'))
   // console.log(c.req.header('Content-Type'))
-  console.log(JSON.stringify(c.req.raw))
   await next()
-  console.log(c.res.status)
+  console.log(`[${c.req.method}] ${c.req.url} - ${c.res.status}`)
 })
 
 // Add X-Response-Time header
