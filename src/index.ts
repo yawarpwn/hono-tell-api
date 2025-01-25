@@ -88,12 +88,9 @@ app.notFound((c) => c.json({ message: 'not found', ok: false }, 404))
 //   return c.text("custom erorr ", 500);
 // });
 
-export default class API extends WorkerEntrypoint {
-  async fetch() {
-    return new Response(null, { status: 404 })
-  }
-
+export default {
+  fetch: app.fetch,
   async sum(a: number, b: number) {
     return a + b
-  }
-}
+  },
+} satisfies WorkerEntrypoint
