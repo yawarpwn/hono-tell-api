@@ -68,7 +68,11 @@ app.get('/api/seed', async (c) => {
   return c.json(info)
 })
 
-// Custom Not Found Message
+app.get('/api/test', async (c) => {
+  return c.json({ message: 'TESTAPI: success' })
+})
+
+// nustom Not Found Message
 app.notFound((c) => c.json({ message: 'not found', ok: false }, 404))
 
 // Error handling
