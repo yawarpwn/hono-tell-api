@@ -24,8 +24,8 @@ importers:
         specifier: 0.6.1
         version: 0.6.1(drizzle-orm@0.38.4(@cloudflare/workers-types@4.20250124.3))(zod@3.24.1)
       hono:
-        specifier: ^4.6.18
-        version: 4.6.18
+        specifier: ^4.6.19
+        version: 4.6.19
       zod:
         specifier: ^3.24.1
         version: 3.24.1
@@ -832,8 +832,8 @@ packages:
   has-unicode@2.0.1:
     resolution: {integrity: sha512-8Rf9Y83NBReMnx0gFzA8JImQACstCYWUplepDa9xprwwtmgEZUF0h/i5xSA625zB/I37EtrswSST6OXxwaaIJQ==}
 
-  hono@4.6.18:
-    resolution: {integrity: sha512-Fu7hEPvdwtPG8LqSAiPn8p8HjD+PDxrP/HVnwRBnwtVKOn5zDDKsw0ma2Xt58oq97Rlp3t/mRNADEV/Ym6cDng==}
+  hono@4.6.19:
+    resolution: {integrity: sha512-Xw5DwU2cewEsQ1DkDCdy6aBJkEBARl5loovoL1gL3/gw81RdaPbXrNJYp3LoQpzpJ7ECC/1OFi/vn3UZTLHFEw==}
     engines: {node: '>=16.9.0'}
 
   https-proxy-agent@5.0.1:
@@ -1648,7 +1648,7 @@ snapshots:
 
   has-unicode@2.0.1: {}
 
-  hono@4.6.18: {}
+  hono@4.6.19: {}
 
   https-proxy-agent@5.0.1:
     dependencies:
