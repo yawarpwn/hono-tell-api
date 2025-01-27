@@ -22,7 +22,7 @@ type Bindings = {
   USERNAME: string
   PASSWORD: string
   JWT_SECRET: string
-  TELLAPP_DB: D1Database
+  DB: D1Database
 }
 
 type Variables = {

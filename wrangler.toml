@@ -13,11 +13,10 @@ compatibility_flags = ["nodejs_compat"]
 MY_VAR = "my-variable"
 
 [[d1_databases]]
-binding = "TELLAPP_DB"
+binding = "DB"
 database_name = "tellapp-db"
-database_id = "bf97a768-9f69-4eea-9204-8fb4232481b0"
+database_id = "d0b07f27-00ed-426d-8ae4-692e970da855"
 migrations_dir = "migrations"
-preview_database_id = "a4b0b0d1-9fc2-4347-a7da-9108ab0aff07" # Required for Pages local development
 
 [observability.logs]
 enabled = true

@@ -1,14 +1,16 @@
-// import type { Config } from "drizzle-kit";
-import { defineConfig } from 'drizzle-kit'
+import type { Config } from 'drizzle-kit'
 
-export default defineConfig({
+export default {
   schema: './src/db/schemas/index.ts',
   out: './migrations',
   dialect: 'sqlite',
   driver: 'd1-http',
   dbCredentials: {
-    accountId: process.env.CLOUDFLARE_ACCOUNT_ID!,
-    databaseId: process.env.CLOUDFLARE_DATABASE_ID!,
-    token: process.env.CLOUDFLARE_D1_TOKEN!,
+    accountId: '8822126d2aafa667c35b5849162bbb3b',
+
+    // @ts-expect-error - no use node
+    databaseId: process.env.CLOUDFLARE_DATABASE_ID,
+    // @ts-expect-error - no use node
+    token: process.env.CLOUDFLARE_D1_TOKEN,
   },
-})
+} satisfies Config
