@@ -35,7 +35,7 @@ export class QuotationsModel {
       .from(quotationsTable)
       .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
       .limit(2000)
-      .orderBy(desc(quotationsTable.updatedAt))
+      .orderBy(asc(quotationsTable.updatedAt))
     return {
       items: quotations,
       meta: {
@@ -117,14 +117,20 @@ export class QuotationsModel {
   }
 
   static async create(db: DB, dto: CreateQuotationDto & { customer: CreateCustomerDto }) {
+    let customerId = dto.customerId
+
     if (!dto.customerId) {
       if (dto?.customer?.name && dto?.customer?.ruc) {
         const { insertedId } = await CustomersModel.create(db, dto.customer)
+        customerId = insertedId
         console.log(`Inserted new customer with id ${insertedId}`)
       }
     }
 
-    const { data, success, error } = InsertQuotationSchema.safeParse(dto)
+    const { data, success, error } = InsertQuotationSchema.safeParse({
+      ...dto,
+      customerId,
+    })
 
     if (!success) {
       console.log(error.errors)
