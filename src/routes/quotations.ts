@@ -23,7 +23,7 @@ app.post('/', async (c) => {
   const db = c.get('db')
   const dto = await c.req.json()
   const result = await QuotationsModel.create(db, dto)
-  return c.json({ ok: true, data: result }, STATUS_CODE.Created)
+  return c.json(result, STATUS_CODE.Created)
 })
 
 app.put('/:id', async (c) => {

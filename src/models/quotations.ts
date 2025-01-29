@@ -1,10 +1,11 @@
 import { eq, and, type SQL, ilike, like, asc, desc } from 'drizzle-orm'
 import { quotationsTable, customersTable } from '@/db/schemas'
 import { HTTPException } from 'hono/http-exception'
-import type { CreateQuotationDto, UpdateQuotationDto, QuotationDto } from '@/types'
+import type { CreateQuotationDto, UpdateQuotationDto, QuotationDto, CreateCustomerDto } from '@/types'
 import { InsertQuotationSchema, UpdateQuotationSchema } from '@/dtos'
 import type { DB } from '@/types'
 import { STATUS_CODE } from '@/constants'
+import { CustomersModel } from './customers'
 
 export class QuotationsModel {
   static async getAll(db: DB) {
@@ -115,7 +116,14 @@ export class QuotationsModel {
     return quotations[0]
   }
 
-  static async create(db: DB, dto: CreateQuotationDto) {
+  static async create(db: DB, dto: CreateQuotationDto & { customer: CreateCustomerDto }) {
+    if (!dto.customerId) {
+      if (dto?.customer?.name && dto?.customer?.ruc) {
+        const { insertedId } = await CustomersModel.create(db, dto.customer)
+        console.log(`Inserted new customer with id ${insertedId}`)
+      }
+    }
+
     const { data, success, error } = InsertQuotationSchema.safeParse(dto)
 
     if (!success) {
@@ -146,6 +154,7 @@ export class QuotationsModel {
     }
 
     const [quotation] = results
+    console.log({ quotation })
     return quotation
   }
 

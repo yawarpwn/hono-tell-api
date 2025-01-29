@@ -9,6 +9,7 @@ import type { App } from './types'
 const app = new Hono<App>()
 
 /**------- Middlewares----- */
+app.use('*', cors())
 app.use('*', prettyJSON())
 
 // Add X-Response-Time header

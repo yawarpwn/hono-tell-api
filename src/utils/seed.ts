@@ -22,6 +22,7 @@ export async function seed(db: DB) {
     ruc: faker.string.numeric({ length: 11 }),
     isRegular: faker.datatype.boolean(),
     name: faker.company.name(),
+    address: faker.location.streetAddress(),
     createAt: faker.date.past(),
     updatedAt: faker.date.soon(),
   }))
