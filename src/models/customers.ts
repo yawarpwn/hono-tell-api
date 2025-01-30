@@ -7,13 +7,17 @@ import type { DB } from '@/types'
 import { STATUS_CODE } from '@/constants'
 
 export class CustomersModel {
-  static async getAll(db: DB, { page = 1, pageSize = 2, name = '' }) {
-    const customers = await db
-      .select()
-      .from(customersTable)
-      .where(name ? like(customersTable.name, `%${name}%`) : undefined)
+  static async getAll(db: DB, { page = 1, pageSize = 2, ruc = '' }) {
+    const customers = await db.select().from(customersTable)
+    // .where(name ? like(customersTable.name, `%${}%`) : undefined)
     // .limit(pageSize)
     // .offset((page - 1) * pageSize)
+
+    if (customers.length === 0) {
+      throw new HTTPException(404, {
+        message: 'Customers not found',
+      })
+    }
     return {
       items: customers,
       meta: {
@@ -23,11 +27,11 @@ export class CustomersModel {
     }
   }
 
-  static async getById(db: DB, id: CustomerDto['id']) {
-    const customers = await db.select().from(customersTable).where(eq(customersTable.id, id))
+  static async getByRuc(db: DB, ruc: CustomerDto['ruc']) {
+    const customers = await db.select().from(customersTable).where(eq(customersTable.ruc, ruc))
     if (customers.length === 0) {
-      throw new HTTPException(STATUS_CODE.NotFound, {
-        message: `Customer with id ${id} not found`,
+      throw new HTTPException(404, {
+        message: `Customer with ruc: ${ruc} not found`,
       })
     }
     return customers[0]

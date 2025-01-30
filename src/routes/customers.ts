@@ -3,10 +3,10 @@ import { Hono } from 'hono'
 import { CustomersModel } from '@/models'
 import { validator } from 'hono/validator'
 import { STATUS_CODE } from '@/constants'
+import { HTTPException } from 'hono/http-exception'
 
 const app = new Hono<App>()
 
-//TODO: implement robust json validator
 const jsonValidator = validator('json', (body, c) => {
   if (typeof body !== 'object' || !body) {
     return c.json({ ok: false, message: 'Invalid' })
@@ -21,16 +21,56 @@ const jsonValidator = validator('json', (body, c) => {
 
 app.get('/', async (c) => {
   const db = c.get('db')
-  const name = c.req.query('name')
-  const todos = await CustomersModel.getAll(db, { name })
-  return c.json(todos, STATUS_CODE.Ok)
+  const ruc = c.req.query('ruc')
+
+  try {
+    const todos = await CustomersModel.getAll(db, { ruc })
+    return c.json(todos, STATUS_CODE.Ok)
+  } catch (error) {
+    if (error instanceof HTTPException) {
+      return c.json({ ok: false, message: error.message, statusCode: error.status }, error.status)
+    }
+
+    console.log('ERROR: ', error)
+    return c.json(
+      {
+        ok: false,
+        message: 'Error Desconocido',
+        statusCode: STATUS_CODE.ServerError,
+      },
+      STATUS_CODE.BadRequest,
+    )
+  }
 })
 
-app.get('/:id', async (c) => {
+app.get('/:ruc', async (c) => {
   const db = c.get('db')
-  const id = c.req.param('id')
-  const results = await CustomersModel.getById(db, id)
-  return c.json(results)
+  const ruc = c.req.param('ruc')
+
+  try {
+    const customer = await CustomersModel.getByRuc(db, ruc)
+    return c.json(customer)
+  } catch (error) {
+    if (error instanceof HTTPException) {
+      return c.json(
+        {
+          ok: false,
+          message: error.message,
+          statusCode: error.status,
+        },
+        error.status,
+      )
+    }
+    console.log('ERROR: ', error)
+    return c.json(
+      {
+        ok: false,
+        message: 'Error Desconocido',
+        statusCode: 500,
+      },
+      500,
+    )
+  }
 })
 
 app.post('/', jsonValidator, async (c) => {

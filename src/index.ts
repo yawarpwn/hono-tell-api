@@ -5,6 +5,7 @@ import { drizzle } from 'drizzle-orm/d1'
 import { customersRoute, quotationsRoute, productsRoute } from './routes'
 import { seed } from './utils/seed'
 import type { App } from './types'
+import { STATUS_CODE } from './constants'
 
 const app = new Hono<App>()
 
@@ -65,7 +66,16 @@ app.get('/api/test', async (c) => {
 })
 
 // nustom Not Found Message
-app.notFound((c) => c.json({ message: 'not found', ok: false }, 404))
+app.notFound((c) =>
+  c.json(
+    {
+      message: 'ENOENT: Endpoint Not Found',
+      ok: false,
+      statusCode: STATUS_CODE.BadRequest,
+    },
+    404,
+  ),
+)
 
 // Error handling
 // app.onError((err, c) => {
