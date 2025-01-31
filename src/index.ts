@@ -6,6 +6,8 @@ import { customersRoute, quotationsRoute, productsRoute } from './routes'
 import { seed } from './utils/seed'
 import type { App } from './types'
 import { STATUS_CODE } from './constants'
+import { seedProducts } from './utils/seed-products'
+import { seedCustomers } from './utils/seed-customers'
 
 const app = new Hono<App>()
 
@@ -55,10 +57,12 @@ app.route('/api/customers', customersRoute)
 app.route('/api/quotations', quotationsRoute)
 app.route('/api/products', productsRoute)
 
-app.get('/api/seed', async (c) => {
-  const db = c.get('db')
-  const info = await seed(db)
-  return c.json(info)
+app.get('/api/seed-customers', async (c) => {
+  return c.json(await seedCustomers(c.get('db')))
+})
+
+app.get('/api/seed-products', async (c) => {
+  return c.json(await seedProducts(c.get('db')))
 })
 
 app.get('/api/test', async (c) => {
