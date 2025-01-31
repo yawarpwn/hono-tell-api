@@ -52,24 +52,18 @@ app.get('/:ruc', async (c) => {
     return c.json(customer)
   } catch (error) {
     if (error instanceof HTTPException) {
-      return c.json(
-        {
-          ok: false,
-          message: error.message,
-          statusCode: error.status,
-        },
-        error.status,
-      )
+      return c.json({
+        ok: false,
+        message: error.message,
+        statusCode: error.status,
+      })
     }
     console.log('ERROR: ', error)
-    return c.json(
-      {
-        ok: false,
-        message: 'Error Desconocido',
-        statusCode: 500,
-      },
-      500,
-    )
+    return c.json({
+      ok: false,
+      message: 'Error Desconocido',
+      statusCode: 500,
+    })
   }
 })
 

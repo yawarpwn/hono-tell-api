@@ -35,7 +35,7 @@ export class QuotationsModel {
       .from(quotationsTable)
       .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
       .limit(2000)
-      .orderBy(asc(quotationsTable.updatedAt))
+      .orderBy(desc(quotationsTable.updatedAt))
     return {
       items: quotations,
       meta: {
