@@ -118,20 +118,14 @@ export class QuotationsModel {
   }
 
   static async create(db: DB, dto: CreateQuotationDto & { customer: CreateCustomerDto }) {
+    console.log({ quotationToCreate: dto })
     let customerId = dto.customerId
 
     if (!dto.customerId) {
       if (dto?.customer?.name && dto?.customer?.ruc) {
-        CustomersModel.create(db, dto.customer)
-          .then((data) => {
-            customerId = data.insertedId
-          })
-          .catch((err) => {
-            console.log(err)
-            throw new HTTPException(400, {
-              message: 'Error creando el cliente',
-            })
-          })
+        console.log('insert new customer to db')
+        const { insertedId } = await CustomersModel.create(db, dto.customer)
+        customerId = insertedId
       }
     }
 
