@@ -43,6 +43,11 @@ export const InsertQuotationSchema = createInsertSchema(quotationsTable, {
 })
 export const UpdateQuotationSchema = createUpdateSchema(quotationsTable, {
   items: () => z.array(ItemQuotationSchema),
+}).omit({
+  createdAt: true,
+  number: true,
+  updatedAt: true,
+  id: true,
 })
 
 //Products

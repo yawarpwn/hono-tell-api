@@ -188,7 +188,24 @@ export class QuotationsModel {
       })
     }
 
-    const results = await db.update(quotationsTable).set(data).where(eq(quotationsTable.id, id)).returning()
+    let customerId = dto.customerId
+
+    if (!dto.customerId) {
+      if (dto?.customer?.name && dto?.customer?.ruc) {
+        console.log('insert new customer to db')
+        const { insertedId } = await CustomersModel.create(db, dto.customer)
+        customerId = insertedId
+      }
+    }
+
+    const results = await db
+      .update(quotationsTable)
+      .set({
+        ...data,
+        customerId,
+      })
+      .where(eq(quotationsTable.id, id))
+      .returning()
 
     if (results.length === 0) {
       throw new HTTPException(STATUS_CODE.NotFound, {
