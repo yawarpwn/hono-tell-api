@@ -3,7 +3,6 @@ import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
 import { drizzle } from 'drizzle-orm/d1'
 import { customersRoute, quotationsRoute, productsRoute } from './routes'
-import { seed } from './utils/seed'
 import type { App } from './types'
 import { STATUS_CODE } from './constants'
 import { seedProducts } from './utils/seed-products'
@@ -21,6 +20,12 @@ app.use('*', async (c, next) => {
   await next()
   const ms = Date.now() - start
   c.header('X-Response-Time', `${ms}ms`)
+})
+
+app.use('*', async (c, next) => {
+  console.log(`${c.req.method}:${c.req.url}`)
+  await next()
+  console.log(`${c.res.statusText}`)
 })
 
 //DatabaseMiddleware
@@ -75,7 +80,7 @@ app.notFound((c) =>
     {
       message: 'ENOENT: Endpoint Not Found',
       ok: false,
-      statusCode: STATUS_CODE.BadRequest,
+      statusCode: 404,
     },
     404,
   ),

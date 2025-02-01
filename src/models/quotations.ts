@@ -5,7 +5,7 @@ import type { CreateQuotationDto, UpdateQuotationDto, QuotationDto, CreateCustom
 import { InsertQuotationSchema, UpdateQuotationSchema } from '@/dtos'
 import type { DB } from '@/types'
 import { STATUS_CODE } from '@/constants'
-import { CustomersModel } from './customers'
+import { CustomersModel } from '@/models/customers'
 
 export class QuotationsModel {
   static async getAll(db: DB) {
@@ -20,6 +20,7 @@ export class QuotationsModel {
         items: quotationsTable.items,
         createdAt: quotationsTable.createdAt,
         updatedAt: quotationsTable.updatedAt,
+        customerId: customersTable.id,
         customer: {
           id: customersTable.id,
           name: customersTable.name,
@@ -74,7 +75,7 @@ export class QuotationsModel {
       .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
     if (quotations.length === 0) {
       throw new HTTPException(STATUS_CODE.NotFound, {
-        message: `quotation with id ${id} not found`,
+        message: `Cotizacion con id ${id},No encontrada`,
       })
     }
     return quotations[0]
@@ -90,6 +91,7 @@ export class QuotationsModel {
         includeIgv: quotationsTable.includeIgv,
         isPaymentPending: quotationsTable.isPaymentPending,
         items: quotationsTable.items,
+        customerId: customersTable.id,
         customer: {
           id: customersTable.id,
           name: customersTable.name,
@@ -101,7 +103,6 @@ export class QuotationsModel {
           createdAt: customersTable.createdAt,
           updatedAt: customersTable.updatedAt,
         },
-        customerId: customersTable.id,
         createdAt: quotationsTable.createdAt,
         updatedAt: quotationsTable.updatedAt,
       })
@@ -110,7 +111,7 @@ export class QuotationsModel {
       .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
     if (quotations.length === 0) {
       throw new HTTPException(STATUS_CODE.NotFound, {
-        message: `quotation with Number:${quotationNumber} not found`,
+        message: `Cotización con Numero: ${quotationNumber}, No encontrada`,
       })
     }
     return quotations[0]
@@ -121,9 +122,16 @@ export class QuotationsModel {
 
     if (!dto.customerId) {
       if (dto?.customer?.name && dto?.customer?.ruc) {
-        const { insertedId } = await CustomersModel.create(db, dto.customer)
-        customerId = insertedId
-        console.log(`Inserted new customer with id ${insertedId}`)
+        CustomersModel.create(db, dto.customer)
+          .then((data) => {
+            customerId = data.insertedId
+          })
+          .catch((err) => {
+            console.log(err)
+            throw new HTTPException(400, {
+              message: 'Error creando el cliente',
+            })
+          })
       }
     }
 
@@ -134,20 +142,26 @@ export class QuotationsModel {
 
     if (!success) {
       console.log(error.errors)
-      throw new HTTPException(STATUS_CODE.BadRequest, {
+      throw new HTTPException(400, {
         message: 'Invalid quotation',
       })
     }
 
-    const [{ lastQuotationNumber }] = await db
+    let lastQuotationNumber = 0
+
+    const quotations = await db
       .select({ lastQuotationNumber: quotationsTable.number })
       .from(quotationsTable)
       .orderBy(desc(quotationsTable.number))
       .limit(1)
 
+    if (quotations.length > 0) {
+      lastQuotationNumber = quotations[0].lastQuotationNumber
+    }
+
     const results = await db
       .insert(quotationsTable)
-      .values({ ...data, number: lastQuotationNumber + 1 })
+      .values({ ...data, number: lastQuotationNumber + 1 || 0 })
       .returning({
         insertedId: quotationsTable.id,
         insertedNumber: quotationsTable.number,
