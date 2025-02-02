@@ -9,10 +9,11 @@ export async function seedCustomers(db: DB) {
 
   //Seed Customers
   for (const customer of customersJson) {
+    console.log('seed: ', customer.name)
     await db.insert(customersTable).values({
       id: customer.id,
       name: customer.name,
-      ruc: customer.ruc,
+      ruc: customer.ruc.toString(),
       phone: null,
       address: customer.address,
       email: null,
