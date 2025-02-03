@@ -43,6 +43,7 @@ export class ProductsModel {
         code: productsTable.code,
         unitSize: productsTable.unitSize,
         category: productCategoriesTable.name,
+        categoryId: productsTable.categoryId,
         link: productsTable.link,
         rank: productsTable.rank,
         price: productsTable.price,
@@ -70,7 +71,7 @@ export class ProductsModel {
         message: 'Invalid product',
       })
     }
-    const results = await db.insert(productsTable).values(data).returning({ insertedId: productsTable.id })
+    const results = await db.insert(productsTable).values(data).returning()
 
     if (results.length === 0) {
       throw new HTTPException(STATUS_CODE.BadRequest, {

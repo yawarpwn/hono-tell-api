@@ -22,7 +22,7 @@ export const PRODUCT_CATEGORIES = {
   SERVICIO: 'servicio',
   ROPA_SEGURIDAD: 'ropa seguridad',
   CONVENCIONALES: 'convencionales',
-  ACRILICOs: 'acrilicos',
+  ACRILICOS: 'acrilicos',
 } as const
 
 export const productCategories = [
