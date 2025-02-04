@@ -20,12 +20,24 @@ app.get('/', async (c) => {
   }
 })
 
-app.get('/:ruc', async (c) => {
+app.get('/ruc/:ruc', async (c) => {
   const db = c.get('db')
   const ruc = c.req.param('ruc')
 
   try {
     const customer = await CustomersModel.getByRuc(db, ruc)
+    return c.json(customer)
+  } catch (error) {
+    return handleError(error, c)
+  }
+})
+
+app.get('/:id', async (c) => {
+  const db = c.get('db')
+  const id = c.req.param('id')
+
+  try {
+    const customer = await CustomersModel.getById(db, id)
     return c.json(customer)
   } catch (error) {
     return handleError(error, c)

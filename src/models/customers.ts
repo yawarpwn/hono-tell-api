@@ -32,6 +32,16 @@ export class CustomersModel {
     return customers[0]
   }
 
+  static async getById(db: DB, id: CustomerDto['id']) {
+    const customers = await db.select().from(customersTable).where(eq(customersTable.id, id))
+    if (customers.length === 0) {
+      throw new HTTPException(404, {
+        message: `Customer with ruc: ${id} not found`,
+      })
+    }
+    return customers[0]
+  }
+
   static async create(db: DB, dto: CreateCustomerDto) {
     const { data, success, error } = insertQuotationSchema.safeParse(dto)
 

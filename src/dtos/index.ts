@@ -29,7 +29,11 @@ export const insertCustomerSchema = createInsertSchema(customersTable, {
 }).omit({
   id: true,
 })
-export const updateCustomerSchema = createUpdateSchema(customersTable)
+export const updateCustomerSchema = createUpdateSchema(customersTable).omit({
+  createdAt: true,
+  updatedAt: true,
+  id: true,
+})
 
 //Quotations
 export const quotationSchema = createSelectSchema(quotationsTable)
