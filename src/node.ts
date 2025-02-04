@@ -1,4 +1,4 @@
-import { UpdateQuotationSchema } from './dtos/index'
+import { updateQuotationSchema } from './dtos/index'
 
 const quoToUpdate = {
   id: 'b1f9a9a8-7208-4f7d-9257-003086cc37b0',
@@ -25,7 +25,7 @@ const quoToUpdate = {
 }
 
 async function main() {
-  const { data, success, error } = UpdateQuotationSchema.safeParse(quoToUpdate)
+  const { data, success, error } = updateQuotationSchema.safeParse(quoToUpdate)
   console.log(data, success, error)
   // const pdfDoc = pdfmake.createPdf({ content: 'pruebita' }, undefined, fonts)
   // pdfDoc.getBlob((blob) => {

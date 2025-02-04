@@ -2,7 +2,7 @@ import { eq, and, type SQL, ilike, like } from 'drizzle-orm'
 import { customersTable } from '@/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateCustomerDto, UpdateCustomerDto, CustomerDto } from '@/types'
-import { InsertCustomerSchema, UpdateCustomerSchema } from '@/dtos'
+import { insertQuotationSchema, updateCustomerSchema } from '@/dtos'
 import type { DB } from '@/types'
 import { STATUS_CODE } from '@/constants'
 
@@ -38,7 +38,7 @@ export class CustomersModel {
   }
 
   static async create(db: DB, dto: CreateCustomerDto) {
-    const { data, success, error } = InsertCustomerSchema.safeParse(dto)
+    const { data, success, error } = insertQuotationSchema.safeParse(dto)
 
     if (!success) {
       console.log(error.errors)
@@ -60,7 +60,7 @@ export class CustomersModel {
   }
 
   static async update(db: DB, id: CustomerDto['id'], dto: UpdateCustomerDto) {
-    const { data, success, error } = UpdateCustomerSchema.safeParse(dto)
+    const { data, success, error } = updateCustomerSchema.safeParse(dto)
 
     if (!success) {
       console.log(error.errors)

@@ -2,7 +2,7 @@ import { eq, and, type SQL, ilike, like, asc, desc } from 'drizzle-orm'
 import { productsTable, productCategoriesTable } from '@/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateProductDto, UpdateProductDto, ProductDto } from '@/types'
-import { InsertProductSchema, UpdateProductSchema } from '@/dtos'
+import { insertProductSchema, updateProductSchema } from '@/dtos'
 import type { DB } from '@/types'
 import { STATUS_CODE } from '@/constants'
 
@@ -63,7 +63,7 @@ export class ProductsModel {
   }
 
   static async create(db: DB, dto: CreateProductDto) {
-    const { data, success, error } = InsertProductSchema.safeParse(dto)
+    const { data, success, error } = insertProductSchema.safeParse(dto)
 
     if (!success) {
       console.log(error.errors)
@@ -84,7 +84,7 @@ export class ProductsModel {
   }
 
   static async update(db: DB, id: ProductDto['id'], dto: UpdateProductDto) {
-    const { data, success, error } = UpdateProductSchema.safeParse(dto)
+    const { data, success, error } = updateProductSchema.safeParse(dto)
 
     if (!success) {
       console.log(error.errors)

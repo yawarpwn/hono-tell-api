@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { customersTable, quotationsTable, productsTable } from '@/db/schemas'
 import { createSelectSchema, createInsertSchema, createUpdateSchema } from 'drizzle-zod'
 
-export const ItemQuotationSchema = z.object({
+export const itemQuotationSChema = z.object({
   id: z.string(),
   price: z.number(),
   qty: z.number(),
@@ -22,27 +22,27 @@ const UserSchema = z.object({
 export type UserDto = z.infer<typeof UserSchema>
 
 // Customers
-export const CustomerSchema = createSelectSchema(customersTable)
-export const InsertCustomerSchema = createInsertSchema(customersTable, {
+export const customerSchema = createSelectSchema(customersTable)
+export const insertCustomerSchema = createInsertSchema(customersTable, {
   ruc: () => z.coerce.string().length(11),
   phone: () => z.coerce.string().length(9).nullable().optional(),
 }).omit({
   id: true,
 })
-export const UpdateCustomerSchema = createUpdateSchema(customersTable)
+export const updateCustomerSchema = createUpdateSchema(customersTable)
 
 //Quotations
-export const QuotationSchema = createSelectSchema(quotationsTable)
-export const InsertQuotationSchema = createInsertSchema(quotationsTable, {
-  items: () => z.array(ItemQuotationSchema),
+export const quotationSchema = createSelectSchema(quotationsTable)
+export const insertQuotationSchema = createInsertSchema(quotationsTable, {
+  items: () => z.array(itemQuotationSChema),
 }).omit({
   id: true,
   number: true,
   createdAt: true,
   updatedAt: true,
 })
-export const UpdateQuotationSchema = createUpdateSchema(quotationsTable, {
-  items: () => z.array(ItemQuotationSchema),
+export const updateQuotationSchema = createUpdateSchema(quotationsTable, {
+  items: () => z.array(itemQuotationSChema),
 }).omit({
   createdAt: true,
   number: true,
@@ -51,6 +51,6 @@ export const UpdateQuotationSchema = createUpdateSchema(quotationsTable, {
 })
 
 //Products
-export const ProductSchema = createSelectSchema(productsTable)
-export const InsertProductSchema = createInsertSchema(productsTable)
-export const UpdateProductSchema = createUpdateSchema(productsTable)
+export const productSchema = createSelectSchema(productsTable)
+export const insertProductSchema = createInsertSchema(productsTable)
+export const updateProductSchema = createUpdateSchema(productsTable)

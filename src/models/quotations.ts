@@ -2,7 +2,7 @@ import { eq, and, type SQL, ilike, like, asc, desc } from 'drizzle-orm'
 import { quotationsTable, customersTable } from '@/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateQuotationDto, UpdateQuotationDto, QuotationDto, CreateCustomerDto } from '@/types'
-import { InsertQuotationSchema, UpdateQuotationSchema } from '@/dtos'
+import { insertQuotationSchema, updateQuotationSchema } from '@/dtos'
 import type { DB } from '@/types'
 import { STATUS_CODE } from '@/constants'
 import { CustomersModel } from '@/models/customers'
@@ -129,7 +129,7 @@ export class QuotationsModel {
       }
     }
 
-    const { data, success, error } = InsertQuotationSchema.safeParse({
+    const { data, success, error } = insertQuotationSchema.safeParse({
       ...dto,
       customerId,
     })
@@ -173,7 +173,7 @@ export class QuotationsModel {
   }
 
   static async update(db: DB, id: QuotationDto['id'], dto: UpdateQuotationDto) {
-    const { data, success, error } = UpdateQuotationSchema.safeParse(dto)
+    const { data, success, error } = updateQuotationSchema.safeParse(dto)
 
     if (!success) {
       console.log(error.errors)
