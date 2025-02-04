@@ -13,11 +13,6 @@ export class CustomersModel {
     // .limit(pageSize)
     // .offset((page - 1) * pageSize)
 
-    if (customers.length === 0) {
-      throw new HTTPException(404, {
-        message: 'Customers not found',
-      })
-    }
     return {
       items: customers,
       meta: {
