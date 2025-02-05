@@ -1,6 +1,5 @@
 import type { DB, InsertCustomer, InsertQuotation } from '@/types'
 import { usersTable, customersTable, quotationsTable, productCategoriesTable, productsTable } from '@/db/schemas'
-import { usersData } from '@/db/dataset'
 import { productCategories } from '@/constants'
 import bcryp from 'bcryptjs'
 import productsJson from '../../muckup/_products_rows.json'
@@ -26,6 +25,22 @@ const PRODUCTS_CATEGORIES = {
 export async function seedProducts(db: DB) {
   await db.delete(productsTable)
   await db.delete(productCategoriesTable)
+  await db.delete(usersTable)
+
+  const insertedUsers = await db.insert(usersTable).values([
+    {
+      id: 1,
+      email: 'neyda.mili11@gmail.com',
+      password: await bcryp.hash('ney123456', 10),
+      role: 'user',
+    },
+    {
+      id: 2,
+      email: 'tellsenales@gmail.com',
+      password: await bcryp.hash('tell123456', 10),
+      role: 'admin',
+    },
+  ])
 
   const categoriesToInsert = productCategories.map((category, index) => ({
     id: index + 1,
@@ -53,6 +68,7 @@ export async function seedProducts(db: DB) {
   return {
     productCategories: insertedProductCategories.meta.changes,
     products: await db.select({ count: count() }).from(productsTable),
+    users: insertedUsers.meta.changes,
   }
   // console.log(insertedUsers.meta.changes)
 }

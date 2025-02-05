@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
 import { drizzle } from 'drizzle-orm/d1'
-import { customersRoute, quotationsRoute, productsRoute } from './routes'
+import { customersRoute, quotationsRoute, productsRoute, authRoute } from './routes'
 import type { App } from './types'
 import { STATUS_CODE } from './constants'
 import { seedProducts } from './utils/seed-products'
@@ -63,16 +63,13 @@ app.route('/api/customers', customersRoute)
 app.route('/api/quotations', quotationsRoute)
 app.route('/api/products', productsRoute)
 app.route('/api/product-categories', productCategoriesRoute)
+//seed
+app.route('/api/auth', authRoute)
 app.get('/api/seed-customers', async (c) => {
   return c.json(await seedCustomers(c.get('db')))
 })
-
 app.get('/api/seed-products', async (c) => {
   return c.json(await seedProducts(c.get('db')))
-})
-
-app.get('/api/test', async (c) => {
-  return c.json({ message: 'TESTAPI: success' })
 })
 
 // nustom Not Found Message

@@ -9,18 +9,23 @@
     "db:migrate-production": "dotenv -- drizzle-kit migrate"
   },
   "dependencies": {
+    "@hono/hello": "^0.1.1",
+    "@hono/zod-validator": "^0.4.2",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "dotenv-cli": "^8.0.0",
     "drizzle-orm": "^0.38.4",
     "drizzle-zod": "0.6.1",
     "hono": "^4.6.19",
-    "zod": "^3.24.1"
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.24.1",
+    "zod-validator": "^1.0.1"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250124.3",
     "@faker-js/faker": "^9.4.0",
     "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.8",
     "@types/pdfmake": "^0.2.11",
     "drizzle-kit": "^0.30.2",
     "wrangler": "^3.105.1"

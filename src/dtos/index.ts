@@ -19,6 +19,11 @@ const UserSchema = z.object({
   role: z.enum(['user', 'admin']),
 })
 
+export const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+})
+
 export type UserDto = z.infer<typeof UserSchema>
 
 // Customers

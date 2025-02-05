@@ -4,6 +4,7 @@ import type {
   insertProductSchema,
   insertQuotationSchema,
   itemQuotationSChema,
+  loginSchema,
   productSchema,
   quotationSchema,
   updateCustomerSchema,
@@ -56,3 +57,6 @@ export type ProductDto = z.infer<typeof productSchema>
 export type CreateProductDto = z.infer<typeof insertProductSchema>
 export type UpdateProductDto = z.infer<typeof updateProductSchema>
 export type ProductCategory = (typeof PRODUCT_CATEGORIES)[keyof typeof PRODUCT_CATEGORIES]
+
+//Authr
+export type LoginDto = z.infer<typeof loginSchema>
