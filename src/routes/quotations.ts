@@ -3,11 +3,13 @@ import { Hono } from 'hono'
 import { QuotationsModel } from '@/models'
 import { STATUS_CODE } from '@/constants'
 import { handleError } from '@/utils'
+import { getCookie } from 'hono/cookie'
 
 const app = new Hono<App>()
 
 app.get('/', async (c) => {
   const db = c.get('db')
+
   try {
     const todos = await QuotationsModel.getAll(db)
     return c.json(todos, STATUS_CODE.Ok)
@@ -41,6 +43,7 @@ app.post('/', async (c) => {
 app.put('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
+
   try {
     const dto = await c.req.json()
     const results = await QuotationsModel.update(db, id, dto)

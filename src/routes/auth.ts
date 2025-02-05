@@ -16,8 +16,10 @@ const app = new Hono<App>()
 
 app.post(
   '/login',
-  zValidator('json', loginSchema, (result, c) => {
-    if (!result.success) return c.json('invalid', 400)
+  zValidator('json', loginSchema, async (result, c) => {
+    if (!result.success) {
+      return c.json('invalid', 400)
+    }
   }),
   async (c) => {
     const user = c.req.valid('json')
@@ -25,25 +27,21 @@ app.post(
 
     try {
       const userFromDb = await AuthModel.login(db, user)
-
-      //valid password
       const isValidPassword = await bycrypt.compare(user.password, userFromDb.password)
-      if (!isValidPassword)
-        throw new HTTPException(401, {
-          message: 'Invalid password',
-        })
 
+      console.log({ user, userFromDb, isValidPassword })
+      if (!isValidPassword || userFromDb.email !== user.email) {
+        return c.json({ ok: false }, 401)
+      }
       const token = jwt.sign({ id: userFromDb.id, email: userFromDb.email }, SECRET_KEY, { expiresIn: TOKEN_EXPIRATION })
+
       setCookie(c, 'auth_token', token, {
-        httpOnly: true,
-        secure: true,
+        httpOnly: false,
+        secure: false,
         maxAge: 3600,
       })
-
       return c.json({
-        id: userFromDb.id,
-        email: userFromDb.email,
-        role: userFromDb.role,
+        token,
       })
     } catch (error) {
       return handleError(error, c)

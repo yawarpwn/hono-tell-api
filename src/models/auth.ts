@@ -9,6 +9,7 @@ export class AuthModel {
   static async login(db: DB, user: LoginDto) {
     //Search user in db by email
     const [userFromDb] = await db.select().from(usersTable).where(eq(usersTable.email, user.email))
+    console.log({ userFromDb })
 
     if (!userFromDb) {
       throw new HTTPException(404, {
