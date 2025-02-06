@@ -32,8 +32,6 @@ app.use('*', async (c, next) => {
 
 app.use('*', async (c, next) => {
   console.log(`${c.req.method}:${c.req.url}`)
-  const cookies = getCookie(c)
-  console.log({ cookies })
   await next()
   console.log(`${c.res.statusText}`)
 })
