@@ -8,11 +8,18 @@ import { STATUS_CODE } from './constants'
 import { seedProducts } from './utils/seed-products'
 import { seedCustomers } from './utils/seed-customers'
 import { productCategoriesRoute } from './routes/product-categories'
+import { getCookie } from 'hono/cookie'
 
 const app = new Hono<App>()
 
 /**------- Middlewares----- */
-app.use('*', cors())
+app.use(
+  '*',
+  cors({
+    credentials: true,
+    origin: 'http://localhost:5173',
+  }),
+)
 app.use('*', prettyJSON())
 
 // Add X-Response-Time header
@@ -25,6 +32,8 @@ app.use('*', async (c, next) => {
 
 app.use('*', async (c, next) => {
   console.log(`${c.req.method}:${c.req.url}`)
+  const cookies = getCookie(c)
+  console.log({ cookies })
   await next()
   console.log(`${c.res.statusText}`)
 })

@@ -36,8 +36,10 @@ app.post(
       const token = jwt.sign({ id: userFromDb.id, email: userFromDb.email }, SECRET_KEY, { expiresIn: TOKEN_EXPIRATION })
 
       setCookie(c, 'auth_token', token, {
-        httpOnly: false,
+        httpOnly: true,
         secure: false,
+        sameSite: 'lax',
+        path: '/',
         maxAge: 3600,
       })
       return c.json({
