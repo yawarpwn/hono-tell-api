@@ -29,13 +29,11 @@ export async function seedProducts(db: DB) {
 
   const insertedUsers = await db.insert(usersTable).values([
     {
-      id: 1,
       email: 'neyda.mili11@gmail.com',
       password: await bcryp.hash('ney123456', 10),
       role: 'user',
     },
     {
-      id: 2,
       email: 'tellsenales@gmail.com',
       password: await bcryp.hash('tell123456', 10),
       role: 'admin',

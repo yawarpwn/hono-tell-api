@@ -5,7 +5,10 @@ import { productCategories } from '@/constants'
 
 const userRoles = ['admin', 'user'] as const
 export const usersTable = sqliteTable('users', {
-  id: integer().primaryKey({ autoIncrement: true }),
+  id: text()
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => crypto.randomUUID()),
   email: text().notNull().unique(),
   password: text().notNull(),
   role: text({ enum: userRoles }).notNull().default('user'),
