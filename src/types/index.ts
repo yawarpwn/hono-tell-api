@@ -10,6 +10,12 @@ import type {
   updateCustomerSchema,
   updateProductSchema,
   updateQuotationSchema,
+  agencySchema,
+  insertAgencySchema,
+  updateAgencySchema,
+  insertLabelSchema,
+  labelSchema,
+  updateLabelSchema,
 } from '@/dtos'
 import type { customersTable, quotationsTable } from '../db/schemas'
 
@@ -20,14 +26,11 @@ import type { z } from 'zod'
 export type DB = DrizzleD1Database
 
 type Bindings = {
-  USERNAME: string
-  PASSWORD: string
-  JWT_SECRET: string
+  POSTGRES_URL: string
   DB: D1Database
 }
 
 type Variables = {
-  mam: number
   db: DB
   MY_VAR: string
 }
@@ -57,6 +60,16 @@ export type ProductDto = z.infer<typeof productSchema>
 export type CreateProductDto = z.infer<typeof insertProductSchema>
 export type UpdateProductDto = z.infer<typeof updateProductSchema>
 export type ProductCategory = (typeof PRODUCT_CATEGORIES)[keyof typeof PRODUCT_CATEGORIES]
+
+//Agencies
+export type AgencyDto = z.infer<typeof agencySchema>
+export type CreateAgencyDto = z.infer<typeof insertAgencySchema>
+export type UpdateAgencyDto = z.infer<typeof updateAgencySchema>
+
+//Labels
+export type LabelDto = z.infer<typeof labelSchema>
+export type CreateLabelDto = z.infer<typeof insertLabelSchema>
+export type UpdateLabelDto = z.infer<typeof updateLabelSchema>
 
 //Authr
 export type LoginDto = z.infer<typeof loginSchema>

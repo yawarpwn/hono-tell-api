@@ -2,13 +2,15 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
 import { drizzle } from 'drizzle-orm/d1'
-import { customersRoute, quotationsRoute, productsRoute, authRoute } from './routes'
+import { customersRoute, quotationsRoute, productsRoute, authRoute, agenciesRoute, labelsRoute } from './routes'
 import type { App } from './types'
 import { STATUS_CODE } from './constants'
 import { seedProducts } from './utils/seed-products'
 import { seedCustomers } from './utils/seed-customers'
+import { seedAgencies } from './utils/seed-agencies'
 import { productCategoriesRoute } from './routes/product-categories'
 import { getCookie } from 'hono/cookie'
+import { agenciesTable } from './db/schemas'
 
 const app = new Hono<App>()
 
@@ -44,16 +46,6 @@ app.use('/api/*', async (c, next) => {
   await next()
 })
 
-//Auth Middleware
-// app.use(
-//   '/api/*',
-//   basicAuth({
-//     verifyUser(username, password, c) {
-//       return username === c.env.USERNAME && password === c.env.PASSWORD
-//     },
-//   }),
-// )
-
 //JWTMiddleware
 // app.use("/api/*", (c, next) => {
 //   const jwtMiddleware = jwt({ secret: c.env.JWT_SECRET });
@@ -70,6 +62,9 @@ app.route('/api/customers', customersRoute)
 app.route('/api/quotations', quotationsRoute)
 app.route('/api/products', productsRoute)
 app.route('/api/product-categories', productCategoriesRoute)
+app.route('/api/agencies', agenciesRoute)
+app.route('/api/labels', labelsRoute)
+
 //seed
 app.route('/api/auth', authRoute)
 app.get('/api/seed-customers', async (c) => {
@@ -77,6 +72,9 @@ app.get('/api/seed-customers', async (c) => {
 })
 app.get('/api/seed-products', async (c) => {
   return c.json(await seedProducts(c.get('db')))
+})
+app.get('/api/seed-agencies', async (c) => {
+  return c.json(await seedAgencies(c.get('db'), c.env.POSTGRES_URL))
 })
 
 // nustom Not Found Message

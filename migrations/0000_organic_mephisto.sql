@@ -1,3 +1,15 @@
+CREATE TABLE `agencies` (
+	`id` text PRIMARY KEY NOT NULL,
+	`name` text NOT NULL,
+	`ruc` text NOT NULL,
+	`phone` text,
+	`address` text,
+	`create_at` integer DEFAULT (unixepoch()),
+	`updated_at` integer
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `agencies_name_unique` ON `agencies` (`name`);--> statement-breakpoint
+CREATE UNIQUE INDEX `agencies_ruc_unique` ON `agencies` (`ruc`);--> statement-breakpoint
 CREATE TABLE `customers` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
@@ -13,6 +25,20 @@ CREATE TABLE `customers` (
 CREATE UNIQUE INDEX `customers_name_unique` ON `customers` (`name`);--> statement-breakpoint
 CREATE UNIQUE INDEX `customers_ruc_unique` ON `customers` (`ruc`);--> statement-breakpoint
 CREATE UNIQUE INDEX `customers_email_unique` ON `customers` (`email`);--> statement-breakpoint
+CREATE TABLE `labels` (
+	`id` text PRIMARY KEY NOT NULL,
+	`recipient` text NOT NULL,
+	`destination` text NOT NULL,
+	`dni_ruc` text NOT NULL,
+	`phone` text,
+	`address` text,
+	`observations` text,
+	`agency_id` text,
+	`create_at` integer DEFAULT (unixepoch()),
+	`updated_at` integer,
+	FOREIGN KEY (`agency_id`) REFERENCES `agencies`(`id`) ON UPDATE no action ON DELETE set null
+);
+--> statement-breakpoint
 CREATE TABLE `product_categories` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
@@ -51,7 +77,7 @@ CREATE TABLE `quotations` (
 --> statement-breakpoint
 CREATE UNIQUE INDEX `quotations_number_unique` ON `quotations` (`number`);--> statement-breakpoint
 CREATE TABLE `users` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`id` text PRIMARY KEY NOT NULL,
 	`email` text NOT NULL,
 	`password` text NOT NULL,
 	`role` text DEFAULT 'user' NOT NULL

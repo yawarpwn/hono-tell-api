@@ -18,6 +18,7 @@
     "drizzle-zod": "0.6.1",
     "hono": "^4.6.19",
     "jsonwebtoken": "^9.0.2",
+    "postgres": "^3.4.5",
     "zod": "^3.24.1",
     "zod-validator": "^1.0.1"
   },

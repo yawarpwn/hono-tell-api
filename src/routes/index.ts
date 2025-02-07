@@ -1,5 +1,7 @@
 export * from './customers'
 export * from './quotations'
 export * from './products'
+export * from './agencies'
+export * from './labels'
 export * from './product-categories'
 export * from './auth'

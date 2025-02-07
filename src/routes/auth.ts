@@ -23,7 +23,7 @@ app.post(
     const user = c.req.valid('json')
     const db = c.get('db')
     try {
-      const userId = AuthModel.validateCredentials(db, {
+      const userId = await AuthModel.validateCredentials(db, {
         email: user.email,
         password: user.password,
       })

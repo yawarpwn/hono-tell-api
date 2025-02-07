@@ -8,6 +8,7 @@ import bcrypt from 'bcryptjs'
 export class AuthModel {
   static async validateCredentials(db: DB, { email, password }: { email: string; password: string }) {
     const users = await db.select().from(usersTable).where(eq(usersTable.email, email))
+    console.log('users', { users })
     if (users.length === 0) {
       throw new HTTPException(403, {
         message: 'User not found',
@@ -18,7 +19,7 @@ export class AuthModel {
     const isValidPassword = bcrypt.compareSync(password, user.password)
     if (!isValidPassword) {
       throw new HTTPException(403, {
-        message: 'Invalid credentials',
+        message: 'Invalid password',
       })
     }
 

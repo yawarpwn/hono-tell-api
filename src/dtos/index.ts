@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { customersTable, quotationsTable, productsTable } from '@/db/schemas'
+import { customersTable, quotationsTable, productsTable, agenciesTable, labelsTable } from '@/db/schemas'
 import { createSelectSchema, createInsertSchema, createUpdateSchema } from 'drizzle-zod'
 
 export const itemQuotationSChema = z.object({
@@ -63,3 +63,13 @@ export const updateQuotationSchema = createUpdateSchema(quotationsTable, {
 export const productSchema = createSelectSchema(productsTable)
 export const insertProductSchema = createInsertSchema(productsTable)
 export const updateProductSchema = createUpdateSchema(productsTable)
+
+//Agencies
+export const agencySchema = createSelectSchema(agenciesTable)
+export const insertAgencySchema = createInsertSchema(agenciesTable)
+export const updateAgencySchema = createUpdateSchema(agenciesTable)
+
+//Labels
+export const labelSchema = createSelectSchema(labelsTable)
+export const insertLabelSchema = createInsertSchema(labelsTable)
+export const updateLabelSchema = createUpdateSchema(labelsTable)

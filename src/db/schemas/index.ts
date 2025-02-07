@@ -29,6 +29,38 @@ export const customersTable = sqliteTable('customers', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
 })
 
+export const agenciesTable = sqliteTable('agencies', {
+  id: text('id')
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text('name').notNull().unique(),
+  ruc: text('ruc').notNull().unique(),
+  phone: text('phone'),
+  address: text('address'),
+  createdAt: integer('create_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
+})
+
+export const labelsTable = sqliteTable('labels', {
+  id: text('id')
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => crypto.randomUUID()),
+  recipient: text('recipient').notNull(),
+  destination: text('destination').notNull(),
+  dniRuc: text('dni_ruc').notNull(),
+  phone: text('phone'),
+  address: text('address'),
+  observations: text('observations'),
+  agencyId: text('agency_id').references(() => agenciesTable.id, {
+    onDelete: 'set null',
+    onUpdate: 'no action',
+  }),
+  createdAt: integer('create_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
+})
+
 export const quotationsTable = sqliteTable('quotations', {
   id: text('id')
     .primaryKey()
