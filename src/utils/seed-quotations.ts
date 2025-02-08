@@ -1,13 +1,10 @@
 import type { DB, InsertCustomer, InsertQuotation } from '@/types'
 import { usersTable, customersTable, quotationsTable, productCategoriesTable, productsTable } from '@/db/schemas'
 import { count } from 'drizzle-orm'
-
-import postgres from 'postgres'
+import quotations from '../../muckup/quotations.json'
 
 export async function seedQuotations(db: DB, postgresUrl: string) {
   await db.delete(quotationsTable)
-  const sql = postgres(postgresUrl)
-  const quotations = await sql`select * from _quotations`
   // {
   //    id: '92f9740e-5f0c-489c-a662-f5efaf2fd193',
   //    number: 5406,

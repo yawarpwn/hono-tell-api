@@ -1,13 +1,12 @@
 import { agenciesTable, labelsTable } from '@/db/schemas'
 import { count } from 'drizzle-orm'
 import type { DB } from '@/types'
-import postgres from 'postgres'
+import agencies from '../../muckup/agencies.json'
+import labels from '../../muckup/labels.json'
 
 export async function seedAgencies(db: DB, postgresURl: string) {
   await db.delete(agenciesTable)
   await db.delete(labelsTable)
-  const sql = postgres(postgresURl)
-  const agencies = await sql`select * from _agencies`
   // {
   //   id: '511cc296-6e9f-4776-8082-00f7093c23c7',
   //   name: 'TRANSPORTE BURGA CARGO S.A.C.',
@@ -31,8 +30,6 @@ export async function seedAgencies(db: DB, postgresURl: string) {
     console.log(`inserted agencies ${agency.id} success`)
   }
 
-  const labels = await sql`select * from labels`
-  console.log('total labels: ', labels.length)
   for (const label of labels) {
     await db.insert(labelsTable).values({
       id: label.id,

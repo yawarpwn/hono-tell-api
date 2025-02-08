@@ -1,10 +1,9 @@
 import type { DB, InsertCustomer, InsertQuotation } from '@/types'
 import { usersTable, customersTable, quotationsTable, productCategoriesTable, productsTable } from '@/db/schemas'
 import { productCategories } from '@/constants'
+import products from '../../muckup/products.json'
 import bcryp from 'bcryptjs'
-// import productsJson from '../../muckup/_products_rows.json'
 import { count } from 'drizzle-orm'
-import postgres from 'postgres'
 
 const PRODUCTS_CATEGORIES = {
   'cintas seguridad': 1,
@@ -27,9 +26,6 @@ export async function seedProducts(db: DB, postgresURl: string) {
   await db.delete(productsTable)
   await db.delete(productCategoriesTable)
   await db.delete(usersTable)
-
-  const sql = postgres(postgresURl)
-  const products = await sql`select * from _products`
 
   const insertedUsers = await db.insert(usersTable).values([
     {
