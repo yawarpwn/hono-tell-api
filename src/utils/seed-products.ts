@@ -48,26 +48,19 @@ export async function seedProducts(db: DB, postgresURl: string) {
   const insertedProductCategories = await db.insert(productCategoriesTable).values(categoriesToInsert)
 
   for (const product of products) {
-    fetch('https://api.tellsignals.workers.dev/api/products', {
-      method: 'POST',
-      body: JSON.stringify(product),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    await db.insert(productsTable).values({
+      id: product.id,
+      description: product.description,
+      code: product.code,
+      unitSize: product.unit_size,
+      categoryId: PRODUCTS_CATEGORIES[product.category],
+      link: product.link,
+      rank: product.rank,
+      price: product.price,
+      cost: product.cost,
+      createdAt: new Date(product.created_at),
+      updatedAt: new Date(product.updated_at),
     })
-    // await db.insert(productsTable).values({
-    //   id: product.id,
-    //   description: product.description,
-    //   code: product.code,
-    //   unitSize: product.unit_size,
-    //   categoryId: PRODUCTS_CATEGORIES[product.category],
-    //   link: product.link,
-    //   rank: product.rank,
-    //   price: product.price,
-    //   cost: product.cost,
-    //   createdAt: new Date(product.created_at),
-    //   updatedAt: new Date(product.updated_at),
-    // })
     console.log('product inserted: ', product.id)
   }
 
