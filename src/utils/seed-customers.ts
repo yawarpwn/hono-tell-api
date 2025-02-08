@@ -2,14 +2,14 @@ import type { DB, InsertCustomer, InsertQuotation } from '@/types'
 import { usersTable, customersTable, quotationsTable, productCategoriesTable, productsTable } from '@/db/schemas'
 import { count } from 'drizzle-orm'
 
-import customersJson from '../../muckup/_customers_rows.json'
+import postgres from 'postgres'
 
-export async function seedCustomers(db: DB) {
+export async function seedCustomers(db: DB, postgresUrl: string) {
   await db.delete(customersTable)
-
+  const sql = postgres(postgresUrl)
+  const customers = await sql`select * from _customers`
   //Seed Customers
-  for (const customer of customersJson) {
-    console.log('seed: ', customer.name)
+  for (const customer of customers) {
     await db.insert(customersTable).values({
       id: customer.id,
       name: customer.name,
@@ -21,6 +21,8 @@ export async function seedCustomers(db: DB) {
       createdAt: new Date(customer.created_at),
       updatedAt: new Date(customer.updated_at),
     })
+
+    console.log('seed: ', customer.name)
   }
 
   //seed quotations

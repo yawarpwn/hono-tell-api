@@ -1,4 +1,4 @@
-import { eq, and, type SQL, ilike, like } from 'drizzle-orm'
+import { eq, and, type SQL, ilike, like, desc } from 'drizzle-orm'
 import { agenciesTable } from '@/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateAgencyDto, UpdateAgencyDto, AgencyDto } from '@/types'
@@ -7,24 +7,24 @@ import { STATUS_CODE } from '@/constants'
 
 export class AgenciesModel {
   static async getAll(db: DB) {
-    const customers = await db.select().from(agenciesTable)
+    const result = await db.select().from(agenciesTable).orderBy(desc(agenciesTable.updatedAt))
     return {
-      items: customers,
+      items: result,
       meta: {
-        totalItems: customers.length,
+        totalItems: result.length,
       },
       links: {},
     }
   }
 
   static async getById(db: DB, id: AgencyDto['id']) {
-    const customers = await db.select().from(agenciesTable).where(eq(agenciesTable.id, id))
-    if (customers.length === 0) {
+    const result = await db.select().from(agenciesTable).where(eq(agenciesTable.id, id))
+    if (result.length === 0) {
       throw new HTTPException(404, {
         message: `Customer with ruc: ${id} not found`,
       })
     }
-    return customers[0]
+    return result[0]
   }
 
   static async create(db: DB, dto: CreateAgencyDto) {

@@ -33,7 +33,10 @@ app.get('/:id', async (c) => {
 app.post(
   '/',
   zValidator('json', insertLabelSchema, async (result, c) => {
-    if (!result.success) return c.json({ ok: false, message: 'invalid' }, 400)
+    if (!result.success) {
+      console.log(result.error.errors)
+      return c.json({ ok: false, message: 'invalid' }, 400)
+    }
   }),
   async (c) => {
     const db = c.get('db')
@@ -50,12 +53,15 @@ app.post(
 app.put(
   '/:id',
   zValidator('json', updateLabelSchema, async (result, c) => {
-    if (!result.success) return c.json({ ok: false, message: 'invalid' }, 400)
+    if (!result.success) {
+      console.log(result.error.errors)
+      return c.json({ ok: false, message: 'invalid' }, 400)
+    }
   }),
   async (c) => {
     const db = c.get('db')
     const id = c.req.param('id')
-    const dto = await c.req.json()
+    const dto = c.req.valid('json')
     try {
       const results = await LabelsModel.update(db, id, dto)
       return c.json(results)

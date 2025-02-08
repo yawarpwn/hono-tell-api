@@ -61,15 +61,39 @@ export const updateQuotationSchema = createUpdateSchema(quotationsTable, {
 
 //Products
 export const productSchema = createSelectSchema(productsTable)
-export const insertProductSchema = createInsertSchema(productsTable)
-export const updateProductSchema = createUpdateSchema(productsTable)
+export const insertProductSchema = createInsertSchema(productsTable).omit({
+  id: true,
+  updatedAt: true,
+  createdAt: true,
+})
+export const updateProductSchema = createUpdateSchema(productsTable).omit({
+  id: true,
+  updatedAt: true,
+  createdAt: true,
+})
 
 //Agencies
 export const agencySchema = createSelectSchema(agenciesTable)
-export const insertAgencySchema = createInsertSchema(agenciesTable)
-export const updateAgencySchema = createUpdateSchema(agenciesTable)
+export const insertAgencySchema = createInsertSchema(agenciesTable).omit({
+  id: true,
+  updatedAt: true,
+  createdAt: true,
+})
+export const updateAgencySchema = createUpdateSchema(agenciesTable).omit({
+  id: true,
+  updatedAt: true,
+  createdAt: true,
+})
 
 //Labels
 export const labelSchema = createSelectSchema(labelsTable)
-export const insertLabelSchema = createInsertSchema(labelsTable)
-export const updateLabelSchema = createUpdateSchema(labelsTable)
+export const insertLabelSchema = createInsertSchema(labelsTable).omit({
+  id: true,
+  updatedAt: true,
+  createdAt: true,
+})
+export const updateLabelSchema = createUpdateSchema(labelsTable).omit({
+  id: true,
+  updatedAt: true,
+  createdAt: true,
+})

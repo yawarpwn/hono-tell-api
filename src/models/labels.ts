@@ -1,4 +1,4 @@
-import { eq, and, type SQL, ilike, like } from 'drizzle-orm'
+import { eq, and, desc, type SQL, ilike, like } from 'drizzle-orm'
 import { labelsTable, agenciesTable } from '@/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateLabelDto, UpdateLabelDto, LabelDto } from '@/types'
@@ -28,7 +28,7 @@ export class LabelsModel {
       })
       .from(labelsTable)
       .leftJoin(agenciesTable, eq(labelsTable.agencyId, agenciesTable.id))
-      .orderBy(labelsTable.updatedAt)
+      .orderBy(desc(labelsTable.updatedAt))
     return {
       items: customers,
       meta: {
