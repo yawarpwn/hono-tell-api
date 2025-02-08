@@ -1,5 +1,5 @@
 import { eq, and, type SQL, ilike, like } from 'drizzle-orm'
-import { labelsTable } from '@/db/schemas'
+import { labelsTable, agenciesTable } from '@/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateLabelDto, UpdateLabelDto, LabelDto } from '@/types'
 import type { DB } from '@/types'
@@ -7,7 +7,28 @@ import { STATUS_CODE } from '@/constants'
 
 export class LabelsModel {
   static async getAll(db: DB) {
-    const customers = await db.select().from(labelsTable)
+    const customers = await db
+      .select({
+        id: labelsTable.id,
+        recipient: labelsTable.recipient,
+        destination: labelsTable.destination,
+        address: labelsTable.address,
+        dniRuc: labelsTable.dniRuc,
+        phone: labelsTable.phone,
+        observations: labelsTable.observations,
+        agencyId: labelsTable.agencyId,
+        updatedAt: labelsTable.updatedAt,
+        createdAt: labelsTable.createdAt,
+        agency: {
+          name: agenciesTable.name,
+          address: agenciesTable.address,
+          phone: agenciesTable.phone,
+          ruc: agenciesTable.ruc,
+        },
+      })
+      .from(labelsTable)
+      .leftJoin(agenciesTable, eq(labelsTable.agencyId, agenciesTable.id))
+      .orderBy(labelsTable.updatedAt)
     return {
       items: customers,
       meta: {
@@ -18,7 +39,28 @@ export class LabelsModel {
   }
 
   static async getById(db: DB, id: LabelDto['id']) {
-    const customers = await db.select().from(labelsTable).where(eq(labelsTable.id, id))
+    const customers = await db
+      .select({
+        id: labelsTable.id,
+        recipient: labelsTable.recipient,
+        destination: labelsTable.destination,
+        address: labelsTable.address,
+        dniRuc: labelsTable.dniRuc,
+        phone: labelsTable.phone,
+        observations: labelsTable.observations,
+        agencyId: labelsTable.agencyId,
+        updatedAt: labelsTable.updatedAt,
+        createdAt: labelsTable.createdAt,
+        agency: {
+          name: agenciesTable.name,
+          address: agenciesTable.address,
+          phone: agenciesTable.phone,
+          ruc: agenciesTable.ruc,
+        },
+      })
+      .from(labelsTable)
+      .leftJoin(agenciesTable, eq(labelsTable.agencyId, agenciesTable.id))
+      .where(eq(labelsTable.id, id))
     if (customers.length === 0) {
       throw new HTTPException(404, {
         message: `Customer with ruc: ${id} not found`,
