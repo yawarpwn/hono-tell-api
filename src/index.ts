@@ -7,6 +7,7 @@ import type { App } from './types'
 import { seedProducts } from './utils/seed-products'
 import { seedCustomers } from './utils/seed-customers'
 import { seedAgencies } from './utils/seed-agencies'
+import { seed } from './utils/seed'
 import { seedQuotations } from './utils/seed-quotations'
 import { productCategoriesRoute } from './routes/product-categories'
 
@@ -76,6 +77,9 @@ app.get('/api/seed-agencies', async (c) => {
 })
 app.get('/api/seed-quotations', async (c) => {
   return c.json(await seedQuotations(c.get('db'), c.env.POSTGRES_URL))
+})
+app.get('/api/seed', async (c) => {
+  return c.json(await seed(c.get('db')))
 })
 
 // nustom Not Found Message
