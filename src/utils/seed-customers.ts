@@ -5,22 +5,22 @@ import customers from '../../muckup/customers.json'
 
 export async function seedCustomers(db: DB, postgresUrl: string) {
   await db.delete(customersTable)
-  //Seed Customers
-  for (const customer of customers) {
-    await db.insert(customersTable).values({
+
+  const stmts = customers.map((customer) => {
+    return db.insert(customersTable).values({
       id: customer.id,
       name: customer.name,
-      ruc: customer.ruc.toString(),
-      phone: null,
+      ruc: customer.ruc,
+      email: customer.email,
       address: customer.address,
-      email: null,
+      phone: customer.phone,
       isRegular: customer.is_regular,
       createdAt: new Date(customer.created_at),
       updatedAt: new Date(customer.updated_at),
     })
+  })
 
-    console.log('seed: ', customer.name)
-  }
+  await db.batch(stmts)
 
   //seed quotations
 

@@ -17,8 +17,8 @@ export async function seedQuotations(db: DB, postgresUrl: string) {
   //    updated_at: 2024-05-23T22:01:34.229Z,
   //    is_payment_pending: false
   //  },
-  for (const quotation of quotations) {
-    await db.insert(quotationsTable).values({
+  const stmts = quotations.map((quotation) => {
+    return db.insert(quotationsTable).values({
       id: quotation.id,
       number: quotation.number,
       deadline: quotation.deadline,
@@ -37,9 +37,9 @@ export async function seedQuotations(db: DB, postgresUrl: string) {
       createdAt: new Date(quotation.created_at),
       updatedAt: new Date(quotation.updated_at),
     })
+  })
 
-    console.log('seed quotation: ', quotation.number)
-  }
+  await db.batch(stmts)
 
   return {
     customers: await db.select({ count: count() }).from(quotationsTable),

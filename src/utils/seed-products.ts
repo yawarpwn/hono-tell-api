@@ -67,7 +67,6 @@ export async function seedProducts(db: DB, c: Context) {
   })
 
   await c.env.DB.batch(stmts)
-  console.log('success products Batch inserted')
 
   return {
     productCategories: insertedProductCategories.meta.changes,
