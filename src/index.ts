@@ -70,7 +70,7 @@ app.get('/api/seed-customers', async (c) => {
   return c.json(await seedCustomers(c.get('db'), c.env.POSTGRES_URL))
 })
 app.get('/api/seed-products', async (c) => {
-  return c.json(await seedProducts(c.get('db'), c.env.POSTGRES_URL))
+  return c.json(await seedProducts(c.get('db'), c))
 })
 app.get('/api/seed-agencies', async (c) => {
   return c.json(await seedAgencies(c.get('db'), c.env.POSTGRES_URL))

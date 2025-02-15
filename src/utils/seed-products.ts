@@ -4,6 +4,7 @@ import { productCategories } from '@/constants'
 import products from '../../muckup/products.json'
 import bcryp from 'bcryptjs'
 import { count } from 'drizzle-orm'
+import type { Context } from 'hono'
 
 const PRODUCTS_CATEGORIES = {
   'cintas seguridad': 1,
@@ -22,7 +23,7 @@ const PRODUCTS_CATEGORIES = {
   acrilicos: 14,
 } as const
 
-export async function seedProducts(db: DB, postgresURl: string) {
+export async function seedProducts(db: DB, c: Context) {
   await db.delete(productsTable)
   await db.delete(productCategoriesTable)
   await db.delete(usersTable)
@@ -47,22 +48,26 @@ export async function seedProducts(db: DB, postgresURl: string) {
 
   const insertedProductCategories = await db.insert(productCategoriesTable).values(categoriesToInsert)
 
-  for (const product of products) {
-    await db.insert(productsTable).values({
-      id: product.id,
-      description: product.description,
-      code: product.code,
-      unitSize: product.unit_size,
-      categoryId: PRODUCTS_CATEGORIES[product.category],
-      link: product.link,
-      rank: product.rank,
-      price: product.price,
-      cost: product.cost,
-      createdAt: new Date(product.created_at),
-      updatedAt: new Date(product.updated_at),
-    })
-    console.log('product inserted: ', product.id)
-  }
+  const stmts = products.map((prod) => {
+    return c.env.DB.prepare(
+      'INSERT INTO products (id, description, code, unit_size, category_id, link, rank, price, cost, created_at, updated_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    ).bind(
+      prod.id,
+      prod.description,
+      prod.code,
+      prod.unit_size,
+      PRODUCTS_CATEGORIES[prod.category],
+      prod.link,
+      prod.rank,
+      prod.price,
+      prod.cost,
+      Math.floor(new Date(prod.created_at).getTime() / 1000),
+      Math.floor(new Date(prod.updated_at).getTime() / 1000),
+    )
+  })
+
+  await c.env.DB.batch(stmts)
+  console.log('success products Batch inserted')
 
   return {
     productCategories: insertedProductCategories.meta.changes,
