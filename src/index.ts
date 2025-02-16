@@ -10,6 +10,9 @@ import { seedAgencies } from './utils/seed-agencies'
 import { seed } from './utils/seed'
 import { seedQuotations } from './utils/seed-quotations'
 import { productCategoriesRoute } from './routes/product-categories'
+// import jwt from 'jsonwebtoken'
+import { jwt } from 'hono/jwt'
+import { getCookie } from 'hono/cookie'
 
 const app = new Hono<App>()
 
@@ -45,11 +48,25 @@ app.use('/api/*', async (c, next) => {
   await next()
 })
 
+app.use('/auth/*', async (c, next) => {
+  const db = drizzle(c.env.DB)
+  c.set('db', db)
+  // await seed(db);
+  await next()
+})
+
+app.use('/seed/*', async (c, next) => {
+  const db = drizzle(c.env.DB)
+  c.set('db', db)
+  // await seed(db);
+  await next()
+})
+
 //JWTMiddleware
-// app.use("/api/*", (c, next) => {
-//   const jwtMiddleware = jwt({ secret: c.env.JWT_SECRET });
-//   return jwtMiddleware(c, next);
-// });
+app.use('/api/*', (c, next) => {
+  const jwtMiddleware = jwt({ secret: c.env.JWT_SECRET })
+  return jwtMiddleware(c, next)
+})
 
 /**-------Routes----- */
 
@@ -57,6 +74,7 @@ app.get('/', async (c) => {
   return c.json({ message: 'success' })
 })
 
+app.route('/auth', authRoute)
 app.route('/api/customers', customersRoute)
 app.route('/api/quotations', quotationsRoute)
 app.route('/api/products', productsRoute)
@@ -64,21 +82,20 @@ app.route('/api/product-categories', productCategoriesRoute)
 app.route('/api/agencies', agenciesRoute)
 app.route('/api/labels', labelsRoute)
 
-//seed
-app.route('/api/auth', authRoute)
-app.get('/api/seed-customers', async (c) => {
+//seed Data
+app.get('/seed/customers', async (c) => {
   return c.json(await seedCustomers(c.get('db'), c.env.POSTGRES_URL))
 })
-app.get('/api/seed-products', async (c) => {
+app.get('/seed/products', async (c) => {
   return c.json(await seedProducts(c.get('db'), c))
 })
-app.get('/api/seed-agencies', async (c) => {
+app.get('/seed/agencies', async (c) => {
   return c.json(await seedAgencies(c.get('db'), c.env.POSTGRES_URL))
 })
-app.get('/api/seed-quotations', async (c) => {
+app.get('/seed/quotations', async (c) => {
   return c.json(await seedQuotations(c.get('db'), c.env.POSTGRES_URL))
 })
-app.get('/api/seed', async (c) => {
+app.get('/seed', async (c) => {
   return c.json(await seed(c.get('db')))
 })
 

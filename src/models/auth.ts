@@ -8,7 +8,7 @@ import bcrypt from 'bcryptjs'
 export class AuthModel {
   static async validateCredentials(db: DB, { email, password }: { email: string; password: string }) {
     const users = await db.select().from(usersTable).where(eq(usersTable.email, email))
-    console.log('users', { users })
+    console.log({ users })
     if (users.length === 0) {
       throw new HTTPException(403, {
         message: 'User not found',
@@ -23,7 +23,10 @@ export class AuthModel {
       })
     }
 
-    return user.id
+    return {
+      id: user.id,
+      email: user.email,
+    }
   }
   static async login(db: DB, user: LoginDto) {
     //Search user in db by email

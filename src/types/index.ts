@@ -27,6 +27,7 @@ export type DB = DrizzleD1Database
 
 type Bindings = {
   POSTGRES_URL: string
+  JWT_SECRET: string
   DB: D1Database
 }
 
