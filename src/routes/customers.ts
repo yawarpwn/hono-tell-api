@@ -1,10 +1,8 @@
 import type { App } from '@/types'
 import { Hono } from 'hono'
 import { CustomersModel } from '@/models'
-//TODO: implment validator
-import { validator } from 'hono/validator'
-import { STATUS_CODE } from '@/constants'
 import { handleError } from '@/utils'
+import { HTTPException } from 'hono/http-exception'
 
 const app = new Hono<App>()
 
@@ -14,7 +12,49 @@ app.get('/', async (c) => {
 
   try {
     const todos = await CustomersModel.getAll(db, { ruc })
-    return c.json(todos, STATUS_CODE.Ok)
+    return c.json(todos, 200)
+  } catch (error) {
+    return handleError(error, c)
+  }
+})
+
+app.get('/search/:dniruc', async (c) => {
+  const db = c.get('db')
+  const dniRuc = c.req.param('dniruc')
+
+  //Buscar en base de datos si existe el cliente
+
+  try {
+    if (!dniRuc)
+      throw new HTTPException(400, {
+        message: 'dni/Ruc is invalid',
+      })
+
+    if (dniRuc.length === 11) {
+      try {
+        //buscar por ruc en base de datos
+        const customerFromDb = await CustomersModel.getByRuc(db, dniRuc)
+        return c.json(customerFromDb, 200)
+      } catch (error) {
+        //buscar por ruc en sunat
+        const customerFromSunat = await CustomersModel.getByRucFromSunat(dniRuc)
+        return c.json(customerFromSunat, 200)
+      }
+    }
+
+    if (dniRuc.length === 8) {
+      console.log('search by dni in sunat')
+      //buscar por dni en sunat
+      const customerFromSunat = await CustomersModel.getByDniFromSunat(dniRuc)
+      return c.json(customerFromSunat, 200)
+    }
+
+    return c.json(
+      {
+        message: 'dni/ruc not found',
+      },
+      400,
+    )
   } catch (error) {
     return handleError(error, c)
   }
