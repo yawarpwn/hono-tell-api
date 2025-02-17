@@ -8,7 +8,7 @@ import { STATUS_CODE } from '@/constants'
 
 type Company = {
   ruc: string
-  company: string
+  name: string
   address: string
 }
 
@@ -75,7 +75,7 @@ export class CustomersModel {
     }
   }
 
-  static async getByRucFromSunat(ruc: string) {
+  static async getByRucFromSunat(ruc: string): Promise<Company> {
     const API_URL = 'https://dniruc.apisperu.com/api/v1'
     const TOKEN =
       'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5leWRhLm1pbGkxMUBnbWFpbC5jb20ifQ.UtiFRViVJrO2YGQ5H3alRcFBhnSwuE5yKU9PYuojgq0'
@@ -93,12 +93,12 @@ export class CustomersModel {
 
     return {
       ruc: data.ruc,
-      company: data.razonSocial,
+      name: data.razonSocial,
       address: data.direccion,
     }
   }
 
-  static async getByDniFromSunat(dni: string) {
+  static async getByDniFromSunat(dni: string): Promise<Company> {
     const URL = `https://apiperu.dev/api/dni/${dni}`
     const TOKEN = '66ec9b5c4d6e359a3ca2117ce321ceddbd1aa54b5ea29a38e0a6eed061308dc1'
     // curl -H 'Accept: application/json' -H "Authorization: Bearer $TOKEN" https://api.apis.net.pe/v2/reniec/dni?numero=46027897
@@ -120,7 +120,7 @@ export class CustomersModel {
 
     return {
       ruc: String(dni),
-      company: `${nombres} ${apellido_paterno} ${apellido_materno}`,
+      name: `${nombres} ${apellido_paterno} ${apellido_materno}`,
       address: '',
     }
   }
