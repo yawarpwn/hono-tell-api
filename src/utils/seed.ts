@@ -11,11 +11,12 @@ import {
 import { productCategories } from '@/constants'
 import bcryp from 'bcryptjs'
 import { count } from 'drizzle-orm'
-import productsJson from '../../muckup/products.json'
-import customerJson from '../../muckup/customers.json'
-import agenciesJson from '../../muckup/agencies.json'
-import labelsJson from '../../muckup/labels.json'
-import quotationsJson from '../../muckup/quotations.json'
+import products from '../../muckup/products.json'
+import customers from '../../muckup/customers.json'
+import agencies from '../../muckup/agencies.json'
+import labels from '../../muckup/labels.json'
+import quotations from '../../muckup/quotations.json'
+import type { Context } from 'hono'
 
 const PRODUCTS_CATEGORIES = {
   'cintas seguridad': 1,
@@ -34,7 +35,7 @@ const PRODUCTS_CATEGORIES = {
   acrilicos: 14,
 } as const
 
-export async function seed(db: DB) {
+export async function seed(db: DB, c: Context) {
   await db.delete(productsTable)
   await db.delete(productCategoriesTable)
   await db.delete(usersTable)
@@ -57,7 +58,7 @@ export async function seed(db: DB) {
     },
   ])
 
-  //Seed product Categories
+  //seed Products Categories
   const categoriesToInsert = productCategories.map((category, index) => ({
     id: index + 1,
     name: category,
@@ -65,75 +66,39 @@ export async function seed(db: DB) {
 
   const insertedProductCategories = await db.insert(productCategoriesTable).values(categoriesToInsert)
 
-  //Seed Customers
-  for (const customer of customerJson) {
-    await db.insert(customersTable).values({
+  //seed Products
+  const stmtsProducts = products.map((prod) => {
+    return db.insert(productsTable).values({
+      id: prod.id,
+      description: prod.description,
+      code: prod.code,
+      unitSize: prod.unit_size,
+      categoryId: PRODUCTS_CATEGORIES[prod.category],
+      link: prod.link,
+      rank: prod.rank,
+      price: prod.price,
+      cost: prod.cost,
+      createdAt: new Date(prod.created_at),
+      updatedAt: new Date(prod.updated_at),
+    })
+  })
+  //Seed customers
+  const stmts = customers.map((customer) => {
+    return db.insert(customersTable).values({
       id: customer.id,
       name: customer.name,
-      ruc: customer.ruc.toString(),
-      phone: null,
+      ruc: customer.ruc,
+      email: customer.email,
       address: customer.address,
-      email: null,
+      phone: customer.phone,
       isRegular: customer.is_regular,
       createdAt: new Date(customer.created_at),
       updatedAt: new Date(customer.updated_at),
     })
+  })
 
-    console.log('seed: ', customer.name)
-  }
-
-  //Seed Products
-  for (const product of productsJson) {
-    await db.insert(productsTable).values({
-      id: product.id,
-      description: product.description,
-      code: product.code,
-      unitSize: product.unit_size,
-      categoryId: PRODUCTS_CATEGORIES[product.category],
-      link: product.link,
-      rank: product.rank,
-      price: product.price,
-      cost: product.cost,
-      createdAt: new Date(product.created_at),
-      updatedAt: new Date(product.updated_at),
-    })
-    console.log('product inserted: ', product.id)
-  }
-
-  //seed Agencies
-  for (const agency of agenciesJson) {
-    await db.insert(agenciesTable).values({
-      id: agency.id,
-      name: agency.name,
-      ruc: agency.ruc,
-      phone: agency.phone,
-      address: agency.address,
-      createdAt: new Date(agency.created_at),
-      updatedAt: new Date(agency.updated_at),
-    })
-    console.log(`inserted agencies ${agency.id} success`)
-  }
-
-  //Seed labels
-  for (const label of labelsJson) {
-    await db.insert(labelsTable).values({
-      id: label.id,
-      recipient: label.recipient,
-      destination: label.destination,
-      dniRuc: label.dni_ruc,
-      phone: label.phone,
-      address: label.address,
-      observations: label.observations,
-      agencyId: label.agency_id,
-      createdAt: new Date(label.created_at),
-      updatedAt: new Date(label.updated_at),
-    })
-    console.log(`inserted labels ${label.id} success`)
-  }
-
-  //Seed quotations
-  for (const quotation of quotationsJson) {
-    await db.insert(quotationsTable).values({
+  const stmtsQuotations = quotations.map((quotation) => {
+    return db.insert(quotationsTable).values({
       id: quotation.id,
       number: quotation.number,
       deadline: quotation.deadline,
@@ -152,14 +117,57 @@ export async function seed(db: DB) {
       createdAt: new Date(quotation.created_at),
       updatedAt: new Date(quotation.updated_at),
     })
+  })
 
-    console.log('seed quotation: ', quotation.number)
-  }
+  //seed agencies
+  const stmtsAgencies = agencies.map((agency) => {
+    return db.insert(agenciesTable).values({
+      id: agency.id,
+      name: agency.name,
+      ruc: agency.ruc,
+      phone: agency.phone,
+      address: agency.address,
+      createdAt: new Date(agency.created_at),
+      updatedAt: new Date(agency.updated_at),
+    })
+  })
+
+  //seed labels
+  const stmtsLabels = labels.map((label) => {
+    return db.insert(labelsTable).values({
+      id: label.id,
+      recipient: label.recipient,
+      destination: label.destination,
+      dniRuc: label.dni_ruc,
+      phone: label.phone,
+      address: label.address,
+      observations: label.observations,
+      agencyId: label.agency_id,
+      createdAt: new Date(label.created_at),
+      updatedAt: new Date(label.updated_at),
+    })
+  })
+
+  //@ts-ignore
+  await db.batch(stmtsProducts)
+  //@ts-ignore
+  await db.batch(stmts)
+  //@ts-ignore
+  await db.batch(stmtsQuotations)
+  //@ts-ignore
+  await db.batch(stmtsAgencies)
+  //@ts-ignore
+  await db.batch(stmtsLabels)
 
   return {
+    users: insertedUsers.meta.changes,
     productCategories: insertedProductCategories.meta.changes,
     products: await db.select({ count: count() }).from(productsTable),
-    users: insertedUsers.meta.changes,
+    customers: await db.select({ count: count() }).from(customersTable),
+    quotations: await db.select({ count: count() }).from(quotationsTable),
+    agencies: await db.select({ count: count() }).from(agenciesTable),
+    labels: await db.select({ count: count() }).from(labelsTable),
   }
+
   // console.log(insertedUsers.meta.changes)
 }

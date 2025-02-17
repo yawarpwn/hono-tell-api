@@ -5,11 +5,7 @@ import { jwt } from 'hono/jwt'
 import { drizzle } from 'drizzle-orm/d1'
 import { customersRoute, quotationsRoute, productsRoute, authRoute, agenciesRoute, labelsRoute } from './routes'
 import type { App } from './types'
-import { seedProducts } from './utils/seed-products'
-import { seedCustomers } from './utils/seed-customers'
-import { seedAgencies } from './utils/seed-agencies'
 import { seed } from './utils/seed'
-import { seedQuotations } from './utils/seed-quotations'
 import { productCategoriesRoute } from './routes/product-categories'
 
 const app = new Hono<App>()
@@ -77,21 +73,8 @@ app.route('/api/product-categories', productCategoriesRoute)
 app.route('/api/agencies', agenciesRoute)
 app.route('/api/labels', labelsRoute)
 
-//seed Data
-app.get('/seed/customers', async (c) => {
-  return c.json(await seedCustomers(c.get('db'), c.env.POSTGRES_URL))
-})
-app.get('/seed/products', async (c) => {
-  return c.json(await seedProducts(c.get('db'), c))
-})
-app.get('/seed/agencies', async (c) => {
-  return c.json(await seedAgencies(c.get('db'), c.env.POSTGRES_URL))
-})
-app.get('/seed/quotations', async (c) => {
-  return c.json(await seedQuotations(c.get('db'), c.env.POSTGRES_URL))
-})
 app.get('/seed', async (c) => {
-  return c.json(await seed(c.get('db')))
+  return c.json(await seed(c.get('db'), c))
 })
 
 // nustom Not Found Message
