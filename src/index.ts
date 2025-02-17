@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
+import { jwt } from 'hono/jwt'
 import { drizzle } from 'drizzle-orm/d1'
 import { customersRoute, quotationsRoute, productsRoute, authRoute, agenciesRoute, labelsRoute } from './routes'
 import type { App } from './types'
@@ -10,20 +11,14 @@ import { seedAgencies } from './utils/seed-agencies'
 import { seed } from './utils/seed'
 import { seedQuotations } from './utils/seed-quotations'
 import { productCategoriesRoute } from './routes/product-categories'
-// import jwt from 'jsonwebtoken'
-import { jwt } from 'hono/jwt'
-import { getCookie } from 'hono/cookie'
 
 const app = new Hono<App>()
 
-/**------- Middlewares----- */
-app.use(
-  '*',
-  cors({
-    credentials: true,
-    origin: 'http://localhost:5173',
-  }),
-)
+/**--------------------------------Middlewares---------------------------------------- */
+
+const ALLOWED_ORIGINS = ['http://localhost:5173', 'https://app.tellsenales.workers.dev']
+
+app.use('*', cors())
 app.use('*', prettyJSON())
 
 // Add X-Response-Time header
@@ -62,8 +57,8 @@ app.use('/seed/*', async (c, next) => {
   await next()
 })
 
-//JWTMiddleware
-app.use('/api/*', (c, next) => {
+// JWTMiddleware
+app.use('/api/*', async (c, next) => {
   const jwtMiddleware = jwt({ secret: c.env.JWT_SECRET })
   return jwtMiddleware(c, next)
 })
