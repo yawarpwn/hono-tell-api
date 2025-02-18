@@ -4,6 +4,7 @@ import { WatermarksModel } from '@/models'
 import { handleError } from '@/utils'
 import { zValidator } from '@hono/zod-validator'
 import { insertWatermarkSchema, updateWatermarkSchema } from '@/dtos'
+// import { getClient } from '@/lib/cloudinary'
 
 export const watermarksRoute = new Hono<App>()
 
@@ -30,22 +31,23 @@ watermarksRoute.get('/:id', async (c) => {
   }
 })
 
-watermarksRoute.post(
-  '/',
-  zValidator('json', insertWatermarkSchema, async (result, c) => {
-    if (!result.success) return c.json({ ok: false, message: 'invalid' }, 400)
-  }),
-  async (c) => {
-    const db = c.get('db')
-    const data = c.req.valid('json')
-    try {
-      const result = await WatermarksModel.create(db, data)
-      return c.json({ ok: true, data: result }, 201)
-    } catch (error) {
-      return handleError(error, c)
-    }
-  },
-)
+watermarksRoute.post('/', async (c) => {
+  const db = c.get('db')
+  const buffer = await c.req.arrayBuffer()
+  // const formData = await c.req.formData()
+  // const file = formData.get('files[]') as File
+  //
+  // const cloudinaryClient = getClient(c.env.CLOUDINARY_API_SECRET)
+
+  // await WatermarksModel.uploadToCloudinary(file, cloudinaryClient)
+  // try {
+  //   const result = await WatermarksModel.create(db, data)
+  //   return c.json({ ok: true, data: result }, 201)
+  // } catch (error) {
+  //   return handleError(error, c)
+  // }
+  return c.json({ succes: 'true' })
+})
 
 watermarksRoute.put(
   '/:id',

@@ -32,6 +32,7 @@ type Bindings = {
   POSTGRES_URL: string
   JWT_SECRET: string
   API_KEY: string
+  CLOUDINARY_API_SECRET: string
   DB: D1Database
 }
 
