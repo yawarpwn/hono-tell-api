@@ -1,6 +1,6 @@
-import type { ItemQuotation, ProductCategory } from '@/types'
+import type { ItemQuotation } from '@/types'
 import { sql } from 'drizzle-orm'
-import { integer, sqliteTable, text, real, blob } from 'drizzle-orm/sqlite-core'
+import { integer, sqliteTable, text, real } from 'drizzle-orm/sqlite-core'
 import { productCategories } from '@/constants'
 
 const userRoles = ['admin', 'user'] as const
@@ -99,10 +99,22 @@ export const productsTable = sqliteTable('products', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
 })
 
-// const userRoles = ['admin', 'user'] as const
-
 export const productCategoriesTable = sqliteTable('product_categories', {
   id: integer().primaryKey({ autoIncrement: true }),
   name: text({ enum: productCategories }).notNull(),
   createdAt: integer('create_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+})
+
+export const watermarksTable = sqliteTable('watermark', {
+  id: text('id')
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => crypto.randomUUID()),
+  width: integer('width').notNull(),
+  height: integer('height').notNull(),
+  url: text('url').notNull(),
+  publicId: text('public_id').notNull(),
+  format: text('format').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
 })

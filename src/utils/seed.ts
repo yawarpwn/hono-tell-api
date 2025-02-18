@@ -6,6 +6,7 @@ import {
   productCategoriesTable,
   productsTable,
   agenciesTable,
+  watermarksTable,
   labelsTable,
 } from '@/db/schemas'
 import { productCategories } from '@/constants'
@@ -16,6 +17,7 @@ import customers from '../../muckup/customers.json'
 import agencies from '../../muckup/agencies.json'
 import labels from '../../muckup/labels.json'
 import quotations from '../../muckup/quotations.json'
+import watermarks from '../../muckup/watermarks.json'
 import type { Context } from 'hono'
 
 const PRODUCTS_CATEGORIES = {
@@ -43,6 +45,7 @@ export async function seed(db: DB, c: Context) {
   await db.delete(quotationsTable)
   await db.delete(labelsTable)
   await db.delete(agenciesTable)
+  await db.delete(watermarksTable)
 
   //Seed users
   const insertedUsers = await db.insert(usersTable).values([
@@ -148,8 +151,21 @@ export async function seed(db: DB, c: Context) {
     })
   })
 
+  const stmtsWatermarks = watermarks.map((watermark) => {
+    return db.insert(watermarksTable).values({
+      id: watermark.id,
+      format: watermark.format,
+      height: watermark.height,
+      width: watermark.width,
+      publicId: watermark.public_id,
+      url: watermark.url,
+      createdAt: new Date(watermark.created_at),
+      updatedAt: new Date(watermark.updated_at),
+    })
+  })
+
   //@ts-ignore
-  await db.batch(stmtsProducts)
+  await db.batch([...stmtsProducts, ...stmtsWatermarks])
   //@ts-ignore
   await db.batch(stmts)
   //@ts-ignore
@@ -167,6 +183,7 @@ export async function seed(db: DB, c: Context) {
     quotations: await db.select({ count: count() }).from(quotationsTable),
     agencies: await db.select({ count: count() }).from(agenciesTable),
     labels: await db.select({ count: count() }).from(labelsTable),
+    watermarks: await db.select({ count: count() }).from(watermarksTable),
   }
 
   // console.log(insertedUsers.meta.changes)

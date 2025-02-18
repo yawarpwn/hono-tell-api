@@ -16,6 +16,9 @@ import type {
   insertLabelSchema,
   labelSchema,
   updateLabelSchema,
+  watermarkSchema,
+  insertWatermarkSchema,
+  updateWatermarkSchema,
 } from '@/dtos'
 import type { customersTable, quotationsTable } from '../db/schemas'
 
@@ -72,6 +75,11 @@ export type UpdateAgencyDto = z.infer<typeof updateAgencySchema>
 export type LabelDto = z.infer<typeof labelSchema>
 export type CreateLabelDto = z.infer<typeof insertLabelSchema>
 export type UpdateLabelDto = z.infer<typeof updateLabelSchema>
+
+//Watermarks
+export type WatermarkDto = z.infer<typeof watermarkSchema>
+export type CreateWatermarkDto = z.infer<typeof insertWatermarkSchema>
+export type UpdateWatermarkDto = z.infer<typeof updateWatermarkSchema>
 
 //Authr
 export type LoginDto = z.infer<typeof loginSchema>

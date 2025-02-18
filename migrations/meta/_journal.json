@@ -15,6 +15,13 @@
       "when": 1739628414120,
       "tag": "0001_quiet_the_enforcers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1739836347309,
+      "tag": "0002_naive_wild_pack",
+      "breakpoints": true
     }
   ]
 }

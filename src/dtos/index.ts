@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { customersTable, quotationsTable, productsTable, agenciesTable, labelsTable } from '@/db/schemas'
+import { customersTable, quotationsTable, productsTable, agenciesTable, labelsTable, watermarksTable } from '@/db/schemas'
+
 import { createSelectSchema, createInsertSchema, createUpdateSchema } from 'drizzle-zod'
 
 export const itemQuotationSChema = z.object({
@@ -11,7 +12,7 @@ export const itemQuotationSChema = z.object({
   unitSize: z.string(),
   description: z.string(),
 })
-//Users
+//------------------------------------Users---------------------------------\\
 const UserSchema = z.object({
   id: z.number(),
   email: z.string(),
@@ -26,7 +27,7 @@ export const loginSchema = z.object({
 
 export type UserDto = z.infer<typeof UserSchema>
 
-// Customers
+//--------------------------------- Customers---------------------------------\\
 export const customerSchema = createSelectSchema(customersTable)
 export const insertCustomerSchema = createInsertSchema(customersTable, {
   ruc: () => z.coerce.string().length(11),
@@ -40,7 +41,7 @@ export const updateCustomerSchema = createUpdateSchema(customersTable).omit({
   id: true,
 })
 
-//Quotations
+//---------------------------------Quotations---------------------------------\\
 export const quotationSchema = createSelectSchema(quotationsTable)
 export const insertQuotationSchema = createInsertSchema(quotationsTable, {
   items: () => z.array(itemQuotationSChema),
@@ -59,7 +60,7 @@ export const updateQuotationSchema = createUpdateSchema(quotationsTable, {
   id: true,
 })
 
-//Products
+//---------------------------------Products------------------------------------\\
 export const productSchema = createSelectSchema(productsTable)
 export const insertProductSchema = createInsertSchema(productsTable).omit({
   id: true,
@@ -72,7 +73,7 @@ export const updateProductSchema = createUpdateSchema(productsTable).omit({
   createdAt: true,
 })
 
-//Agencies
+//---------------------------------Agencies------------------------------------\\
 export const agencySchema = createSelectSchema(agenciesTable)
 export const insertAgencySchema = createInsertSchema(agenciesTable).omit({
   id: true,
@@ -85,7 +86,7 @@ export const updateAgencySchema = createUpdateSchema(agenciesTable).omit({
   createdAt: true,
 })
 
-//Labels
+//----------------------------------Labels--------------------------------------\\
 export const labelSchema = createSelectSchema(labelsTable)
 export const insertLabelSchema = createInsertSchema(labelsTable).omit({
   id: true,
@@ -93,6 +94,19 @@ export const insertLabelSchema = createInsertSchema(labelsTable).omit({
   createdAt: true,
 })
 export const updateLabelSchema = createUpdateSchema(labelsTable).omit({
+  id: true,
+  updatedAt: true,
+  createdAt: true,
+})
+
+//-------------------------------------Watermark-----------------------------------\\
+export const watermarkSchema = createSelectSchema(watermarksTable)
+export const insertWatermarkSchema = createInsertSchema(watermarksTable).omit({
+  id: true,
+  updatedAt: true,
+  createdAt: true,
+})
+export const updateWatermarkSchema = createUpdateSchema(watermarksTable).omit({
   id: true,
   updatedAt: true,
   createdAt: true,

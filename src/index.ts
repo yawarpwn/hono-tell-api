@@ -3,7 +3,7 @@ import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
 import { jwt } from 'hono/jwt'
 import { drizzle } from 'drizzle-orm/d1'
-import { customersRoute, quotationsRoute, productsRoute, authRoute, agenciesRoute, labelsRoute } from './routes'
+import { customersRoute, quotationsRoute, productsRoute, authRoute, agenciesRoute, labelsRoute, watermarksRoute } from './routes'
 import type { App } from './types'
 import { seed } from './utils/seed'
 import { productCategoriesRoute } from './routes/product-categories'
@@ -72,6 +72,7 @@ app.route('/api/products', productsRoute)
 app.route('/api/product-categories', productCategoriesRoute)
 app.route('/api/agencies', agenciesRoute)
 app.route('/api/labels', labelsRoute)
+app.route('/api/watermarks', watermarksRoute)
 
 app.get('/seed', async (c) => {
   return c.json(await seed(c.get('db'), c))
