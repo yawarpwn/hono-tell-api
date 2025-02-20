@@ -1,5 +1,5 @@
 // import type { ResourceApiResponse, TransformationOptions, UploadApiOptions, UploadApiErrorResponse, UploadApiResponse } from 'cloudinary'
-import { v2 } from 'cloudinary'
+import { type SignApiOptions, v2 } from 'cloudinary'
 
 export function getClient(apiSecret: string) {
   v2.config({
@@ -9,6 +9,25 @@ export function getClient(apiSecret: string) {
     secure: true,
   })
   return v2
+}
+
+export function getSignature(apiSecret: string, signOptions?: SignApiOptions) {
+  const timestamp = Math.round(new Date().getTime() / 1000)
+  const cloudinaryClient = getClient(apiSecret)
+
+  const sign = cloudinaryClient.utils.sign_request({
+    timestamp,
+    ...signOptions,
+  })
+
+  const cloudName = cloudinaryClient.config().cloud_name!
+
+  return {
+    timestamp: timestamp.toString(),
+    signature: sign.signature,
+    cloudName,
+    apiKey: sign.api_key,
+  }
 }
 
 // export async function getResources(): Promise<ResourceApiResponse> {

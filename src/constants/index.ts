@@ -1,3 +1,4 @@
+export const API_REST_CLOUDINARY = 'https://api.cloudinary.com/v1_1'
 export const STATUS_CODE = {
   Ok: 200,
   Created: 201,

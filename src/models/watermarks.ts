@@ -4,13 +4,15 @@ import { HTTPException } from 'hono/http-exception'
 import type { CreateWatermarkDto, UpdateWatermarkDto, WatermarkDto } from '@/types'
 import type { DB } from '@/types'
 import { v2 } from 'cloudinary'
+import { getSignature } from '@/lib/cloudinary'
+import { API_REST_CLOUDINARY } from '@/constants'
 
 type UploadResponse = {
-  url: string
+  secure_url: string
   width: string
   height: string
   format: string
-  publicId: string
+  public_id: string
 }
 export class WatermarksModel {
   static async getAll(db: DB) {
@@ -43,58 +45,72 @@ export class WatermarksModel {
     }
   }
 
-  static async uploadToCloudinary(photos: File, client: typeof v2): Promise<UploadResponse[]> {
-    if (!photos) {
-      throw new HTTPException(400, {
-        message: 'No photos provided',
-      })
-    }
-    try {
-      const buffer = await photos.arrayBuffer()
-      console.log(buffer)
-    } catch (error) {
-      console.log(error)
-    }
-
-    const res: UploadResponse[] = []
-    // for (const photo of photos) {
-    //   // Guardar la imagen procesada en el sistema de archivos
-    //   try {
-    //     const res = await uploadStream(watermarkedImage, {
-    //       folder: 'watermarked',
-    //       category: 'watermarked',
-    //     })
-    //
-    //     res.push({
-    //       url: res.secure_url,
-    //       width: res.width,
-    //       height: res.height,
-    //       format: res.format,
-    //       publicId: res.public_id,
-    //     })
-    //   } catch (error) {
-    //     console.log(error)
-    //     throw new HTTPException(500, {
-    //       message: 'Failed to upload image',
-    //     })
-    //   }
-    // }
-    return res
-
-    // Devolver las rutas de las imágenes procesadas como respuesta JSON
-  }
-
   static async create(db: DB, data: CreateWatermarkDto) {
-    const results = await db.insert(watermarksTable).values(data).returning({ insertedId: watermarksTable.id })
+    const rows = await db.insert(watermarksTable).values(data).returning({ insertedId: watermarksTable.id })
 
-    if (results.length === 0) {
+    if (rows.length === 0) {
       throw new HTTPException(400, {
         message: 'Failed to create customer',
       })
     }
 
-    const [customer] = results
+    const [customer] = rows
     return customer
+  }
+
+  static async uploadImage(file: File, apiSecret: string) {
+    const transformation = 'c_limit,w_1000,h_1000'
+    const format = 'webp'
+    const folder = 'watermarked'
+
+    const { timestamp, apiKey, signature, cloudName } = getSignature(apiSecret, {
+      transformation,
+      format,
+      folder,
+    })
+
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('signature', signature)
+    formData.append('timestamp', timestamp)
+    formData.append('api_key', apiKey)
+    formData.append('folder', 'watermarked')
+    formData.append('transformation', transformation)
+    formData.append('format', format)
+    // formData.append('eager', eager)
+
+    return fetch(`${API_REST_CLOUDINARY}/${cloudName}/image/upload`, {
+      method: 'POST',
+      body: formData,
+    }).then((res) => {
+      console.log(res)
+      // if (!res.ok) throw new Error('Network response was not ok')
+      return res.json<UploadResponse>()
+    })
+  }
+
+  static async destroyImage(publicId: string, apiSecret: string) {
+    const { cloudName, apiKey, signature, timestamp } = getSignature(apiSecret, {
+      public_id: publicId,
+    })
+    const url = `${API_REST_CLOUDINARY}/${cloudName}/image/destroy`
+
+    const formdata = new FormData()
+    formdata.append('public_id', publicId)
+    formdata.append('signature', signature)
+    formdata.append('api_key', apiKey)
+    formdata.append('timestamp', timestamp)
+
+    console.log(Object.fromEntries(formdata))
+
+    return fetch(url, {
+      method: 'POST',
+      body: formdata,
+      redirect: 'follow',
+    })
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+    // .catch((error) => console.error(error))
   }
 
   static async update(db: DB, id: WatermarkDto['id'], data: UpdateWatermarkDto) {

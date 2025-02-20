@@ -11,6 +11,11 @@
         "noStaticOnlyClass": {
           "level": "off"
         }
+      },
+      "style": {
+        "noNonNullAssertion": {
+          "level": "off"
+        }
       }
     }
   },

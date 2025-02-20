@@ -105,7 +105,7 @@ export const productCategoriesTable = sqliteTable('product_categories', {
   createdAt: integer('create_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
 })
 
-export const watermarksTable = sqliteTable('watermark', {
+export const watermarksTable = sqliteTable('watermarks', {
   id: text('id')
     .primaryKey()
     .notNull()

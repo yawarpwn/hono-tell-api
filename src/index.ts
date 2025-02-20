@@ -16,6 +16,7 @@ import {
   productCategoriesRoute,
 } from './routes'
 import { seed } from './utils/seed'
+import { getSignature } from './lib/cloudinary'
 
 const app = new Hono<App>()
 
@@ -68,7 +69,7 @@ app.use('/api/*', async (c, next) => {
   return jwtMiddleware(c, next)
 })
 
-/**-------Routes----- */
+//-------------------------------------Routes---------------------------- //
 
 app.get('/', async (c) => {
   return c.json({ message: 'success' })
@@ -82,32 +83,6 @@ app.route('/api/product-categories', productCategoriesRoute)
 app.route('/api/agencies', agenciesRoute)
 app.route('/api/labels', labelsRoute)
 app.route('/api/watermarks', watermarksRoute)
-app.get('/api/signuploadform', async (c) => {
-  cloudinary.config({
-    cloud_name: 'tellsenales-cloud',
-    api_key: '781191585666779',
-    api_secret: c.env.CLOUDINARY_API_SECRET,
-    secure: true,
-  })
-
-  const timestamp = Math.round(new Date().getTime() / 1000)
-  const sign = cloudinary.utils.sign_request({
-    timestamp: timestamp,
-    source: 'uw',
-    folder: 'signed_upload_demo_uw',
-  })
-
-  // const signature = cloudinary.utils.api_sign_request(
-  //   {
-  //     timestamp: timestamp,
-  //     source: 'uw',
-  //     folder: 'signed_upload_demo_uw',
-  //   },
-  //   c.env.CLOUDINARY_API_SECRET,
-  // )
-
-  return c.json(sign)
-})
 
 app.get('/seed', async (c) => {
   return c.json(await seed(c.get('db'), c))

@@ -31,23 +31,36 @@ watermarksRoute.get('/:id', async (c) => {
   }
 })
 
-watermarksRoute.post('/', async (c) => {
-  const db = c.get('db')
-  const buffer = await c.req.arrayBuffer()
-  // const formData = await c.req.formData()
-  // const file = formData.get('files[]') as File
-  //
-  // const cloudinaryClient = getClient(c.env.CLOUDINARY_API_SECRET)
+watermarksRoute.post(
+  '/',
+  // zValidator('json', insertWatermarkSchema, async (result, c) => {
+  //   if (!result.success) return c.json({ ok: false, message: 'invalid' }, 400)
+  // }),
+  async (c) => {
+    try {
+      const formdata = await c.req.formData()
+      const files = formdata.getAll('files[]') as File[]
 
-  // await WatermarksModel.uploadToCloudinary(file, cloudinaryClient)
-  // try {
-  //   const result = await WatermarksModel.create(db, data)
-  //   return c.json({ ok: true, data: result }, 201)
-  // } catch (error) {
-  //   return handleError(error, c)
-  // }
-  return c.json({ succes: 'true' })
-})
+      const db = c.get('db')
+
+      for (const file of files) {
+        const response = await WatermarksModel.uploadImage(file, c.env.CLOUDINARY_API_SECRET)
+        const result = await WatermarksModel.create(db, {
+          url: response.secure_url,
+          width: response.width,
+          height: response.height,
+          format: response.format,
+          publicId: response.public_id,
+        })
+
+        console.log({ result })
+      }
+      return c.json({ message: `inserted ${files.length} images success` }, 201)
+    } catch (error) {
+      return handleError(error, c)
+    }
+  },
+)
 
 watermarksRoute.put(
   '/:id',
