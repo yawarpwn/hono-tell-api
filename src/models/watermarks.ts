@@ -4,7 +4,7 @@ import { HTTPException } from 'hono/http-exception'
 import type { CreateWatermarkDto, UpdateWatermarkDto, WatermarkDto } from '@/types'
 import type { DB } from '@/types'
 import { v2 } from 'cloudinary'
-import { getSignature } from '@/lib/cloudinary'
+import { getClient, getSignature } from '@/lib/cloudinary'
 import { API_REST_CLOUDINARY } from '@/constants'
 
 type UploadResponse = {
@@ -90,27 +90,28 @@ export class WatermarksModel {
   }
 
   static async destroyImage(publicId: string, apiSecret: string) {
-    const { cloudName, apiKey, signature, timestamp } = getSignature(apiSecret, {
-      public_id: publicId,
-    })
+    const timestamp = Math.round(new Date().getTime() / 1000)
+    const cloudName = 'tellsenales-cloud'
+    const signature = v2.utils.api_sign_request(
+      {
+        timestamp,
+        public_id: publicId,
+      },
+      apiSecret,
+    )
     const url = `${API_REST_CLOUDINARY}/${cloudName}/image/destroy`
+    const api_key = '781191585666779'
 
-    const formdata = new FormData()
-    formdata.append('public_id', publicId)
-    formdata.append('signature', signature)
-    formdata.append('api_key', apiKey)
-    formdata.append('timestamp', timestamp)
-
-    console.log(Object.fromEntries(formdata))
+    const formData = new FormData()
+    formData.append('public_id', publicId)
+    formData.append('signature', signature)
+    formData.append('timestamp', timestamp.toString())
+    formData.append('api_key', api_key)
 
     return fetch(url, {
       method: 'POST',
-      body: formdata,
-      redirect: 'follow',
-    })
-      .then((response) => response.text())
-      .then((result) => console.log(result))
-    // .catch((error) => console.error(error))
+      body: formData,
+    }).then((res) => res.json())
   }
 
   static async update(db: DB, id: WatermarkDto['id'], data: UpdateWatermarkDto) {

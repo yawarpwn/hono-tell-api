@@ -84,6 +84,9 @@ watermarksRoute.delete('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
   try {
+    const watermark = await WatermarksModel.getById(db, id)
+    const result = await WatermarksModel.destroyImage(watermark.publicId, c.env.CLOUDINARY_API_SECRET)
+    // return c.json({ result })
     const results = await WatermarksModel.delete(db, id)
     return c.json(results)
   } catch (error) {
