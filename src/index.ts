@@ -3,7 +3,6 @@ import type { App } from './types'
 import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
 import { jwt } from 'hono/jwt'
-import { v2 as cloudinary } from 'cloudinary'
 import { drizzle } from 'drizzle-orm/d1'
 import {
   customersRoute,
@@ -16,7 +15,6 @@ import {
   productCategoriesRoute,
 } from './routes'
 import { seed } from './utils/seed'
-import { getSignature } from './lib/cloudinary'
 
 const app = new Hono<App>()
 
@@ -83,7 +81,7 @@ app.use('/api/*', async (c, next) => {
 //-------------------------------------Routes---------------------------- //
 
 app.get('/', async (c) => {
-  return c.json({ message: 'success' })
+  return c.json({ message: 'api is running' })
 })
 
 app.route('/auth', authRoute)
