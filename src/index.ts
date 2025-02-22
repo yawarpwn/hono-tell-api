@@ -65,8 +65,19 @@ app.use('/seed/*', async (c, next) => {
 
 // JWTMiddleware
 app.use('/api/*', async (c, next) => {
-  const jwtMiddleware = jwt({ secret: c.env.JWT_SECRET })
-  return jwtMiddleware(c, next)
+  const apiKey = c.req.header('TELL-API-KEY')
+  if (apiKey !== c.env.TELL_API_KEY) {
+    return c.json(
+      {
+        message: 'Unauthorized',
+      },
+      401,
+    )
+  }
+
+  await next()
+  // const jwtMiddleware = jwt({ secret: c.env.JWT_SECRET })
+  // return jwtMiddleware(c, next)
 })
 
 //-------------------------------------Routes---------------------------- //
