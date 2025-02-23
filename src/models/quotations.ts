@@ -188,7 +188,7 @@ export class QuotationsModel {
 
     if (!dto.customerId) {
       if (dto?.customer?.name && dto?.customer?.ruc) {
-        console.log('insert new customer to db')
+        console.log('update  new customer to db')
         const { insertedId } = await CustomersModel.create(db, dto.customer)
         customerId = insertedId
       }

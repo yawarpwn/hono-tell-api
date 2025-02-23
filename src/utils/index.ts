@@ -5,7 +5,7 @@ import { HTTPException } from 'hono/http-exception'
 export function handleError(error: unknown, c: Context) {
   if (error instanceof HTTPException) {
     console.log('HTTPException Error', error)
-    return c.json({ ok: false, message: error.message, statusCode: error.status }, 400)
+    return c.json({ ok: false, message: error.message, statusCode: error.status }, error.status)
   }
 
   if (error instanceof DrizzleError) {

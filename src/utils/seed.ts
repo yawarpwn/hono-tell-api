@@ -116,6 +116,7 @@ export async function seed(db: DB, c: Context) {
         price: item.price,
         unitSize: item.unit_size,
         description: item.description,
+        link: item.link,
       })),
       createdAt: new Date(quotation.created_at),
       updatedAt: new Date(quotation.updated_at),
