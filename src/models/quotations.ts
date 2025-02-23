@@ -4,7 +4,6 @@ import { HTTPException } from 'hono/http-exception'
 import type { CreateQuotationDto, UpdateQuotationDto, QuotationDto, CreateCustomerDto } from '@/types'
 import { insertQuotationSchema, updateQuotationSchema } from '@/dtos'
 import type { DB } from '@/types'
-import { STATUS_CODE } from '@/constants'
 import { CustomersModel } from '@/models/customers'
 
 export class QuotationsModel {
@@ -74,7 +73,7 @@ export class QuotationsModel {
       .where(eq(quotationsTable.id, id))
       .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
     if (quotations.length === 0) {
-      throw new HTTPException(STATUS_CODE.NotFound, {
+      throw new HTTPException(404, {
         message: `Cotizacion con id ${id},No encontrada`,
       })
     }
@@ -110,7 +109,7 @@ export class QuotationsModel {
       .where(eq(quotationsTable.number, quotationNumber))
       .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
     if (quotations.length === 0) {
-      throw new HTTPException(STATUS_CODE.NotFound, {
+      throw new HTTPException(404, {
         message: `Cotización con Numero: ${quotationNumber}, No encontrada`,
       })
     }
@@ -118,15 +117,12 @@ export class QuotationsModel {
   }
 
   static async create(db: DB, dto: CreateQuotationDto & { customer: CreateCustomerDto }) {
-    console.log({ quotationToCreate: dto })
     let customerId = dto.customerId
 
-    if (!dto.customerId) {
-      if (dto?.customer?.name && dto?.customer?.ruc) {
-        console.log('insert new customer to db')
-        const { insertedId } = await CustomersModel.create(db, dto.customer)
-        customerId = insertedId
-      }
+    if (!dto.customerId && dto?.customer?.name && dto?.customer?.ruc) {
+      console.log('insert new customer to db')
+      const { insertedId } = await CustomersModel.create(db, dto.customer)
+      customerId = insertedId
     }
 
     const { data, success, error } = insertQuotationSchema.safeParse({
@@ -162,7 +158,7 @@ export class QuotationsModel {
       })
 
     if (results.length === 0) {
-      throw new HTTPException(STATUS_CODE.BadRequest, {
+      throw new HTTPException(400, {
         message: 'Failed to create quotation',
       })
     }
@@ -177,13 +173,13 @@ export class QuotationsModel {
 
     if (!success) {
       console.log(error.errors)
-      throw new HTTPException(STATUS_CODE.BadRequest, {
+      throw new HTTPException(400, {
         message: 'Invalid quotation',
       })
     }
 
     if (Object.values(data).length === 0) {
-      throw new HTTPException(STATUS_CODE.BadRequest, {
+      throw new HTTPException(400, {
         message: 'Invalid quotation',
       })
     }
@@ -208,7 +204,7 @@ export class QuotationsModel {
       .returning()
 
     if (results.length === 0) {
-      throw new HTTPException(STATUS_CODE.NotFound, {
+      throw new HTTPException(404, {
         message: `quotation with id ${id} not found`,
       })
     }
@@ -220,7 +216,7 @@ export class QuotationsModel {
     const results = await db.delete(quotationsTable).where(eq(quotationsTable.number, quotationNumber)).returning()
 
     if (results.length === 0) {
-      throw new HTTPException(STATUS_CODE.NotFound, {
+      throw new HTTPException(404, {
         message: `quotation with id ${quotationNumber} not found`,
       })
     }

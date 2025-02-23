@@ -2,7 +2,6 @@ import { Hono } from 'hono'
 import type { App } from './types'
 import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
-import { jwt } from 'hono/jwt'
 import { drizzle } from 'drizzle-orm/d1'
 import {
   customersRoute,
