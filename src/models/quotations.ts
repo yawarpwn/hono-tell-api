@@ -1,4 +1,4 @@
-import { eq, and, type SQL, ilike, like, asc, desc, count } from 'drizzle-orm'
+import { eq, and, type SQL, ilike, like, asc, desc, count, or } from 'drizzle-orm'
 import { quotationsTable, customersTable } from '@/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateQuotationDto, UpdateQuotationDto, QuotationDto, CreateCustomerDto } from '@/types'
@@ -16,10 +16,21 @@ export class QuotationsModel {
     }: {
       page: number | undefined
       limit: number | undefined
-      query: number | undefined
+      query: string | undefined
     },
   ) {
     console.log({ page, limit, query })
+
+    const search = (query: string | number | undefined) => {
+      if (!query) return undefined
+
+      const isNumber = !Number.isNaN(Number(query))
+      if (isNumber) {
+        const queryNumber = Number(query)
+        return eq(quotationsTable.number, queryNumber)
+      }
+      return like(customersTable.name, `%${query}%`)
+    }
 
     const quotations = await db
       .select({
@@ -47,7 +58,8 @@ export class QuotationsModel {
       })
       .from(quotationsTable)
       .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
-      .where(query ? eq(quotationsTable.number, query) : undefined)
+      .where(search(query))
+      // .where(query ? eq(quotationsTable.number, 7050) : undefined)
       .orderBy(desc(quotationsTable.updatedAt))
       .limit(limit ? limit : 15)
       .offset(page && limit ? (page - 1) * limit : 0)

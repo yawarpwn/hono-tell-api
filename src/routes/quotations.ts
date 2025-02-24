@@ -11,7 +11,7 @@ app.get('/', async (c) => {
   const db = c.get('db')
   const page = Number(c.req.query('page'))
   const limit = Number(c.req.query('limit'))
-  const query = Number(c.req.query('q'))
+  const query = c.req.query('q')
 
   try {
     const result = await QuotationsModel.getAll(db, {
