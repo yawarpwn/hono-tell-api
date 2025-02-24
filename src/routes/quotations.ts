@@ -9,9 +9,16 @@ const app = new Hono<App>()
 
 app.get('/', async (c) => {
   const db = c.get('db')
+  const page = Number(c.req.query('page'))
+  const limit = Number(c.req.query('limit'))
+  const query = Number(c.req.query('q'))
 
   try {
-    const result = await QuotationsModel.getAll(db)
+    const result = await QuotationsModel.getAll(db, {
+      page,
+      limit,
+      query,
+    })
     return c.json(result, STATUS_CODE.Ok)
   } catch (error) {
     return handleError(error, c)

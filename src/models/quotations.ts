@@ -1,4 +1,4 @@
-import { eq, and, type SQL, ilike, like, asc, desc } from 'drizzle-orm'
+import { eq, and, type SQL, ilike, like, asc, desc, count } from 'drizzle-orm'
 import { quotationsTable, customersTable } from '@/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateQuotationDto, UpdateQuotationDto, QuotationDto, CreateCustomerDto } from '@/types'
@@ -7,7 +7,20 @@ import type { DB } from '@/types'
 import { CustomersModel } from '@/models/customers'
 
 export class QuotationsModel {
-  static async getAll(db: DB) {
+  static async getAll(
+    db: DB,
+    {
+      page,
+      limit,
+      query,
+    }: {
+      page: number | undefined
+      limit: number | undefined
+      query: number | undefined
+    },
+  ) {
+    console.log({ page, limit, query })
+
     const quotations = await db
       .select({
         id: quotationsTable.id,
@@ -34,12 +47,17 @@ export class QuotationsModel {
       })
       .from(quotationsTable)
       .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
-      .limit(15)
+      .where(query ? eq(quotationsTable.number, query) : undefined)
       .orderBy(desc(quotationsTable.updatedAt))
+      .limit(limit ? limit : 15)
+      .offset(page && limit ? (page - 1) * limit : 0)
+
+    const rows = await db.select({ total: count(quotationsTable.id) }).from(quotationsTable)
+
     return {
       items: quotations,
       meta: {
-        totalItems: quotations.length,
+        totalItems: rows[0].total,
       },
       links: {},
     }
