@@ -11,8 +11,8 @@ app.get('/', async (c) => {
   const db = c.get('db')
 
   try {
-    const todos = await QuotationsModel.getAll(db)
-    return c.json(todos, STATUS_CODE.Ok)
+    const result = await QuotationsModel.getAll(db)
+    return c.json(result, STATUS_CODE.Ok)
   } catch (error) {
     return handleError(error, c)
   }
