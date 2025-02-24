@@ -34,7 +34,9 @@ app.use('*', async (c, next) => {
 
 app.use('*', async (c, next) => {
   console.log(`${c.req.method}:${c.req.url}`)
+  const now = Date.now()
   await next()
+  c.header('X-Response-Time', `${Date.now() - now}ms`)
   console.log(`${c.res.statusText}`)
 })
 
