@@ -3,22 +3,43 @@ import { Hono } from 'hono'
 import { CustomersModel } from '@/models'
 import { handleError } from '@/utils'
 import { HTTPException } from 'hono/http-exception'
+import { z } from 'zod'
+import { zValidator } from '@hono/zod-validator'
 
-const app = new Hono<App>()
-
-app.get('/', async (c) => {
-  const db = c.get('db')
-  const ruc = c.req.query('ruc')
-
-  try {
-    const todos = await CustomersModel.getAll(db, { ruc })
-    return c.json(todos, 200)
-  } catch (error) {
-    return handleError(error, c)
-  }
+const customerQueryParamsSchema = z.object({
+  onlyRegular: z
+    .string()
+    .transform((str) => str === 'true')
+    .default('false'),
 })
 
-app.get('/search/:dniruc', async (c) => {
+export type CustomerQueryParams = z.infer<typeof customerQueryParamsSchema>
+
+export const customersRoute = new Hono<App>()
+
+customersRoute.get(
+  '/',
+  zValidator('query', customerQueryParamsSchema, (result, c) => {
+    if (!result.success) {
+      return c.json({
+        message: 'Invalid query params',
+      })
+    }
+  }),
+  async (c) => {
+    const db = c.get('db')
+    const { onlyRegular } = c.req.valid('query')
+
+    try {
+      const todos = await CustomersModel.getAll(db, { onlyRegular })
+      return c.json(todos, 200)
+    } catch (error) {
+      return handleError(error, c)
+    }
+  },
+)
+
+customersRoute.get('/search/:dniruc', async (c) => {
   const db = c.get('db')
   const dniRuc = c.req.param('dniruc')
 
@@ -60,7 +81,7 @@ app.get('/search/:dniruc', async (c) => {
   }
 })
 
-app.get('/ruc/:ruc', async (c) => {
+customersRoute.get('/ruc/:ruc', async (c) => {
   const db = c.get('db')
   const ruc = c.req.param('ruc')
 
@@ -72,7 +93,7 @@ app.get('/ruc/:ruc', async (c) => {
   }
 })
 
-app.get('/:id', async (c) => {
+customersRoute.get('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
 
@@ -84,7 +105,7 @@ app.get('/:id', async (c) => {
   }
 })
 
-app.post('/', async (c) => {
+customersRoute.post('/', async (c) => {
   const db = c.get('db')
   const dto = await c.req.json()
   try {
@@ -95,7 +116,7 @@ app.post('/', async (c) => {
   }
 })
 
-app.put('/:id', async (c) => {
+customersRoute.put('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
   const dto = await c.req.json()
@@ -107,7 +128,7 @@ app.put('/:id', async (c) => {
   }
 })
 
-app.delete('/:id', async (c) => {
+customersRoute.delete('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
   try {
@@ -117,5 +138,3 @@ app.delete('/:id', async (c) => {
     return handleError(error, c)
   }
 })
-
-export { app as customersRoute }

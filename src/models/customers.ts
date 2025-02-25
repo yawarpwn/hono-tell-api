@@ -5,6 +5,7 @@ import type { CreateCustomerDto, UpdateCustomerDto, CustomerDto } from '@/types'
 import { insertCustomerSchema, insertQuotationSchema, updateCustomerSchema } from '@/dtos'
 import type { DB } from '@/types'
 import { STATUS_CODE } from '@/constants'
+import { CustomerQueryParams } from '@/routes'
 
 type Company = {
   ruc: string
@@ -60,16 +61,18 @@ function isApiDniresponseSuccess(apiResponse: ApiDniReponse): apiResponse is Api
 }
 
 export class CustomersModel {
-  static async getAll(db: DB, { page = 1, pageSize = 2, ruc = '' }) {
-    const customers = await db.select().from(customersTable)
-    // .where(name ? like(customersTable.name, `%${}%`) : undefined)
+  static async getAll(db: DB, { onlyRegular }: CustomerQueryParams) {
+    const rows = await db
+      .select()
+      .from(customersTable)
+      .where(onlyRegular ? eq(customersTable.isRegular, true) : undefined)
     // .limit(pageSize)
     // .offset((page - 1) * pageSize)
 
     return {
-      items: customers,
+      items: rows,
       meta: {
-        totalItems: customers.length,
+        totalItems: rows.length,
       },
       links: {},
     }
