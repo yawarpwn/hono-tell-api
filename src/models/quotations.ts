@@ -5,22 +5,10 @@ import type { CreateQuotationDto, UpdateQuotationDto, QuotationDto, CreateCustom
 import { insertQuotationSchema, updateQuotationSchema } from '@/dtos'
 import type { DB } from '@/types'
 import { CustomersModel } from '@/models/customers'
+import type { QueryQuotations } from '@/routes'
 
 export class QuotationsModel {
-  static async getAll(
-    db: DB,
-    {
-      page,
-      limit,
-      query,
-    }: {
-      page: number | undefined
-      limit: number | undefined
-      query: string | undefined
-    },
-  ) {
-    console.log({ page, limit, query })
-
+  static async getAll(db: DB, { page = 1, limit = 20, q }: QueryQuotations) {
     const search = (query: string | number | undefined) => {
       if (!query) return undefined
 
@@ -58,11 +46,11 @@ export class QuotationsModel {
       })
       .from(quotationsTable)
       .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
-      .where(search(query))
+      .where(search(q))
       // .where(query ? eq(quotationsTable.number, 7050) : undefined)
       .orderBy(desc(quotationsTable.updatedAt))
-      .limit(limit ? limit : 15)
-      .offset(page && limit ? (page - 1) * limit : 0)
+      .limit(limit)
+      .offset((page - 1) * limit)
 
     const rows = await db.select({ total: count(quotationsTable.id) }).from(quotationsTable)
 

@@ -7,23 +7,42 @@ import { getCookie } from 'hono/cookie'
 
 const app = new Hono<App>()
 
-app.get('/', async (c) => {
-  const db = c.get('db')
-  const page = Number(c.req.query('page'))
-  const limit = Number(c.req.query('limit'))
-  const query = c.req.query('q')
+import { z } from 'zod'
+import { zValidator } from '@hono/zod-validator'
 
-  try {
-    const result = await QuotationsModel.getAll(db, {
-      page,
-      limit,
-      query,
-    })
-    return c.json(result, STATUS_CODE.Ok)
-  } catch (error) {
-    return handleError(error, c)
-  }
+const querySchema = z.object({
+  page: z.coerce.number().optional(),
+  limit: z.coerce.number().optional(),
+  q: z.string().optional(),
 })
+
+export type QueryQuotations = z.infer<typeof querySchema>
+
+app.get(
+  '/',
+  zValidator('query', querySchema, (result, c) => {
+    if (!result.success) {
+      return c.json({
+        message: 'Invalid query params',
+      })
+    }
+  }),
+  async (c) => {
+    const db = c.get('db')
+    const { page, limit, q } = c.req.valid('query')
+
+    try {
+      const result = await QuotationsModel.getAll(db, {
+        page,
+        limit,
+        q,
+      })
+      return c.json(result, STATUS_CODE.Ok)
+    } catch (error) {
+      return handleError(error, c)
+    }
+  },
+)
 
 app.get('/:number', async (c) => {
   const db = c.get('db')
