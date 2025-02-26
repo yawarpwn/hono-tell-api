@@ -5,7 +5,7 @@ import type { CreateCustomerDto, UpdateCustomerDto, CustomerDto } from '@/types'
 import { insertCustomerSchema, insertQuotationSchema, updateCustomerSchema } from '@/dtos'
 import type { DB } from '@/types'
 import { STATUS_CODE } from '@/constants'
-import { CustomerQueryParams } from '@/routes'
+import type { CustomerQueryParams } from '@/routes'
 
 type Company = {
   ruc: string
