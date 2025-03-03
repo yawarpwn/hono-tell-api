@@ -64,7 +64,6 @@ app.use('/seed/*', async (c, next) => {
 
 // JWTMiddleware
 app.use('/api/*', async (c, next) => {
-  console.log(c.req.raw.headers)
   const apiKey = c.req.header('TELL-API-KEY')
   if (apiKey !== c.env.TELL_API_KEY) {
     return c.json(

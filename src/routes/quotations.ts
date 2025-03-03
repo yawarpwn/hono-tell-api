@@ -1,14 +1,17 @@
-import type { App } from '@/types'
-import { Hono } from 'hono'
-import { QuotationsModel } from '@/models'
 import { STATUS_CODE } from '@/constants'
+import { QuotationsModel } from '@/models'
+import type { App } from '@/types'
 import { handleError } from '@/utils'
+import rescueJson from '../../muckup/rescues.json'
+import { Hono } from 'hono'
 import { getCookie } from 'hono/cookie'
 
 const app = new Hono<App>()
 
-import { z } from 'zod'
+import { quotationsTable } from '@/db/schemas'
 import { zValidator } from '@hono/zod-validator'
+import { between, desc, eq, asc, gt } from 'drizzle-orm'
+import { z } from 'zod'
 
 const querySchema = z.object({
   page: z.coerce.number().optional(),
@@ -88,6 +91,21 @@ app.delete('/:number', async (c) => {
   } catch (error) {
     return handleError(error, c)
   }
+})
+
+app.get('/super/rescue', async (c) => {
+  const db = c.get('db')
+
+  for (const quotation of rescueJson) {
+    const rows = await db.insert(quotationsTable).values({
+      ...quotation,
+      updatedAt: new Date(quotation.updatedAt),
+      createdAt: new Date(quotation.updatedAt),
+    })
+    console.log(rows)
+  }
+
+  return c.json({ succes: 'true' })
 })
 
 export { app as quotationsRoute }

@@ -17,6 +17,7 @@ import customers from '../../muckup/customers.json'
 import agencies from '../../muckup/agencies.json'
 import labels from '../../muckup/labels.json'
 import quotations from '../../muckup/quotations.json'
+import rescues from '../../muckup/rescues.json'
 import watermarks from '../../muckup/watermarks.json'
 import type { Context } from 'hono'
 

@@ -55,7 +55,16 @@ customersRoute.get('/search/:dniruc', async (c) => {
       try {
         //buscar por ruc en base de datos
         const customerFromDb = await CustomersModel.getByRuc(db, dniRuc)
-        return c.json(customerFromDb, 200)
+        return c.json(
+          {
+            id: customerFromDb.id,
+            name: customerFromDb.name,
+            ruc: customerFromDb.ruc,
+            isRegular: customerFromDb.isRegular,
+            address: customerFromDb.address,
+          },
+          200,
+        )
       } catch (error) {
         //buscar por ruc en sunat
         const customerFromSunat = await CustomersModel.getByRucFromSunat(dniRuc)
