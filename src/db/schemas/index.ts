@@ -24,9 +24,11 @@ export const customersTable = sqliteTable('customers', {
   phone: text('phone'),
   address: text('address'),
   email: text('email').unique(),
-  isRegular: integer('is_regular', { mode: 'boolean' }).default(false),
-  createdAt: integer('create_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
+  isRegular: integer('is_regular', { mode: 'boolean' }).notNull().default(false),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$onUpdate(() => new Date()),
 })
 
 export const agenciesTable = sqliteTable('agencies', {
@@ -38,8 +40,10 @@ export const agenciesTable = sqliteTable('agencies', {
   ruc: text('ruc').notNull().unique(),
   phone: text('phone'),
   address: text('address'),
-  createdAt: integer('create_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$onUpdate(() => new Date()),
 })
 
 export const labelsTable = sqliteTable('labels', {
@@ -57,8 +61,10 @@ export const labelsTable = sqliteTable('labels', {
     onDelete: 'set null',
     onUpdate: 'no action',
   }),
-  createdAt: integer('create_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$onUpdate(() => new Date()),
 })
 
 export const quotationsTable = sqliteTable('quotations', {
@@ -76,8 +82,10 @@ export const quotationsTable = sqliteTable('quotations', {
   }),
   isPaymentPending: integer('is_payment_pending', { mode: 'boolean' }).default(false),
   items: text('items', { mode: 'json' }).$type<ItemQuotation[]>().notNull(),
-  createdAt: integer('create_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$onUpdate(() => new Date()),
 })
 
 export const productsTable = sqliteTable('products', {
@@ -95,8 +103,10 @@ export const productsTable = sqliteTable('products', {
   rank: real('rank').default(0).notNull(),
   price: real('price').notNull(), //must be 1, 2,  0.5, 5.5
   cost: real('cost').notNull(), //must be 1, 2, 0.5. 55
-  createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$onUpdate(() => new Date()),
 })
 
 export const productCategoriesTable = sqliteTable('product_categories', {
@@ -115,6 +125,8 @@ export const watermarksTable = sqliteTable('watermarks', {
   url: text('url').notNull(),
   publicId: text('public_id').notNull(),
   format: text('format').notNull(),
-  createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdate(() => new Date()),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$onUpdate(() => new Date()),
 })

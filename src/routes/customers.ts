@@ -59,15 +59,14 @@ customersRoute.get('/search/:dniruc', async (c) => {
       } catch (error) {
         //buscar por ruc en sunat
         const customerFromSunat = await CustomersModel.getByRucFromSunat(dniRuc)
-        return c.json(customerFromSunat, 200)
+        return c.json({ ...customerFromSunat, isRegular: false }, 200)
       }
     }
 
     if (dniRuc.length === 8) {
-      console.log('search by dni in sunat')
       //buscar por dni en sunat
       const customerFromSunat = await CustomersModel.getByDniFromSunat(dniRuc)
-      return c.json(customerFromSunat, 200)
+      return c.json({ ...customerFromSunat, isRegular: false }, 200)
     }
 
     return c.json(
