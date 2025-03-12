@@ -9,9 +9,12 @@ import type { QueryQuotations } from '@/routes'
 
 export class QuotationsModel {
   static async getAll(db: DB, { page = 1, limit = 20, q }: QueryQuotations) {
-    const search = (query: string | number | undefined) => {
+    const search = (query: string | undefined) => {
       if (!query) return undefined
 
+      if (query.length === 11 && !Number.isNaN(Number(query))) {
+        return eq(customersTable.ruc, query)
+      }
       const isNumber = !Number.isNaN(Number(query))
       if (isNumber) {
         const queryNumber = Number(query)
@@ -52,7 +55,11 @@ export class QuotationsModel {
       .limit(limit)
       .offset((page - 1) * limit)
 
-    const rows = await db.select({ total: count(quotationsTable.id) }).from(quotationsTable)
+    const rows = await db
+      .select({ total: count(quotationsTable.id) })
+      .from(quotationsTable)
+      .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
+      .where(search(q))
 
     return {
       items: quotations,
