@@ -13,7 +13,6 @@ import {
   watermarksRoute,
   productCategoriesRoute,
 } from './routes'
-import { seed } from './utils/seed'
 
 const app = new Hono<App>()
 
@@ -94,9 +93,9 @@ app.route('/api/agencies', agenciesRoute)
 app.route('/api/labels', labelsRoute)
 app.route('/api/watermarks', watermarksRoute)
 
-app.get('/seed', async (c) => {
-  return c.json(await seed(c.get('db'), c))
-})
+// app.get('/seed', async (c) => {
+//   return c.json(await seed(c.get('db'), c))
+// })
 
 // nustom Not Found Message
 app.notFound((c) =>

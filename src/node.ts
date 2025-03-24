@@ -1,40 +1,38 @@
-import { updateQuotationSchema } from './dtos/index'
-import postgres from 'postgres'
 import fs from 'node:fs/promises'
+//TODO:
 
-// async function main() {
-//   const sql = postgres('postgresql://postgres.mluiozpgwvyzpnbzfkwm:TM6kufzgaKXH6Gnl@aws-0-us-east-1.pooler.supabase.com:6543/postgres')
-//   const products = await sql`select * from _products`
-//   const quotations = await sql`select * from _quotations`
-//   const customers = await sql`select * from _customers`
-//   const agencies = await sql`select * from _agencies`
-//   const labels = await sql`select * from _labels`
-//   const watermarks = await sql`select * from watermark`
-//
-//   await fs.writeFile('muckup/quotations.json', JSON.stringify(quotations))
-//   console.log('muckup/quotations.json')
-//   await fs.writeFile('muckup/customers.json', JSON.stringify(customers))
-//   console.log('muckup/customers.json')
-//   await fs.writeFile('muckup/agencies.json', JSON.stringify(agencies))
-//   console.log('muckup/agencies.json')
-//   await fs.writeFile('muckup/labels.json', JSON.stringify(labels))
-//   console.log('muckup/labels.json')
-//   await fs.writeFile('muckup/products.json', JSON.stringify(products))
-//   console.log('muckup/products.json')
-//   await fs.writeFile('muckup/watermarks.json', JSON.stringify(watermarks))
-//   console.log('muckup/watermarks.json')
-//   sql.end()
-// }
-
+const TELL_API_KEY = process.env.TELL_API_KEY!
 async function main() {
-  const res = await fetch('https://api.tellsignals.workers.dev/api/quotations?limit=40', {
-    headers: {
-      'TELL-API-KEY': 'kakapichipoto',
-    },
+  const endpoints = ['products, quotations, customers, agencies, labels, watermarks']
+
+  const promises = endpoints.map((endpoint) => {
+    return fetch(`https://api.tellsignals.workers.dev/api/${endpoint}`, {
+      headers: {
+        'TEll-API-KEY': TELL_API_KEY,
+      },
+    }).then((res) => res.json())
   })
-  const data = await res.json()
-  const filtered = data.items.filter((q) => q.number > 7279)
-  await fs.writeFile('muckup/rescues.json', JSON.stringify(filtered))
-  console.log('muckup/rescues.json')
+
+  try {
+    const [products, quotations, customers, agencies, labels, watermarks] = await Promise.all(promises)
+
+    await fs.writeFile('muckup/quotations.json', JSON.stringify(quotations))
+    console.log('muckup/quotations.json')
+    await fs.writeFile('muckup/customers.json', JSON.stringify(customers))
+    console.log('muckup/customers.json')
+    await fs.writeFile('muckup/agencies.json', JSON.stringify(agencies))
+    console.log('muckup/agencies.json')
+    await fs.writeFile('muckup/labels.json', JSON.stringify(labels))
+    console.log('muckup/labels.json')
+    await fs.writeFile('muckup/products.json', JSON.stringify(products))
+    console.log('muckup/products.json')
+    await fs.writeFile('muckup/watermarks.json', JSON.stringify(watermarks))
+    console.log('all success')
+  } catch (error) {
+    console.log('Error -----')
+    console.log(error)
+  }
+  console.log('muckup/watermarks.json')
 }
+
 main()

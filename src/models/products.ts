@@ -21,6 +21,7 @@ export class ProductsModel {
         cost: productsTable.cost,
         createdAt: productsTable.createdAt,
         updatedAt: productsTable.updatedAt,
+        categoryId: productCategoriesTable.id,
       })
       .from(productsTable)
       .limit(1000)
