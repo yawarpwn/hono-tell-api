@@ -8,7 +8,7 @@ import { CustomersModel } from '@/models/customers'
 import type { QueryQuotations } from '@/routes'
 
 export class QuotationsModel {
-  static async getAll(db: DB, { page = 1, limit = 20, q }: QueryQuotations) {
+  static async getAll(db: DB, { page = 1, limit, q }: QueryQuotations) {
     const search = (query: string | undefined) => {
       if (!query) return undefined
 
@@ -23,7 +23,7 @@ export class QuotationsModel {
       return like(customersTable.name, `%${query}%`)
     }
 
-    const quotations = await db
+    let query = db
       .select({
         id: quotationsTable.id,
         number: quotationsTable.number,
@@ -52,8 +52,11 @@ export class QuotationsModel {
       .where(search(q))
       // .where(query ? eq(quotationsTable.number, 7050) : undefined)
       .orderBy(desc(quotationsTable.updatedAt))
-      .limit(limit)
-      .offset((page - 1) * limit)
+    if (limit !== undefined) {
+      query = query.limit(limit).offset((page - 1) * limit)
+    }
+
+    const quotations = await query
 
     const rows = await db
       .select({ total: count(quotationsTable.id) })

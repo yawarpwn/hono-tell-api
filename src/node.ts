@@ -3,7 +3,7 @@ import fs from 'node:fs/promises'
 
 const TELL_API_KEY = process.env.TELL_API_KEY!
 async function main() {
-  const endpoints = ['products, quotations, customers, agencies, labels, watermarks']
+  const endpoints = ['products', 'quotations', 'customers', 'agencies', 'labels', 'watermarks']
 
   const promises = endpoints.map((endpoint) => {
     return fetch(`https://api.tellsignals.workers.dev/api/${endpoint}`, {
@@ -15,7 +15,6 @@ async function main() {
 
   try {
     const [products, quotations, customers, agencies, labels, watermarks] = await Promise.all(promises)
-
     await fs.writeFile('muckup/quotations.json', JSON.stringify(quotations))
     console.log('muckup/quotations.json')
     await fs.writeFile('muckup/customers.json', JSON.stringify(customers))
@@ -32,7 +31,6 @@ async function main() {
     console.log('Error -----')
     console.log(error)
   }
-  console.log('muckup/watermarks.json')
 }
 
 main()

@@ -2,7 +2,6 @@ import { STATUS_CODE } from '@/constants'
 import { QuotationsModel } from '@/models'
 import type { App } from '@/types'
 import { handleError } from '@/utils'
-import rescueJson from '../../muckup/rescues.json'
 import { Hono } from 'hono'
 import { getCookie } from 'hono/cookie'
 
@@ -91,21 +90,6 @@ app.delete('/:number', async (c) => {
   } catch (error) {
     return handleError(error, c)
   }
-})
-
-app.get('/super/rescue', async (c) => {
-  const db = c.get('db')
-
-  for (const quotation of rescueJson) {
-    const rows = await db.insert(quotationsTable).values({
-      ...quotation,
-      updatedAt: new Date(quotation.updatedAt),
-      createdAt: new Date(quotation.updatedAt),
-    })
-    console.log(rows)
-  }
-
-  return c.json({ succes: 'true' })
 })
 
 export { app as quotationsRoute }
