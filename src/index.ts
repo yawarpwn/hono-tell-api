@@ -55,11 +55,11 @@ app.use('/auth/*', async (c, next) => {
   await next()
 })
 
-app.use('/seed/*', async (c, next) => {
-  const db = drizzle(c.env.DB)
-  c.set('db', db)
-  await next()
-})
+// app.use('/seed/*', async (c, next) => {
+//   const db = drizzle(c.env.DB)
+//   c.set('db', db)
+//   await next()
+// })
 
 // JWTMiddleware
 app.use('/api/*', async (c, next) => {
@@ -93,9 +93,9 @@ app.route('/api/agencies', agenciesRoute)
 app.route('/api/labels', labelsRoute)
 app.route('/api/watermarks', watermarksRoute)
 
-app.get('/seed', async (c) => {
-  return c.json(await seed(c.get('db')))
-})
+// app.get('/seed', async (c) => {
+//   return c.json(await seed(c.get('db')))
+// })
 
 // nustom Not Found Message
 app.notFound((c) =>
