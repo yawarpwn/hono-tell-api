@@ -1,7 +1,7 @@
 import { eq, and, type SQL, ilike, like, asc, desc, count, or } from 'drizzle-orm'
 import { quotationsTable, customersTable } from '@/db/schemas'
 import { HTTPException } from 'hono/http-exception'
-import type { CreateQuotationDto, UpdateQuotationDto, QuotationDto, CreateCustomerDto } from '@/types'
+import type { CreateQuotationDto, UpdateQuotationDto, QuotationDto, CreateCustomerDto, CustomerDto } from '@/types'
 import { insertQuotationSchema, updateQuotationSchema } from '@/dtos'
 import type { DB } from '@/types'
 import { CustomersModel } from '@/models/customers'
@@ -53,6 +53,7 @@ export class QuotationsModel {
       // .where(query ? eq(quotationsTable.number, 7050) : undefined)
       .orderBy(desc(quotationsTable.updatedAt))
     if (limit !== undefined) {
+      //@ts-ignore
       query = query.limit(limit).offset((page - 1) * limit)
     }
 
@@ -144,7 +145,7 @@ export class QuotationsModel {
     return quotations[0]
   }
 
-  static async create(db: DB, dto: CreateQuotationDto & { customer: CreateCustomerDto }) {
+  static async create(db: DB, dto: CreateQuotationDto) {
     let customerId = dto.customerId
 
     if (!dto.customerId && dto?.customer?.name && dto?.customer?.ruc) {
@@ -215,7 +216,7 @@ export class QuotationsModel {
     let customerId = dto.customerId
 
     if (!dto.customerId) {
-      if (dto?.customer?.name && dto?.customer?.ruc) {
+      if (dto.customer?.name && dto?.customer?.ruc) {
         console.log('update  new customer to db')
         const { insertedId } = await CustomersModel.create(db, dto.customer)
         customerId = insertedId
