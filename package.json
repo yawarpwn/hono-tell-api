@@ -16,10 +16,11 @@
     "cloudinary": "^2.5.1",
     "dotenv-cli": "^8.0.0",
     "drizzle-orm": "^0.38.4",
-    "drizzle-zod": "0.5.1",
+    "drizzle-zod": "0.6.0",
     "hono": "^4.6.19",
     "jsonwebtoken": "^9.0.2",
     "postgres": "^3.4.5",
+    "resend": "^4.2.0",
     "zod": "^3.24.1",
     "zod-validator": "^1.0.1"
   },
