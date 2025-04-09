@@ -12,6 +12,7 @@ import {
   labelsRoute,
   watermarksRoute,
   productCategoriesRoute,
+  customersRoute,
   sendMailRoute,
 } from './routes'
 import { seed } from './utils/seed'
@@ -93,7 +94,7 @@ app.get('/', async (c) => {
 })
 
 app.route('/auth', authRoute)
-app.route('/api/customers', subscribeRoute)
+app.route('/api/customers', customersRoute)
 app.route('/api/quotations', quotationsRoute)
 app.route('/api/products', productsRoute)
 app.route('/api/product-categories', productCategoriesRoute)
