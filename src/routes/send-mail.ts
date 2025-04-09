@@ -55,7 +55,6 @@ sendMailRoute.post(
   }),
   async (c) => {
     const resend = new Resend(c.env.RESEND_API_KEY)
-    console.log(resend)
     const { name, email, message, ruc } = c.req.valid('json')
 
     try {

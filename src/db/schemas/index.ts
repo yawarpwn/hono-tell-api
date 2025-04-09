@@ -130,3 +130,12 @@ export const watermarksTable = sqliteTable('watermarks', {
     .notNull()
     .$onUpdate(() => new Date()),
 })
+
+export const subscribersTable = sqliteTable('subscribers', {
+  id: text('id')
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => crypto.randomUUID()),
+  email: text('email').notNull().unique(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+})

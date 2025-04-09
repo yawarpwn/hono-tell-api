@@ -4,7 +4,7 @@ import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
 import { drizzle } from 'drizzle-orm/d1'
 import {
-  customersRoute,
+  subscribeRoute,
   quotationsRoute,
   productsRoute,
   authRoute,
@@ -56,6 +56,13 @@ app.use('/auth/*', async (c, next) => {
   await next()
 })
 
+app.use('/subscribe/*', async (c, next) => {
+  const db = drizzle(c.env.DB)
+  c.set('db', db)
+  // await seed(db);
+  await next()
+})
+
 // app.use('/seed/*', async (c, next) => {
 //   const db = drizzle(c.env.DB)
 //   c.set('db', db)
@@ -86,7 +93,7 @@ app.get('/', async (c) => {
 })
 
 app.route('/auth', authRoute)
-app.route('/api/customers', customersRoute)
+app.route('/api/customers', subscribeRoute)
 app.route('/api/quotations', quotationsRoute)
 app.route('/api/products', productsRoute)
 app.route('/api/product-categories', productCategoriesRoute)
@@ -94,6 +101,7 @@ app.route('/api/agencies', agenciesRoute)
 app.route('/api/labels', labelsRoute)
 app.route('/api/watermarks', watermarksRoute)
 app.route('/send-mail', sendMailRoute)
+app.route('/subscribe', subscribeRoute)
 
 // app.get('/seed', async (c) => {
 //   return c.json(await seed(c.get('db')))
