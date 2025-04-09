@@ -21,7 +21,6 @@ subscribeRoute.post(
   }),
   async (c) => {
     const db = c.get('db')
-    console.log(db)
     try {
       const { email } = c.req.valid('json')
       //Revisar si el correo ya esta suscrito
