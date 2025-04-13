@@ -41,4 +41,5 @@ export const productCategories = [
   'ropa seguridad',
   'convencionales',
   'acrilicos',
+  'Materiales',
 ] as const

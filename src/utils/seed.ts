@@ -60,7 +60,7 @@ export async function seed(db: DB) {
     })
   })
   //Seed customers
-  const stmts = customers.items.map((customer) => {
+  const stmtsCustomers = customers.items.map((customer) => {
     return db.insert(customersTable).values({
       ...customer,
       createdAt: new Date(customer.createdAt),
@@ -105,7 +105,7 @@ export async function seed(db: DB) {
   //@ts-ignore
   await db.batch([...stmtsProducts, ...stmtsWatermarks])
   //@ts-ignore
-  await db.batch(stmts)
+  await db.batch(stmtsCustomers)
   //@ts-ignore
   await db.batch(stmtsQuotations)
   //@ts-ignore
