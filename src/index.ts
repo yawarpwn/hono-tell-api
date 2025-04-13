@@ -104,9 +104,9 @@ app.route('/api/watermarks', watermarksRoute)
 app.route('/send-mail', sendMailRoute)
 app.route('/subscribe', subscribeRoute)
 
-app.get('/seed', async (c) => {
-  return c.json(await seed(c.get('db')))
-})
+// app.get('/seed', async (c) => {
+//   return c.json(await seed(c.get('db')))
+// })
 
 // nustom Not Found Message
 app.notFound((c) =>
