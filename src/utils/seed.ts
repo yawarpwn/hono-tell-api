@@ -10,7 +10,6 @@ import {
   labelsTable,
 } from '@/db/schemas'
 import { productCategories } from '@/constants'
-import bcryp from 'bcryptjs'
 import { count } from 'drizzle-orm'
 import products from '../../muckup/products.json'
 import customers from '../../muckup/customers.json'
