@@ -51,6 +51,7 @@ usersRoute.post(
       newPassword: z.string().min(6),
     }),
     async (result, c) => {
+      console.log(result.data)
       if (!result.success) return c.json({ ok: false, message: 'invalid' }, 401)
     },
   ),
