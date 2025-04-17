@@ -1,7 +1,7 @@
 import { usersTable } from '@/db/schemas'
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono/quick'
-import { type App } from '@/types'
+import type { App } from '@/types'
 import { z } from 'zod'
 import { eq } from 'drizzle-orm'
 import { AuthModel } from '@/models'
