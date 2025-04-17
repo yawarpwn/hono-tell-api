@@ -41,4 +41,15 @@ export class AuthModel {
 
     return userFromDb
   }
+  static async hashPassword(password: string) {
+    const salt = bcrypt.genSaltSync(10)
+    const hash = bcrypt.hashSync(password, salt)
+    return hash
+  }
+
+  static async resetPassword(db: DB, email: string, password: string) {
+    const hashedPassword = await AuthModel.hashPassword(password)
+    const rows = await db.update(usersTable).set({ password: hashedPassword }).where(eq(usersTable.email, email))
+    if (!rows.success) throw new HTTPException(500, { message: 'Error updating user' })
+  }
 }

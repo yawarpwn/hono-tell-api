@@ -22,26 +22,11 @@ import watermarks from '../../muckup/watermarks.json'
 export async function seed(db: DB) {
   await db.delete(productsTable)
   await db.delete(productCategoriesTable)
-  await db.delete(usersTable)
   await db.delete(customersTable)
   await db.delete(quotationsTable)
   await db.delete(labelsTable)
   await db.delete(agenciesTable)
   await db.delete(watermarksTable)
-
-  //Seed users
-  const insertedUsers = await db.insert(usersTable).values([
-    {
-      email: 'neyda.mili11@gmail.com',
-      password: await bcryp.hash('ney123456', 10),
-      role: 'user',
-    },
-    {
-      email: 'tellsenales@gmail.com',
-      password: await bcryp.hash('tell123456', 10),
-      role: 'admin',
-    },
-  ])
 
   //seed Products Categories
   const categoriesToInsert = productCategories.map((category, index) => ({
@@ -114,7 +99,6 @@ export async function seed(db: DB) {
   await db.batch(stmtsLabels)
 
   return {
-    users: insertedUsers.meta.changes,
     productCategories: insertedProductCategories.meta.changes,
     products: await db.select({ count: count() }).from(productsTable),
     customers: await db.select({ count: count() }).from(customersTable),

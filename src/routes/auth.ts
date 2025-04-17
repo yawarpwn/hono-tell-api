@@ -6,6 +6,7 @@ import { setCookie, getCookie, deleteCookie } from 'hono/cookie'
 import { zValidator } from '@hono/zod-validator'
 import { jwt, verify, sign } from 'hono/jwt'
 import { loginSchema } from '@/dtos'
+import { z } from 'zod'
 
 const app = new Hono<App>()
 
@@ -39,6 +40,33 @@ app.post(
       return c.json({
         token,
       })
+    } catch (error) {
+      return handleError(error, c)
+    }
+  },
+)
+
+app.post(
+  '/reset-password',
+  zValidator(
+    'json',
+    z.object({
+      email: z.string().email(),
+      newPassword: z.string().min(6),
+      tell_api_key: z.string(),
+    }),
+  ),
+  async (c) => {
+    try {
+      const json = c.req.valid('json')
+      const db = c.get('db')
+
+      //validate token
+      const isAuthorized = json.tell_api_key === c.env.TELL_API_KEY
+      if (!isAuthorized) return c.json({ message: 'Unauthorized' }, 401)
+
+      await AuthModel.resetPassword(db, json.email, json.newPassword)
+      return c.json({ message: 'reset password' })
     } catch (error) {
       return handleError(error, c)
     }
