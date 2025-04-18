@@ -1,5 +1,6 @@
 // import type { ResourceApiResponse, TransformationOptions, UploadApiOptions, UploadApiErrorResponse, UploadApiResponse } from 'cloudinary'
 import { type SignApiOptions, v2 } from 'cloudinary'
+import { API_REST_CLOUDINARY } from '@/constants'
 
 export function getClient(apiSecret: string) {
   v2.config({
@@ -28,6 +29,31 @@ export function getSignature(apiSecret: string, signOptions?: SignApiOptions) {
     cloudName,
     apiKey: sign.api_key,
   }
+}
+
+export async function destroyImage(publicId: string, apiSecret: string) {
+  const timestamp = Math.round(new Date().getTime() / 1000)
+  const cloudName = 'tellsenales-cloud'
+  const signature = v2.utils.api_sign_request(
+    {
+      timestamp,
+      public_id: publicId,
+    },
+    apiSecret,
+  )
+  const url = `${API_REST_CLOUDINARY}/${cloudName}/image/destroy`
+  const api_key = '781191585666779'
+
+  const formData = new FormData()
+  formData.append('public_id', publicId)
+  formData.append('signature', signature)
+  formData.append('timestamp', timestamp.toString())
+  formData.append('api_key', api_key)
+
+  return fetch(url, {
+    method: 'POST',
+    body: formData,
+  }).then((res) => res.json())
 }
 
 // export async function getResources(): Promise<ResourceApiResponse> {

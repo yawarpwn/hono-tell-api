@@ -38,49 +38,20 @@ export class SignalsModel {
         message: 'error getting signals',
       })
     }
-
-    // const mappedRows = rows.map(row => ({
-    //   ...row,
-    //   thumbUrl: getThumbUrl(row.publicId),
-    // }))
   }
 
-  // static async getById(id: string): Promise<DatabaseResponse<Signal>> {
-  //   try {
-  //     const rows = await db
-  //       .select({
-  //         id: signalsTable.id,
-  //         title: signalsTable.title,
-  //         code: signalsTable.code,
-  //         publicId: signalsTable.publicId,
-  //         category: signalsTable.category,
-  //         url: signalsTable.url,
-  //         width: signalsTable.width,
-  //         height: signalsTable.height,
-  //         format: signalsTable.format,
-  //         createdAt: signalsTable.createdAt,
-  //         updatedAt: signalsTable.updatedAt,
-  //         description: signalsTable.description,
-  //       })
-  //       .from(signalsTable)
-  //       .where(eq(signalsTable.id, id))
-  //
-  //     const mappedRows = rows.map(row => ({
-  //       ...row,
-  //       thumbUrl: getThumbUrl(row.publicId),
-  //     }))
-  //
-  //     return {
-  //       data: mappedRows[0],
-  //       error: null,
-  //     }
-  //   } catch (error) {
-  //     return {
-  //       data: null,
-  //       error: new DatabaseError('Error al obtener photo in Galeria by ID'),
-  //     }
-  //   }
-  // }
+  static async getById(db: DB, id: string) {
+    try {
+      const rows = await db.select().from(signalsTable).where(eq(signalsTable.id, id))
+
+      return rows[0]
+    } catch (error) {
+      throw new HTTPException(500, {
+        message: 'error getting signals',
+      })
+    }
+  }
+
   //
   // static async create(value: SignalInsert) {
   //   try {
@@ -121,21 +92,13 @@ export class SignalsModel {
   //   }
   // }
   //
-  // static async delete(id: string) {
-  //   try {
-  //     const rows = await db.delete(signalsTable).where(eq(signalsTable.id, id)).returning()
-  //     return {
-  //       data: {
-  //         id: rows[0].id,
-  //       },
-  //       error: null,
-  //     }
-  //   } catch (error) {
-  //     console.log(error)
-  //     return {
-  //       data: null,
-  //       error: DatabaseError.internalError('Error deleting image from Gallery'),
-  //     }
-  //   }
-  // }
+  static async delete(db: DB, id: string) {
+    try {
+      const rows = await db.delete(signalsTable).where(eq(signalsTable.id, id)).returning()
+    } catch (error) {
+      throw new HTTPException(500, {
+        message: 'error deleting signal',
+      })
+    }
+  }
 }

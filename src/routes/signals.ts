@@ -2,6 +2,7 @@ import type { App } from '@/types'
 import { Hono } from 'hono'
 import { SignalsModel } from '@/models'
 import { handleError } from '@/utils'
+import { destroyImage } from '@/lib/cloudinary'
 // import { zValidator } from '@hono/zod-validator'
 // import { insertWatermarkSchema, updateWatermarkSchema } from '@/dtos'
 // import { getClient } from '@/lib/cloudinary'
@@ -80,16 +81,21 @@ signalsRoute.get('/', async (c) => {
 //   },
 // )
 //
-// signalsRoute.delete('/:id', async (c) => {
-//   const db = c.get('db')
-//   const id = c.req.param('id')
-//   try {
-//     const watermark = await WatermarksModel.getById(db, id)
-//     const result = await WatermarksModel.destroyImage(watermark.publicId, c.env.CLOUDINARY_API_SECRET)
-//     // return c.json({ result })
-//     const results = await WatermarksModel.delete(db, id)
-//     return c.json(results)
-//   } catch (error) {
-//     return handleError(error, c)
-//   }
-// })
+signalsRoute.delete('/:id', async (c) => {
+  const db = c.get('db')
+  const id = c.req.param('id')
+  try {
+    // enocntrar la señál a borrar
+    const watermark = await SignalsModel.getById(db, id)
+    //Borrar foto en cloudinary
+    const result = await destroyImage(watermark.publicId, c.env.CLOUDINARY_API_SECRET)
+    console.log(result)
+    //borrar la señal
+    await SignalsModel.delete(db, id)
+    return c.json({
+      message: `Se ha borrado la señal ${id} con exito`,
+    })
+  } catch (error) {
+    return handleError(error, c)
+  }
+})

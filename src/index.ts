@@ -16,6 +16,7 @@ import {
   sendMailRoute,
   usersRoute,
   signalsRoute,
+  signalCategoriesRoute,
 } from './routes'
 import { seed } from './utils/seed'
 
@@ -103,6 +104,7 @@ app.route('/api/labels', labelsRoute)
 app.route('/api/watermarks', watermarksRoute)
 app.route('/api/signals', signalsRoute)
 app.route('/api/users', usersRoute)
+app.route('/api/signal-categories', signalCategoriesRoute)
 app.route('/send-mail', sendMailRoute)
 app.route('/subscribe', subscribeRoute)
 
