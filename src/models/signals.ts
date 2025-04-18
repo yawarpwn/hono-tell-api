@@ -13,6 +13,7 @@ export class SignalsModel {
           code: signalsTable.code,
           publicId: signalsTable.publicId,
           categoryId: signalCategoriesTable.id,
+          category: signalCategoriesTable.name,
           url: signalsTable.url,
           width: signalsTable.width,
           height: signalsTable.height,
@@ -24,7 +25,6 @@ export class SignalsModel {
         .from(signalsTable)
         .leftJoin(signalCategoriesTable, eq(signalsTable.categoryId, signalCategoriesTable.id))
         .orderBy(desc(signalsTable.updatedAt))
-        .limit(200)
 
       return {
         items: rows,
