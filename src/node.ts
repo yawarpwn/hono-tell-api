@@ -1,4 +1,7 @@
 import fs from 'node:fs/promises'
+import dotenv from 'dotenv'
+dotenv.config({ path: '.dev.vars' })
+import postgres from 'postgres'
 //TODO:
 
 const TELL_API_KEY = process.env.TELL_API_KEY!
@@ -42,4 +45,25 @@ async function main() {
   }
 }
 
-main()
+// id: "6634efab-317e-4aec-b9de-7e8282c20bf8",
+// created_at: 2024-03-06T02:48:04.449Z,
+// title: "Salida sola",
+// width: "350",
+// height: "234",
+// category: "decorativas",
+// url: "https://res.cloudinary.com/tellsenales-cloud/image/upload/v1709693283/signals/fiqskdia79lquw5uzf3l.webp",
+// format: "webp",
+// public_id: "signals/fiqskdia79lquw5uzf3l",
+// code: "DC-AL-11",
+// updated_at: 2024-03-11T02:30:54.327Z,
+// description: null,
+async function getSignals() {
+  const sql = postgres(process.env.POSTGRES_URL!)
+  const rows = await sql`select * from signals`
+  await fs.writeFile('muckup/signals.json', JSON.stringify(rows))
+  console.log('muckup/signals.json')
+  sql.end()
+}
+getSignals()
+
+// main()

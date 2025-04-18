@@ -43,3 +43,13 @@ export const productCategories = [
   'acrilicos',
   'Materiales',
 ] as const
+
+export const SIGNALS_CATEGORIES = {
+  Viales: 'viales',
+  Seguridad: 'seguridad',
+  Decorativas: 'decorativas',
+  Obras: 'obras',
+  Fotoluminiscentes: 'fotoluminicentes',
+} as const
+
+export const signalCategories = ['viales', 'seguridad', 'decorativas', 'obras', 'fotoluminicentes'] as const

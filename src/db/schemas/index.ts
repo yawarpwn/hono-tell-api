@@ -1,7 +1,7 @@
 import type { ItemQuotation } from '@/types'
 import { sql } from 'drizzle-orm'
 import { integer, sqliteTable, text, real } from 'drizzle-orm/sqlite-core'
-import { productCategories } from '@/constants'
+import { productCategories, signalCategories } from '@/constants'
 
 const userRoles = ['admin', 'user'] as const
 export const usersTable = sqliteTable('users', {
@@ -112,7 +112,7 @@ export const productsTable = sqliteTable('products', {
 export const productCategoriesTable = sqliteTable('product_categories', {
   id: integer().primaryKey({ autoIncrement: true }),
   name: text({ enum: productCategories }).notNull(),
-  createdAt: integer('create_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+  createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
 })
 
 export const watermarksTable = sqliteTable('watermarks', {
@@ -138,4 +138,32 @@ export const subscribersTable = sqliteTable('subscribers', {
     .$defaultFn(() => crypto.randomUUID()),
   email: text('email').notNull().unique(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+})
+
+export const signalCategoriesTable = sqliteTable('signal_category', {
+  id: integer().primaryKey({ autoIncrement: true }),
+  name: text({ enum: signalCategories }).notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+})
+
+export const signalsTable = sqliteTable('signals', {
+  id: text('id')
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => crypto.randomUUID()),
+  title: text('title').notNull(),
+  code: text('code').notNull(),
+  width: integer('width').notNull(),
+  height: integer('height').notNull(),
+  url: text('url').notNull(),
+  publicId: text('public_id').notNull(),
+  categoryId: integer('category_id')
+    .references(() => signalCategoriesTable.id)
+    .notNull(),
+  description: text('description'),
+  format: text('format').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$onUpdate(() => new Date()),
 })
