@@ -55,14 +55,12 @@ app.use('/api/*', async (c, next) => {
 app.use('/auth/*', async (c, next) => {
   const db = drizzle(c.env.DB)
   c.set('db', db)
-  // await seed(db);
   await next()
 })
 
 app.use('/subscribe/*', async (c, next) => {
   const db = drizzle(c.env.DB)
   c.set('db', db)
-  // await seed(db);
   await next()
 })
 
@@ -108,9 +106,9 @@ app.route('/api/users', usersRoute)
 app.route('/send-mail', sendMailRoute)
 app.route('/subscribe', subscribeRoute)
 
-// app.get('/seed', async (c) => {
-//   return c.json(await seed(c.get('db')))
-// })
+app.get('/seed', async (c) => {
+  return c.json(await seed(c.get('db')))
+})
 
 // nustom Not Found Message
 app.notFound((c) =>
