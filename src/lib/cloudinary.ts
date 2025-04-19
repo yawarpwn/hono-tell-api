@@ -1,6 +1,14 @@
 // import type { ResourceApiResponse, TransformationOptions, UploadApiOptions, UploadApiErrorResponse, UploadApiResponse } from 'cloudinary'
-import { type SignApiOptions, v2 } from 'cloudinary'
+import { type SignApiOptions, UploadApiResponse, v2 } from 'cloudinary'
 import { API_REST_CLOUDINARY } from '@/constants'
+
+type UploadResponse = {
+  secure_url: string
+  width: number
+  height: number
+  format: string
+  public_id: string
+}
 
 export function getClient(apiSecret: string) {
   v2.config({
@@ -12,6 +20,10 @@ export function getClient(apiSecret: string) {
   return v2
 }
 
+/*
+ * Returns a timestamp, signature and api_key
+ * to be used in the cloudinary upload
+ */
 export function getSignature(apiSecret: string, signOptions?: SignApiOptions) {
   const timestamp = Math.round(new Date().getTime() / 1000)
   const cloudinaryClient = getClient(apiSecret)
@@ -56,120 +68,36 @@ export async function destroyImage(publicId: string, apiSecret: string) {
   }).then((res) => res.json())
 }
 
-// export async function getResources(): Promise<ResourceApiResponse> {
-//   return cloudinary.api.resources({
-//     type: 'upload',
-//     prefix: 'gallery',
-//     max_results: 200,
-//   })
-// }
-//
-// export async function fetchGalleryImages() {
-//   const { resources } = await getResources()
-//   const galleryImagesMapped = resources.map((image) => ({
-//     url: image.secure_url,
-//     publicId: image.public_id,
-//     thumb: getThumbUrl(image.public_id),
-//   }))
-//
-//   return galleryImagesMapped
-// }
-//
-// export async function deleteSource(publicId: string) {
-//   return cloudinary.uploader.destroy(publicId)
-// }
-//
-// export async function uploadStream(
-//   buffer: Buffer,
-//   { category, folder, height = 1000 }: { category: string; folder: string; height?: number },
-// ): Promise<UploadApiResponse> {
-//   const options: UploadApiOptions = {
-//     tags: [folder, category],
-//     folder: folder,
-//     overwrite: true,
-//     allowed_formats: ['jpg', 'png', 'webp', 'jpeg', 'avif'],
-//     transformation: [
-//       {
-//         width: 'auto',
-//         height: height,
-//         crop: 'scale',
-//         quality: 'auto',
-//         format: 'webp',
-//       },
-//     ],
-//   }
-//
-//   return new Promise((resolve, reject) => {
-//     cloudinary.uploader
-//       .upload_stream(options, (error, result) => {
-//         if (error) {
-//           reject(error)
-//           return
-//         }
-//
-//         if (!result) {
-//           reject(new Error('No result from upload'))
-//           return
-//         }
-//         resolve(result)
-//       })
-//       .end(buffer)
-//   })
-// }
-//
-// export async function uploadAsset(file: string, options: UploadApiOptions) {
-//   return cloudinary.uploader.upload(file, options)
-// }
-//
-// export async function uploadImageFile(file: File, options: UploadApiOptions) {
-//   const mime = file.type
-//   const arrayBuffer = await file.arrayBuffer()
-//   const encoding = 'base64'
-//   const base64Data = Buffer.from(arrayBuffer).toString('base64')
-//   const fileUri = `data:${mime};${encoding},${base64Data}`
-//
-//   // const options: UploadApiOptions = {
-//   // 	tags: [category, folder],
-//   // 	folder,
-//   // 	overwrite: true,
-//   // 	allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-//   // 	transformation: [
-//   // 		{
-//   // 			width: 'auto',
-//   // 			height: 1000,
-//   // 			crop: 'scale',
-//   // 			quality: 'auto',
-//   // 			format: 'webp',
-//   // 		},
-//   // 	],
-//   // }
-//
-//   return cloudinary.uploader.upload(fileUri, options)
-// }
-//
-// export async function destroyResource(publicId: string) {
-//   return cloudinary.uploader.destroy(publicId)
-// }
-//
-// export function transform(publicId: string, options: TransformationOptions) {
-//   return cloudinary.url(publicId, options)
-// }
-//
-// export function getThumbUrl(publicId: string) {
-//   return transform(publicId, {
-//     width: 200,
-//     crop: 'thumb',
-//     format: 'webp',
-//   })
-// }
-//
-// export function getLargeUrl(publicId: string) {
-//   return transform(publicId, {
-//     color: '#FFFFFF4D',
-//     overlay: 'n6rplobnplhmm8qoojb5',
-//     flags: 'layer_apply',
-//     format: 'webp',
-//   })
-// }
-//
-// export { cloudinary }
+type Options = {
+  transformation?: string
+  folder?: string
+}
+export async function uploadImage(apiSecret: string, file: File, options?: Options) {
+  const transformation = options?.transformation
+  const format = 'webp'
+  const folder = options?.folder
+
+  const { timestamp, apiKey, signature, cloudName } = getSignature(apiSecret, {
+    transformation,
+    format,
+    folder,
+  })
+
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('signature', signature)
+  formData.append('timestamp', timestamp)
+  formData.append('api_key', apiKey)
+  formData.append('folder', folder || '')
+  formData.append('transformation', transformation || '')
+  formData.append('format', format)
+  // formData.append('eager', eager)
+
+  return fetch(`${API_REST_CLOUDINARY}/${cloudName}/image/upload`, {
+    method: 'POST',
+    body: formData,
+  }).then((res) => {
+    // if (!res.ok) throw new Error('Network response was not ok')
+    return res.json<UploadResponse>()
+  })
+}

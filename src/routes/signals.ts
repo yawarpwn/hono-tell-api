@@ -2,12 +2,19 @@ import type { App } from '@/types'
 import { Hono } from 'hono'
 import { SignalsModel } from '@/models'
 import { handleError } from '@/utils'
-import { destroyImage } from '@/lib/cloudinary'
-// import { zValidator } from '@hono/zod-validator'
-// import { insertWatermarkSchema, updateWatermarkSchema } from '@/dtos'
-// import { getClient } from '@/lib/cloudinary'
+import { destroyImage, uploadImage } from '@/lib/cloudinary'
+import { zValidator } from '@hono/zod-validator'
+import { z } from 'zod'
 
 export const signalsRoute = new Hono<App>()
+
+const signalSchema = z.object({
+  title: z.string(),
+  code: z.string(),
+  description: z.string().optional().nullable(),
+  categoryId: z.coerce.number(),
+  file: z.any(),
+})
 
 signalsRoute.get('/', async (c) => {
   const db = c.get('db')
@@ -32,54 +39,91 @@ signalsRoute.get('/', async (c) => {
 //   }
 // })
 //
-// signalsRoute.post(
-//   '/',
-//   // zValidator('json', insertWatermarkSchema, async (result, c) => {
-//   //   if (!result.success) return c.json({ ok: false, message: 'invalid' }, 400)
-//   // }),
-//   async (c) => {
-//     try {
-//       const formdata = await c.req.formData()
-//       const files = formdata.getAll('files[]') as File[]
-//
-//       const db = c.get('db')
-//
-//       for (const file of files) {
-//         const response = await WatermarksModel.uploadImage(file, c.env.CLOUDINARY_API_SECRET)
-//         const result = await WatermarksModel.create(db, {
-//           url: response.secure_url,
-//           width: response.width,
-//           height: response.height,
-//           format: response.format,
-//           publicId: response.public_id,
-//         })
-//
-//         console.log({ result })
-//       }
-//       return c.json({ message: `inserted ${files.length} images success` }, 201)
-//     } catch (error) {
-//       return handleError(error, c)
-//     }
-//   },
-// )
-//
-// signalsRoute.put(
-//   '/:id',
-//   zValidator('json', updateWatermarkSchema, async (result, c) => {
-//     if (!result.success) return c.json({ ok: false, message: 'invalid' }, 400)
-//   }),
-//   async (c) => {
-//     const db = c.get('db')
-//     const id = c.req.param('id')
-//     const data = await c.req.json()
-//     try {
-//       const results = await WatermarksModel.update(db, id, data)
-//       return c.json(results)
-//     } catch (error) {
-//       return handleError(error, c)
-//     }
-//   },
-// )
+// 'files[]' => '',
+//   'unitSize' => 'numero de pruebita',
+//   'code' => 'fhp40',
+//   'description' => 'und',
+//   'categoryId' => '2',
+//   'id' => '',
+//   'file' => File {
+//     name: 'kit2-main.jpg',
+//     lastModified: 1745024146740,
+//     size: 273266,
+//     type: 'image/jpeg'
+//   }
+signalsRoute.post('/', zValidator('form', signalSchema), async (c) => {
+  try {
+    const data = c.req.valid('form')
+    const db = c.get('db')
+
+    //Subir la foto a cloudinary
+    const res = await uploadImage(c.env.CLOUDINARY_API_SECRET, data.file, {
+      transformation: 'c_limit,w_500,h_500',
+      folder: 'signals',
+    })
+
+    //Guardar en la base de datos
+    await SignalsModel.create(db, {
+      title: data.title,
+      code: data.code,
+      description: data.description,
+      categoryId: data.categoryId,
+      format: res.format,
+      height: Number(res.height),
+      width: Number(res.width),
+      url: res.secure_url,
+      publicId: res.public_id,
+    })
+
+    console.log(res)
+    return c.json({
+      succes: 'true',
+    })
+  } catch (error) {
+    return handleError(error, c)
+  }
+})
+
+signalsRoute.put('/:id', zValidator('form', signalSchema), async (c) => {
+  const db = c.get('db')
+  const id = c.req.param('id')
+  const data = c.req.valid('form')
+
+  try {
+    let uploadedResponse
+    if (data.file) {
+      //borrar foto antigua
+      const signal = await SignalsModel.getById(db, id)
+      await destroyImage(signal.publicId, c.env.CLOUDINARY_API_SECRET)
+
+      //Subir la nueva foto
+      const res = await uploadImage(c.env.CLOUDINARY_API_SECRET, data.file, {
+        transformation: 'c_limit,w_500,h_500',
+        folder: 'signals',
+      })
+
+      uploadedResponse = res
+    }
+
+    const results = await SignalsModel.update(
+      db,
+      {
+        ...data,
+        ...(uploadedResponse && {
+          format: uploadedResponse.format,
+          height: uploadedResponse.height,
+          width: uploadedResponse.width,
+          url: uploadedResponse.secure_url,
+          publicId: uploadedResponse.public_id,
+        }),
+      },
+      id,
+    )
+    return c.json(results)
+  } catch (error) {
+    return handleError(error, c)
+  }
+})
 //
 signalsRoute.delete('/:id', async (c) => {
   const db = c.get('db')

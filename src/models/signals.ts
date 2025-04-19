@@ -1,5 +1,5 @@
 import { signalsTable, signalCategoriesTable } from '@/db/schemas'
-import type { DB } from '@/types'
+import type { CreateSignalDto, DB, UpdateSignalDto } from '@/types'
 import { desc, eq } from 'drizzle-orm'
 import { HTTPException } from 'hono/http-exception'
 
@@ -53,44 +53,39 @@ export class SignalsModel {
   }
 
   //
-  // static async create(value: SignalInsert) {
-  //   try {
-  //     const rows = await db.insert(signalsTable).values(value).returning()
-  //     return {
-  //       data: { id: rows[0].id },
-  //       error: null,
-  //     }
-  //   } catch (error) {
-  //     console.log('Error inserting signal', error)
-  //     return {
-  //       data: null,
-  //       error: new DatabaseError('Error al insertar image en signal'),
-  //     }
-  //   }
-  // }
+  static async create(db: DB, values: CreateSignalDto) {
+    console.log({ values })
+    try {
+      const rows = await db.insert(signalsTable).values(values).returning()
+      return rows[0]
+    } catch (error) {
+      console.log(error)
+      throw new HTTPException(500, {
+        message: 'error creating signal',
+      })
+    }
+  }
   //
-  // static async update(value: SignalUpdate, id: string) {
-  //   try {
-  //     const rows = await db
-  //       .update(signalsTable)
-  //       .set({
-  //         ...value,
-  //         updatedAt: new Date(),
-  //       })
-  //       .where(eq(signalsTable.id, id))
-  //       .returning()
-  //     return {
-  //       data: { id: rows[0].id },
-  //       error: null,
-  //     }
-  //   } catch (error) {
-  //     console.log('Error updating gallery', error)
-  //     return {
-  //       data: null,
-  //       error: new DatabaseError('Error al al actualizar image en Galeria'),
-  //     }
-  //   }
-  // }
+  static async update(db: DB, values: UpdateSignalDto, id: string) {
+    try {
+      const rows = await db
+        .update(signalsTable)
+        .set({
+          ...values,
+          updatedAt: new Date(),
+        })
+        .where(eq(signalsTable.id, id))
+        .returning()
+      return {
+        data: { id: rows[0].id },
+        error: null,
+      }
+    } catch (error) {
+      throw new HTTPException(500, {
+        message: 'error updating signal',
+      })
+    }
+  }
   //
   static async delete(db: DB, id: string) {
     try {
