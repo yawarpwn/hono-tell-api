@@ -10,12 +10,13 @@ const emailSchema = z.object({
   name: z.string(),
   email: z.string().email(),
   ruc: z.string().nullish(),
-  phone: z.string().nullish(),
+  phone: z.string().nullable().optional(),
   message: z.string(),
 })
 
 type EmailSchema = z.infer<typeof emailSchema>
 export function EmailTemplate({ email, name, message, phone, ruc }: EmailSchema) {
+  console.log({ phone, email, name, message, ruc })
   return `
 <div className="container">
 <div className="header">
@@ -55,14 +56,14 @@ sendMailRoute.post(
   }),
   async (c) => {
     const resend = new Resend(c.env.RESEND_API_KEY)
-    const { name, email, message, ruc } = c.req.valid('json')
+    const { name, email, message, ruc, phone } = c.req.valid('json')
 
     try {
       const { data, error } = await resend.emails.send({
         from: `${name} <ventas@tellsenales.com>`,
         to: ['tellsenales@gmail.com'],
         subject: 'Cliente desde la WEB',
-        html: EmailTemplate({ email, name, message, ruc, phone: undefined }),
+        html: EmailTemplate({ email, name, message, ruc, phone }),
       })
 
       if (error) {
