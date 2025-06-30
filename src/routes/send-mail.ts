@@ -61,7 +61,7 @@ sendMailRoute.post(
     try {
       const { data, error } = await resend.emails.send({
         from: `${name} <ventas@tellsenales.com>`,
-        to: ['tellsenales@gmail.com'],
+        to: ['ventas@tellsenales.com'],
         subject: 'Cliente desde la WEB',
         html: EmailTemplate({ email, name, message, ruc, phone }),
       })
