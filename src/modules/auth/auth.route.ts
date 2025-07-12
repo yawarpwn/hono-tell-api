@@ -1,6 +1,6 @@
 import type { App } from '@/types'
 import { Hono } from 'hono'
-import { AuthModel } from '@/models'
+import { AuthService } from './auth.service'
 import { handleError } from '@/utils'
 import { setCookie, getCookie, deleteCookie } from 'hono/cookie'
 import { zValidator } from '@hono/zod-validator'
@@ -26,7 +26,7 @@ app.post(
     const db = c.get('db')
 
     try {
-      const { email, id } = await AuthModel.validateCredentials(db, user)
+      const { email, id } = await AuthService.validateCredentials(db, user)
       const token = await sign({ id, email }, c.env.JWT_SECRET)
 
       setCookie(c, 'auth_token', token, {
@@ -65,7 +65,7 @@ app.post(
       const isAuthorized = json.tell_api_key === c.env.TELL_API_KEY
       if (!isAuthorized) return c.json({ message: 'Unauthorized' }, 401)
 
-      await AuthModel.resetPassword(db, json.email, json.newPassword)
+      await AuthService.resetPassword(db, json.email, json.newPassword)
       return c.json({ message: 'reset password' })
     } catch (error) {
       return handleError(error, c)

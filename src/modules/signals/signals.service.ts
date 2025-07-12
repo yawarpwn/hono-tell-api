@@ -3,7 +3,7 @@ import type { CreateSignalDto, DB, UpdateSignalDto } from '@/types'
 import { desc, eq } from 'drizzle-orm'
 import { HTTPException } from 'hono/http-exception'
 
-export class SignalsModel {
+export class SignalsService {
   static async getAll(db: DB) {
     try {
       const rows = await db

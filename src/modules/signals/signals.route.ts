@@ -1,6 +1,6 @@
 import type { App } from '@/types'
 import { Hono } from 'hono'
-import { SignalsModel } from '@/models'
+import { SignalsService } from './signals.service'
 import { handleError } from '@/utils'
 import { destroyImage, uploadImage } from '@/lib/cloudinary'
 import { zValidator } from '@hono/zod-validator'
@@ -20,7 +20,7 @@ signalsRoute.get('/', async (c) => {
   const db = c.get('db')
 
   try {
-    const results = await SignalsModel.getAll(db)
+    const results = await SignalsService.getAll(db)
     return c.json(results, 200)
   } catch (error) {
     return handleError(error, c)
@@ -63,7 +63,7 @@ signalsRoute.post('/', zValidator('form', signalSchema), async (c) => {
     })
 
     //Guardar en la base de datos
-    await SignalsModel.create(db, {
+    await SignalsService.create(db, {
       title: data.title,
       code: data.code,
       description: data.description,
@@ -93,7 +93,7 @@ signalsRoute.put('/:id', zValidator('form', signalSchema), async (c) => {
     let uploadedResponse
     if (data.file) {
       //borrar foto antigua
-      const signal = await SignalsModel.getById(db, id)
+      const signal = await SignalsService.getById(db, id)
       await destroyImage(signal.publicId, c.env.CLOUDINARY_API_SECRET)
 
       //Subir la nueva foto
@@ -105,7 +105,7 @@ signalsRoute.put('/:id', zValidator('form', signalSchema), async (c) => {
       uploadedResponse = res
     }
 
-    const results = await SignalsModel.update(
+    const results = await SignalsService.update(
       db,
       {
         ...data,
@@ -130,12 +130,12 @@ signalsRoute.delete('/:id', async (c) => {
   const id = c.req.param('id')
   try {
     // enocntrar la señál a borrar
-    const watermark = await SignalsModel.getById(db, id)
+    const watermark = await SignalsService.getById(db, id)
     //Borrar foto en cloudinary
     const result = await destroyImage(watermark.publicId, c.env.CLOUDINARY_API_SECRET)
     console.log(result)
     //borrar la señal
-    await SignalsModel.delete(db, id)
+    await SignalsService.delete(db, id)
     return c.json({
       message: `Se ha borrado la señal ${id} con exito`,
     })

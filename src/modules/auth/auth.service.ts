@@ -5,7 +5,7 @@ import type { CreateCustomerDto, UpdateCustomerDto, CustomerDto, LoginDto } from
 import type { DB } from '@/types'
 import bcrypt from 'bcryptjs'
 
-export class AuthModel {
+export class AuthService {
   static async validateCredentials(db: DB, { email, password }: { email: string; password: string }) {
     const users = await db.select().from(usersTable).where(eq(usersTable.email, email))
     console.log({ users })
@@ -48,7 +48,7 @@ export class AuthModel {
   }
 
   static async resetPassword(db: DB, email: string, password: string) {
-    const hashedPassword = await AuthModel.hashPassword(password)
+    const hashedPassword = await AuthService.hashPassword(password)
     const rows = await db.update(usersTable).set({ password: hashedPassword }).where(eq(usersTable.email, email))
     if (!rows.success) throw new HTTPException(500, { message: 'Error updating user' })
   }

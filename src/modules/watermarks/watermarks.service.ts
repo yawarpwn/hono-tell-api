@@ -14,7 +14,7 @@ type UploadResponse = {
   format: string
   public_id: string
 }
-export class WatermarksModel {
+export class WatermarksService {
   static async getAll(db: DB) {
     const rows = await db.select().from(watermarksTable).orderBy(desc(watermarksTable.updatedAt))
     const mappedRows = rows.map((row) => ({
