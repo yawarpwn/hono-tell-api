@@ -3,10 +3,14 @@ import type { App } from './types'
 import { cors } from 'hono/cors'
 import { prettyJSON } from 'hono/pretty-json'
 import { drizzle } from 'drizzle-orm/d1'
-import galleryRoute from '@/modules/gallery/gallery.route'
+
+// Routes import
+import gallery from '@/modules/gallery/gallery.route'
 import customers from '@/modules/customers/customers.route'
 import quotations from '@/modules/quotations/quotations.route'
 import products from '@/modules/products/products.route'
+import labels from '@/modules/labels/labels.route'
+import agencies from '@/modules/agencies/agencies.route'
 
 const app = new Hono<App>()
 
@@ -75,11 +79,13 @@ app.get('/', async (c) => {
   return c.json({ message: 'api is running' })
 })
 
-app.route('/api/gallery', galleryRoute)
-
+// Routes
+app.route('/api/gallery', gallery)
 app.route('/api/v2/quotations', quotations)
 app.route('/api/v2/customers', customers)
 app.route('/api/v2/products', products)
+app.route('/api/v2/labels', labels)
+app.route('/api/v2/agencies', agencies)
 
 // nustom Not Found Message
 app.notFound((c) =>

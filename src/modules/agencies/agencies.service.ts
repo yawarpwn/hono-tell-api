@@ -3,9 +3,8 @@ import { agenciesTable } from '@/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateAgencyDto, UpdateAgencyDto, AgencyDto } from '@/types'
 import type { DB } from '@/types'
-import { STATUS_CODE } from '@/constants'
 
-export class AgenciesModel {
+export class AgenciesService {
   static async getAll(db: DB) {
     const result = await db.select().from(agenciesTable).orderBy(desc(agenciesTable.updatedAt))
     return {
@@ -31,7 +30,7 @@ export class AgenciesModel {
     const results = await db.insert(agenciesTable).values(dto).returning({ insertedId: agenciesTable.id })
 
     if (results.length === 0) {
-      throw new HTTPException(STATUS_CODE.BadRequest, {
+      throw new HTTPException(400, {
         message: 'Failed to create customer',
       })
     }
@@ -44,7 +43,7 @@ export class AgenciesModel {
     const results = await db.update(agenciesTable).set(dto).where(eq(agenciesTable.id, id)).returning()
 
     if (results.length === 0) {
-      throw new HTTPException(STATUS_CODE.NotFound, {
+      throw new HTTPException(404, {
         message: `Customer with id ${id} not found`,
       })
     }
@@ -56,7 +55,7 @@ export class AgenciesModel {
     const results = await db.delete(agenciesTable).where(eq(agenciesTable.id, id)).returning()
 
     if (results.length === 0) {
-      throw new HTTPException(STATUS_CODE.NotFound, {
+      throw new HTTPException(404, {
         message: `Customer with id ${id} not found`,
       })
     }
