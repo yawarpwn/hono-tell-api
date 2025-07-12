@@ -6,6 +6,7 @@ import { drizzle } from 'drizzle-orm/d1'
 import galleryRoute from '@/modules/gallery/gallery.route'
 import customers from '@/modules/customers/customers.route'
 import quotations from '@/modules/quotations/quotations.route'
+import products from '@/modules/products/products.route'
 
 const app = new Hono<App>()
 
@@ -78,6 +79,7 @@ app.route('/api/gallery', galleryRoute)
 
 app.route('/api/v2/quotations', quotations)
 app.route('/api/v2/customers', customers)
+app.route('/api/v2/products', products)
 
 // nustom Not Found Message
 app.notFound((c) =>

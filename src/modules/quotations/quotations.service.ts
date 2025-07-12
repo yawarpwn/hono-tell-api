@@ -2,13 +2,12 @@ import { eq, and, type SQL, ilike, like, asc, desc, count, or } from 'drizzle-or
 import { quotationsTable, customersTable } from '@/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateQuotationDto, UpdateQuotationDto, QuotationDto, CreateCustomerDto, CustomerDto } from '@/types'
-import { insertQuotationSchema, updateQuotationSchema } from '@/dtos'
+import { insertQuotationSchema, updateQuotationSchema } from './quotations.validation'
 import type { DB } from '@/types'
-import { CustomersModel } from '@/models/customers'
-import type { QueryQuotations } from '@/routes'
+import { CustomersService } from '@/modules/customers/customers.service'
 
 export class QuotationsService {
-  static async getAll(db: DB, { page = 1, limit, q }: QueryQuotations) {
+  static async getAll(db: DB, { page = 1, limit, q }: any) {
     const search = (query: string | undefined) => {
       if (!query) return undefined
 
@@ -150,7 +149,7 @@ export class QuotationsService {
 
     if (!dto.customerId && dto?.customer?.name && dto?.customer?.ruc) {
       console.log('insert new customer to db')
-      const { insertedId } = await CustomersModel.create(db, dto.customer)
+      const { insertedId } = await CustomersService.create(db, dto.customer)
       customerId = insertedId
     }
 
@@ -218,7 +217,7 @@ export class QuotationsService {
     if (!dto.customerId) {
       if (dto.customer?.name && dto?.customer?.ruc) {
         console.log('update  new customer to db')
-        const { insertedId } = await CustomersModel.create(db, dto.customer)
+        const { insertedId } = await CustomersService.create(db, dto.customer)
         customerId = insertedId
       }
     }
