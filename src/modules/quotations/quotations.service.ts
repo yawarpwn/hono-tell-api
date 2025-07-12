@@ -7,7 +7,7 @@ import type { DB } from '@/types'
 import { CustomersModel } from '@/models/customers'
 import type { QueryQuotations } from '@/routes'
 
-export class QuotationsModel {
+export class QuotationsService {
   static async getAll(db: DB, { page = 1, limit, q }: QueryQuotations) {
     const search = (query: string | undefined) => {
       if (!query) return undefined

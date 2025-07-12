@@ -5,21 +5,7 @@ import { prettyJSON } from 'hono/pretty-json'
 import { drizzle } from 'drizzle-orm/d1'
 import galleryRoute from '@/modules/gallery/gallery.route'
 import customers from '@/modules/customers/customers.route'
-import {
-  subscribeRoute,
-  quotationsRoute,
-  productsRoute,
-  authRoute,
-  agenciesRoute,
-  labelsRoute,
-  watermarksRoute,
-  productCategoriesRoute,
-  customersRoute,
-  sendMailRoute,
-  usersRoute,
-  signalsRoute,
-  signalCategoriesRoute,
-} from './routes'
+import quotations from '@/modules/quotations/quotations.route'
 
 const app = new Hono<App>()
 
@@ -88,21 +74,9 @@ app.get('/', async (c) => {
   return c.json({ message: 'api is running' })
 })
 
-app.route('/auth', authRoute)
-app.route('/api/customers', customers)
-app.route('/api/quotations', quotationsRoute)
-app.route('/api/products', productsRoute)
-app.route('/api/product-categories', productCategoriesRoute)
-app.route('/api/agencies', agenciesRoute)
-app.route('/api/labels', labelsRoute)
-app.route('/api/watermarks', watermarksRoute)
-app.route('/api/signals', signalsRoute)
-app.route('/api/users', usersRoute)
-app.route('/api/signal-categories', signalCategoriesRoute)
-app.route('/send-mail', sendMailRoute)
-app.route('/subscribe', subscribeRoute)
 app.route('/api/gallery', galleryRoute)
 
+app.route('/api/v2/quotations', quotations)
 app.route('/api/v2/customers', customers)
 
 // nustom Not Found Message
