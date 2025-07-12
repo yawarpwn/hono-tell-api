@@ -5,57 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1738896623224,
-      "tag": "0000_organic_mephisto",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1739628414120,
-      "tag": "0001_quiet_the_enforcers",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1739836347309,
-      "tag": "0002_naive_wild_pack",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1739927099349,
-      "tag": "0003_tense_menace",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1740979244623,
-      "tag": "0004_bent_unicorn",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1744159298962,
-      "tag": "0005_hot_microchip",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "6",
-      "when": 1744166261277,
-      "tag": "0006_special_anthem",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "6",
-      "when": 1744939589685,
-      "tag": "0007_flaky_garia",
+      "when": 1752118751982,
+      "tag": "0000_warm_fenris",
       "breakpoints": true
     }
   ]

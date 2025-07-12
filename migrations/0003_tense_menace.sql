@@ -1,1 +1,0 @@
-ALTER TABLE `watermark` RENAME TO `watermarks`;

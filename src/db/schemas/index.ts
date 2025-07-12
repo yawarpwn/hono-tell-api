@@ -1,7 +1,7 @@
 import type { ItemQuotation } from '@/types'
 import { sql } from 'drizzle-orm'
 import { integer, sqliteTable, text, real } from 'drizzle-orm/sqlite-core'
-import { productCategories, signalCategories } from '@/constants'
+import { productCategories, signalCategories, galleryCategories } from '@/constants'
 
 const userRoles = ['admin', 'user'] as const
 export const usersTable = sqliteTable('users', {
@@ -161,6 +161,32 @@ export const signalsTable = sqliteTable('signals', {
     .references(() => signalCategoriesTable.id)
     .notNull(),
   description: text('description'),
+  format: text('format').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$onUpdate(() => new Date()),
+})
+
+export const galleryCategoriesTable = sqliteTable('gallery_category', {
+  id: integer().primaryKey({ autoIncrement: true }),
+  name: text({ enum: galleryCategories }).notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
+})
+
+export const galleryTable = sqliteTable('gallery', {
+  id: text('id')
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => crypto.randomUUID()),
+  title: text('title').notNull(),
+  width: integer('width').notNull(),
+  height: integer('height').notNull(),
+  url: text('url').notNull(),
+  publicId: text('public_id').notNull(),
+  categoryId: integer('category_id')
+    .references(() => galleryCategoriesTable.id)
+    .notNull(),
   format: text('format').notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
   updatedAt: integer('updated_at', { mode: 'timestamp' })

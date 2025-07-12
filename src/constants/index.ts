@@ -53,3 +53,16 @@ export const SIGNALS_CATEGORIES = {
 } as const
 
 export const signalCategories = ['viales', 'seguridad', 'decorativas', 'obras', 'fotoluminicentes'] as const
+export const galleryCategories = [
+  'Señales Viales',
+  'Señales Obras',
+  'Señales Convencionales',
+  'Señales fotoluminiscentes',
+  'Señales Decorativas',
+  'Señales Reflectivas',
+  'Señales Minería',
+  'Señales Acrílico',
+  'Láminas reflectivas',
+  'Rótulos y stickers',
+  'Plantillas',
+] as const
