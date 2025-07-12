@@ -11,6 +11,7 @@ import quotations from '@/modules/quotations/quotations.route'
 import products from '@/modules/products/products.route'
 import labels from '@/modules/labels/labels.route'
 import agencies from '@/modules/agencies/agencies.route'
+import watermarks from '@/modules/watermarks/watermarks.route'
 
 const app = new Hono<App>()
 
@@ -86,6 +87,7 @@ app.route('/api/v2/customers', customers)
 app.route('/api/v2/products', products)
 app.route('/api/v2/labels', labels)
 app.route('/api/v2/agencies', agencies)
+app.route('/api/v2/watermark', watermarks)
 
 // nustom Not Found Message
 app.notFound((c) =>

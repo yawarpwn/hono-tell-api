@@ -1,37 +1,37 @@
 import type { App } from '@/types'
 import { Hono } from 'hono'
-import { WatermarksModel } from '@/models'
+import { WatermarksService } from './watermarks.service'
 import { handleError } from '@/utils'
 import { zValidator } from '@hono/zod-validator'
-import { insertWatermarkSchema, updateWatermarkSchema } from '@/dtos'
+import { insertWatermarkSchema, updateWatermarkSchema } from './watermarks.validation'
 // import { getClient } from '@/lib/cloudinary'
 
-export const watermarksRoute = new Hono<App>()
+export const app = new Hono<App>()
 
-watermarksRoute.get('/', async (c) => {
+app.get('/', async (c) => {
   const db = c.get('db')
 
   try {
-    const results = await WatermarksModel.getAll(db)
+    const results = await WatermarksService.getAll(db)
     return c.json(results, 200)
   } catch (error) {
     return handleError(error, c)
   }
 })
 
-watermarksRoute.get('/:id', async (c) => {
+app.get('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
 
   try {
-    const result = await WatermarksModel.getById(db, id)
+    const result = await WatermarksService.getById(db, id)
     return c.json(result)
   } catch (error) {
     return handleError(error, c)
   }
 })
 
-watermarksRoute.post(
+app.post(
   '/',
   // zValidator('json', insertWatermarkSchema, async (result, c) => {
   //   if (!result.success) return c.json({ ok: false, message: 'invalid' }, 400)
@@ -44,8 +44,8 @@ watermarksRoute.post(
       const db = c.get('db')
 
       for (const file of files) {
-        const response = await WatermarksModel.uploadImage(file, c.env.CLOUDINARY_API_SECRET)
-        const result = await WatermarksModel.create(db, {
+        const response = await WatermarksService.uploadImage(file, c.env.CLOUDINARY_API_SECRET)
+        const result = await WatermarksService.create(db, {
           url: response.secure_url,
           width: response.width,
           height: response.height,
@@ -62,7 +62,7 @@ watermarksRoute.post(
   },
 )
 
-watermarksRoute.put(
+app.put(
   '/:id',
   zValidator('json', updateWatermarkSchema, async (result, c) => {
     if (!result.success) return c.json({ ok: false, message: 'invalid' }, 400)
@@ -72,7 +72,7 @@ watermarksRoute.put(
     const id = c.req.param('id')
     const data = await c.req.json()
     try {
-      const results = await WatermarksModel.update(db, id, data)
+      const results = await WatermarksService.update(db, id, data)
       return c.json(results)
     } catch (error) {
       return handleError(error, c)
@@ -80,16 +80,18 @@ watermarksRoute.put(
   },
 )
 
-watermarksRoute.delete('/:id', async (c) => {
+app.delete('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
   try {
-    const watermark = await WatermarksModel.getById(db, id)
-    const result = await WatermarksModel.destroyImage(watermark.publicId, c.env.CLOUDINARY_API_SECRET)
+    const watermark = await WatermarksService.getById(db, id)
+    const result = await WatermarksService.destroyImage(watermark.publicId, c.env.CLOUDINARY_API_SECRET)
     // return c.json({ result })
-    const results = await WatermarksModel.delete(db, id)
+    const results = await WatermarksService.delete(db, id)
     return c.json(results)
   } catch (error) {
     return handleError(error, c)
   }
 })
+
+export default app
