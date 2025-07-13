@@ -21,13 +21,19 @@ app.get(
   zValidator('query', querySchema, (result, c) => {
     if (!result.success) {
       return c.json({
+        ok: false,
         message: 'Invalid query params',
+        statusCode: 400,
       })
     }
   }),
   async (c) => {
     const db = c.get('db')
     const { page, limit, q } = c.req.valid('query')
+
+    console.log('page', page)
+    console.log('limit', limit)
+    console.log('q', q)
 
     try {
       const result = await QuotationsService.getAll(db, {

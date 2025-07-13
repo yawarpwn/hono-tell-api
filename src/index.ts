@@ -9,9 +9,13 @@ import gallery from '@/modules/gallery/gallery.route'
 import customers from '@/modules/customers/customers.route'
 import quotations from '@/modules/quotations/quotations.route'
 import products from '@/modules/products/products.route'
+import productCategories from '@/modules/product-categories/product-categories.route'
 import labels from '@/modules/labels/labels.route'
 import agencies from '@/modules/agencies/agencies.route'
 import watermarks from '@/modules/watermarks/watermarks.route'
+import auth from '@/modules/auth/auth.route'
+import signals from '@/modules/signals/signals.route'
+import signalCategories from '@/modules/signal-categories/signal-categories.route'
 
 const app = new Hono<App>()
 
@@ -39,13 +43,13 @@ app.use('*', async (c, next) => {
 })
 
 //DatabaseMiddleware
-app.use('/api/*', async (c, next) => {
+app.use('/v2/api/*', async (c, next) => {
   const db = drizzle(c.env.DB)
   c.set('db', db)
   await next()
 })
 
-app.use('/auth/*', async (c, next) => {
+app.use('/v2/auth/*', async (c, next) => {
   const db = drizzle(c.env.DB)
   c.set('db', db)
   await next()
@@ -58,7 +62,7 @@ app.use('/subscribe/*', async (c, next) => {
 })
 
 // JWTMiddleware
-app.use('/api/*', async (c, next) => {
+app.use('/v2/api/*', async (c, next) => {
   const apiKey = c.req.header('TELL-API-KEY')
   if (apiKey !== c.env.TELL_API_KEY) {
     return c.json(
@@ -81,13 +85,18 @@ app.get('/', async (c) => {
 })
 
 // Routes
-app.route('/api/gallery', gallery)
-app.route('/api/v2/quotations', quotations)
-app.route('/api/v2/customers', customers)
-app.route('/api/v2/products', products)
-app.route('/api/v2/labels', labels)
-app.route('/api/v2/agencies', agencies)
-app.route('/api/v2/watermark', watermarks)
+app.route('/v2/api/apigallery', gallery)
+app.route('/v2/api/quotations', quotations)
+app.route('/v2/api/customers', customers)
+app.route('/v2/api/products', products)
+app.route('/v2/api/product-categories', productCategories)
+app.route('/v2/api/labels', labels)
+app.route('/v2/api/agencies', agencies)
+app.route('/v2/api/watermarks', watermarks)
+app.route('v2/api/signals', signals)
+app.route('/v2/api/signal-categories', signalCategories)
+
+app.route('/v2/auth', auth)
 
 // nustom Not Found Message
 app.notFound((c) =>

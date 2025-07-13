@@ -1,4 +1,4 @@
-import type { App } from '@/types'
+import type { App, ProductDto } from '@/types'
 import { Hono } from 'hono'
 import { ProductsService } from './products.service'
 import { handleError } from '@/utils'

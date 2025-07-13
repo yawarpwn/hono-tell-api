@@ -7,7 +7,7 @@ import type { DB } from '@/types'
 
 export class ProductsService {
   static async getAll(db: DB) {
-    const products = await db
+    const rows = await db
       .select({
         id: productsTable.id,
         description: productsTable.description,
@@ -27,7 +27,15 @@ export class ProductsService {
       .orderBy(desc(productsTable.updatedAt))
       .leftJoin(productCategoriesTable, eq(productsTable.categoryId, productCategoriesTable.id))
 
-    return products
+    return {
+      items: rows,
+      metadata: {
+        totalItems: rows.length,
+        // pageSize: pageSize,
+        // pageNumber: page,
+      },
+      links: {},
+    }
   }
 
   static async getById(db: DB, id: ProductDto['id']) {

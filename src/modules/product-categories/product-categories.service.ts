@@ -2,7 +2,7 @@ import { productCategoriesTable } from '@/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { DB } from '@/types'
 
-export class ProductCategoriesModel {
+export class ProductCategoriesService {
   static async getAll(db: DB) {
     const productCategories = await db.select().from(productCategoriesTable)
 

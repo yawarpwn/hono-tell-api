@@ -6,7 +6,7 @@ import { destroyImage, uploadImage } from '@/lib/cloudinary'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 
-export const signalsRoute = new Hono<App>()
+const app = new Hono<App>()
 
 const signalSchema = z.object({
   title: z.string(),
@@ -16,7 +16,7 @@ const signalSchema = z.object({
   file: z.any(),
 })
 
-signalsRoute.get('/', async (c) => {
+app.get('/', async (c) => {
   const db = c.get('db')
 
   try {
@@ -51,7 +51,7 @@ signalsRoute.get('/', async (c) => {
 //     size: 273266,
 //     type: 'image/jpeg'
 //   }
-signalsRoute.post('/', zValidator('form', signalSchema), async (c) => {
+app.post('/', zValidator('form', signalSchema), async (c) => {
   try {
     const data = c.req.valid('form')
     const db = c.get('db')
@@ -84,7 +84,7 @@ signalsRoute.post('/', zValidator('form', signalSchema), async (c) => {
   }
 })
 
-signalsRoute.put('/:id', zValidator('form', signalSchema), async (c) => {
+app.put('/:id', zValidator('form', signalSchema), async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
   const data = c.req.valid('form')
@@ -125,7 +125,7 @@ signalsRoute.put('/:id', zValidator('form', signalSchema), async (c) => {
   }
 })
 //
-signalsRoute.delete('/:id', async (c) => {
+app.delete('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
   try {
@@ -143,3 +143,5 @@ signalsRoute.delete('/:id', async (c) => {
     return handleError(error, c)
   }
 })
+
+export default app

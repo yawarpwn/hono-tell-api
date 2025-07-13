@@ -5,7 +5,9 @@ import type { CreateCustomerDto, UpdateCustomerDto, CustomerDto } from '@/types'
 import { insertCustomerSchema, updateCustomerSchema } from './customers.validation'
 import type { DB } from '@/types'
 import { STATUS_CODE } from '@/constants'
-import type { CustomerQueryParams } from '@/routes'
+
+//TODO: implement type CustomerQueryParams
+// import type { CustomerQueryParams } from '@/routes'
 
 type Company = {
   ruc: string
@@ -61,7 +63,7 @@ function isApiDniresponseSuccess(apiResponse: ApiDniReponse): apiResponse is Api
 }
 
 export class CustomersService {
-  static async getAll(db: DB, { onlyRegular }: CustomerQueryParams) {
+  static async getAll(db: DB, { onlyRegular }: any) {
     const rows = await db
       .select()
       .from(customersTable)
@@ -69,7 +71,15 @@ export class CustomersService {
     // .limit(pageSize)
     // .offset((page - 1) * pageSize)
 
-    return rows
+    return {
+      items: rows,
+      metadata: {
+        totalItems: rows.length,
+        // pageSize: pageSize,
+        // pageNumber: page,
+      },
+      links: {},
+    }
   }
 
   static async getByRucFromSunat(ruc: string): Promise<Company> {

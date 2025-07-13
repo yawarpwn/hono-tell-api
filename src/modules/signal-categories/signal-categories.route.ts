@@ -3,9 +3,9 @@ import { Hono } from 'hono'
 import { signalCategoriesTable } from '@/db/schemas'
 import { handleError } from '@/utils'
 
-export const signalCategoriesRoute = new Hono<App>()
+const app = new Hono<App>()
 
-signalCategoriesRoute.get('/', async (c) => {
+app.get('/', async (c) => {
   const db = c.get('db')
   try {
     const rows = await db.select().from(signalCategoriesTable)
@@ -20,3 +20,5 @@ signalCategoriesRoute.get('/', async (c) => {
     return handleError(error, c)
   }
 })
+
+export default app

@@ -73,4 +73,4 @@ app.post(
   },
 )
 
-export { app as authRoute }
+export default app
