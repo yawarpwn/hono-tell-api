@@ -5,7 +5,7 @@ import type { CreateWatermarkDto, UpdateWatermarkDto, WatermarkDto } from '@/typ
 import type { DB } from '@/types'
 import { v2 } from 'cloudinary'
 import { getClient, getSignature } from '@/lib/cloudinary'
-import { API_REST_CLOUDINARY } from '@/constants'
+import { API_REST_CLOUDINARY } from '@/core/constants'
 
 type UploadResponse = {
   secure_url: string

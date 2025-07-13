@@ -11,7 +11,7 @@ import {
   signalsTable,
   signalCategoriesTable,
 } from '@/db/schemas'
-import { productCategories, signalCategories } from '@/constants'
+import { productCategories, signalCategories } from '@/core/constants'
 import { count } from 'drizzle-orm'
 import products from '../../muckup/products.json'
 import customers from '../../muckup/customers.json'

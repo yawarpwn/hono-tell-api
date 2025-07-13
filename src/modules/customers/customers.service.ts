@@ -4,7 +4,6 @@ import { HTTPException } from 'hono/http-exception'
 import type { CreateCustomerDto, UpdateCustomerDto, CustomerDto } from '@/types'
 import { insertCustomerSchema, updateCustomerSchema } from './customers.validation'
 import type { DB } from '@/types'
-import { STATUS_CODE } from '@/constants'
 
 //TODO: implement type CustomerQueryParams
 // import type { CustomerQueryParams } from '@/routes'
@@ -157,7 +156,7 @@ export class CustomersService {
 
     if (!success) {
       console.log(error.errors)
-      throw new HTTPException(STATUS_CODE.BadRequest, {
+      throw new HTTPException(400, {
         message: 'Invalid customer',
       })
     }
@@ -165,7 +164,7 @@ export class CustomersService {
     const results = await db.insert(customersTable).values(data).returning({ insertedId: customersTable.id })
 
     if (results.length === 0) {
-      throw new HTTPException(STATUS_CODE.BadRequest, {
+      throw new HTTPException(400, {
         message: 'Failed to create customer',
       })
     }
@@ -179,13 +178,13 @@ export class CustomersService {
 
     if (!success) {
       console.log(error.errors)
-      throw new HTTPException(STATUS_CODE.BadRequest, {
+      throw new HTTPException(400, {
         message: 'Invalid customer',
       })
     }
 
     if (Object.values(data).length === 0) {
-      throw new HTTPException(STATUS_CODE.BadRequest, {
+      throw new HTTPException(400, {
         message: 'Invalid customer',
       })
     }
@@ -193,7 +192,7 @@ export class CustomersService {
     const results = await db.update(customersTable).set(data).where(eq(customersTable.id, id)).returning()
 
     if (results.length === 0) {
-      throw new HTTPException(STATUS_CODE.NotFound, {
+      throw new HTTPException(404, {
         message: `Customer with id ${id} not found`,
       })
     }
@@ -205,7 +204,7 @@ export class CustomersService {
     const results = await db.delete(customersTable).where(eq(customersTable.id, id)).returning()
 
     if (results.length === 0) {
-      throw new HTTPException(STATUS_CODE.NotFound, {
+      throw new HTTPException(404, {
         message: `Customer with id ${id} not found`,
       })
     }

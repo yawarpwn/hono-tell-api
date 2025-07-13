@@ -25,7 +25,7 @@ import type {
 } from '@/dtos'
 import type { customersTable, quotationsTable } from '../db/schemas'
 
-import type { PRODUCT_CATEGORIES } from '@/constants'
+import type { PRODUCT_CATEGORIES } from '@/core/constants'
 import type { DrizzleD1Database } from 'drizzle-orm/d1'
 import type { z } from 'zod'
 

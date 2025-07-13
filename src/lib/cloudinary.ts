@@ -1,6 +1,6 @@
 // import type { ResourceApiResponse, TransformationOptions, UploadApiOptions, UploadApiErrorResponse, UploadApiResponse } from 'cloudinary'
 import { type SignApiOptions, UploadApiResponse, v2 } from 'cloudinary'
-import { API_REST_CLOUDINARY } from '@/constants'
+import { API_REST_CLOUDINARY } from '@/core/constants'
 
 type UploadResponse = {
   secure_url: string

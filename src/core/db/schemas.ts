@@ -1,7 +1,7 @@
 import type { ItemQuotation } from '@/types'
 import { sql } from 'drizzle-orm'
 import { integer, sqliteTable, text, real } from 'drizzle-orm/sqlite-core'
-import { productCategories, signalCategories, galleryCategories } from '@/constants'
+import { productCategories, signalCategories, galleryCategories } from '@/core/constants'
 
 const userRoles = ['admin', 'user'] as const
 export const usersTable = sqliteTable('users', {
