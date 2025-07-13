@@ -1,6 +1,6 @@
 import { QuotationsService } from './quotations.service'
 import type { App } from '@/types'
-import { handleError } from '@/utils'
+import { handleError } from '@/core/utils'
 import { Hono } from 'hono'
 
 const app = new Hono<App>()

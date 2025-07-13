@@ -1,7 +1,7 @@
 import type { App } from '@/types'
 import { Hono } from 'hono'
 import { WatermarksService } from './watermarks.service'
-import { handleError } from '@/utils'
+import { handleError } from '@/core/utils'
 import { zValidator } from '@hono/zod-validator'
 import { insertWatermarkSchema, updateWatermarkSchema } from './watermarks.validation'
 // import { getClient } from '@/lib/cloudinary'

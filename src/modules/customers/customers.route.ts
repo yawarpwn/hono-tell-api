@@ -1,7 +1,7 @@
 import type { App } from '@/types'
 import { Hono } from 'hono'
 import { CustomersService } from './customers.service'
-import { handleError } from '@/utils'
+import { handleError } from '@/core/utils'
 import { HTTPException } from 'hono/http-exception'
 import { z } from 'zod'
 import { zValidator } from '@hono/zod-validator'

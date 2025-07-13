@@ -18,7 +18,7 @@ import signals from '@/modules/signals/signals.route'
 import signalCategories from '@/modules/signal-categories/signal-categories.route'
 
 import sendMail from '@/modules/send-mail/send-mail.route'
-import suscribe from '@/modules/suscribe/suscribe.route'
+import suscribe from '@/modules/suscribe.route'
 
 const app = new Hono<App>()
 

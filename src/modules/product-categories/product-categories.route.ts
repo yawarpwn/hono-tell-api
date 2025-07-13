@@ -1,7 +1,7 @@
 import type { App, ProductDto } from '@/types'
 import { Hono } from 'hono'
 import { ProductCategoriesService } from './product-categories.service'
-import { handleError } from '@/utils'
+import { handleError } from '@/core/utils'
 
 const app = new Hono<App>()
 

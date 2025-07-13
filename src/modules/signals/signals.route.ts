@@ -1,7 +1,7 @@
 import type { App } from '@/types'
 import { Hono } from 'hono'
 import { SignalsService } from './signals.service'
-import { handleError } from '@/utils'
+import { handleError } from '@/core/utils'
 import { destroyImage, uploadImage } from '@/lib/cloudinary'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'

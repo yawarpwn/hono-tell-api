@@ -1,7 +1,7 @@
 import type { App } from '@/types'
 import { Hono } from 'hono'
 import { signalCategoriesTable } from '@/core/db/schemas'
-import { handleError } from '@/utils'
+import { handleError } from '@/core/utils'
 
 const app = new Hono<App>()
 

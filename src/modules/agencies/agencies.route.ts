@@ -1,7 +1,7 @@
 import type { App } from '@/types'
 import { Hono } from 'hono'
 import { AgenciesService } from './agencies.service'
-import { handleError } from '@/utils'
+import { handleError } from '@/core/utils'
 import { zValidator } from '@hono/zod-validator'
 import { insertAgencySchema, updateAgencySchema } from './agencies.validation'
 
