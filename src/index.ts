@@ -17,6 +17,9 @@ import auth from '@/modules/auth/auth.route'
 import signals from '@/modules/signals/signals.route'
 import signalCategories from '@/modules/signal-categories/signal-categories.route'
 
+import sendMail from '@/modules/send-mail/send-mail.route'
+import suscribe from '@/modules/suscribe/suscribe.route'
+
 const app = new Hono<App>()
 
 /**--------------------------------Middlewares---------------------------------------- */
@@ -93,8 +96,11 @@ app.route('/v2/api/product-categories', productCategories)
 app.route('/v2/api/labels', labels)
 app.route('/v2/api/agencies', agencies)
 app.route('/v2/api/watermarks', watermarks)
-app.route('v2/api/signals', signals)
+app.route('/v2/api/signals', signals)
 app.route('/v2/api/signal-categories', signalCategories)
+
+app.route('/send-mail', sendMail)
+app.route('/suscribe', suscribe)
 
 app.route('/v2/auth', auth)
 

@@ -4,7 +4,7 @@ import { Hono } from 'hono'
 import { Resend } from 'resend'
 import { z } from 'zod'
 
-export const sendMailRoute = new Hono<App>()
+const app = new Hono<App>()
 
 const emailSchema = z.object({
   name: z.string(),
@@ -45,7 +45,7 @@ export function EmailTemplate({ email, name, message, phone, ruc }: EmailSchema)
 `
 }
 
-sendMailRoute.post(
+app.post(
   '/',
   zValidator('json', emailSchema, async (result, c) => {
     if (!result.success) {
@@ -92,3 +92,5 @@ sendMailRoute.post(
     }
   },
 )
+
+export default app

@@ -10,9 +10,9 @@ const subscribeSchema = z.object({
   email: z.string().email(),
 })
 
-export const subscribeRoute = new Hono<App>()
+const app = new Hono<App>()
 
-subscribeRoute.post(
+app.post(
   '/',
   zValidator('json', subscribeSchema, (result, c) => {
     if (!result.success) {
@@ -60,3 +60,5 @@ subscribeRoute.post(
     }
   },
 )
+
+export default app
