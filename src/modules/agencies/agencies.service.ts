@@ -1,5 +1,5 @@
 import { eq, and, type SQL, ilike, like, desc } from 'drizzle-orm'
-import { agenciesTable } from '@/db/schemas'
+import { agenciesTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateAgencyDto, UpdateAgencyDto, AgencyDto } from '@/types'
 import type { DB } from '@/types'

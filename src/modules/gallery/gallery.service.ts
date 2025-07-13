@@ -1,4 +1,4 @@
-import { galleryTable } from '@/db/schemas'
+import { galleryTable } from '@/core/db/schemas'
 
 import type { DrizzleD1Database } from 'drizzle-orm/d1'
 

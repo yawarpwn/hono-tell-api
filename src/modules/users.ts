@@ -1,4 +1,4 @@
-import { usersTable } from '@/db/schemas'
+import { usersTable } from '@/core/db/schemas'
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono/quick'
 import type { App } from '@/types'

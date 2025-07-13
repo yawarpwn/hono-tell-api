@@ -3,7 +3,7 @@ import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import { z } from 'zod'
 import { eq } from 'drizzle-orm'
-import { subscribersTable } from '@/db/schemas'
+import { subscribersTable } from '@/core/db/schemas'
 import { Resend } from 'resend'
 
 const subscribeSchema = z.object({

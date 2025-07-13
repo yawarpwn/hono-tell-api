@@ -1,5 +1,5 @@
 import { eq, and, desc, type SQL, ilike, like } from 'drizzle-orm'
-import { labelsTable, agenciesTable } from '@/db/schemas'
+import { labelsTable, agenciesTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateLabelDto, UpdateLabelDto, LabelDto } from '@/types'
 import type { DB } from '@/types'

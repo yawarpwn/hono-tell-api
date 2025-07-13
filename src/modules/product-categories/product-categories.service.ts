@@ -1,4 +1,4 @@
-import { productCategoriesTable } from '@/db/schemas'
+import { productCategoriesTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { DB } from '@/types'
 

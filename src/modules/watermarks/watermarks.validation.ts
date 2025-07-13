@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { customersTable, quotationsTable, productsTable, agenciesTable, labelsTable, watermarksTable, signalsTable } from '@/db/schemas'
+import { customersTable, quotationsTable, productsTable, agenciesTable, labelsTable, watermarksTable, signalsTable } from '@/core/db/schemas'
 
 import { createSelectSchema, createInsertSchema } from 'drizzle-zod'
 

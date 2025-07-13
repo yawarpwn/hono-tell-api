@@ -1,4 +1,4 @@
-import { signalsTable, signalCategoriesTable } from '@/db/schemas'
+import { signalsTable, signalCategoriesTable } from '@/core/db/schemas'
 import type { CreateSignalDto, DB, UpdateSignalDto } from '@/types'
 import { desc, eq } from 'drizzle-orm'
 import { HTTPException } from 'hono/http-exception'

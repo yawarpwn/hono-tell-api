@@ -1,5 +1,5 @@
 import { eq, and, type SQL, ilike, like, desc } from 'drizzle-orm'
-import { watermarksTable } from '@/db/schemas'
+import { watermarksTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateWatermarkDto, UpdateWatermarkDto, WatermarkDto } from '@/types'
 import type { DB } from '@/types'

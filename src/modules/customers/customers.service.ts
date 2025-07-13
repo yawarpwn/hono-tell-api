@@ -1,5 +1,5 @@
 import { eq, and, type SQL, ilike, like } from 'drizzle-orm'
-import { customersTable } from '@/db/schemas'
+import { customersTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateCustomerDto, UpdateCustomerDto, CustomerDto } from '@/types'
 import { insertCustomerSchema, updateCustomerSchema } from './customers.validation'

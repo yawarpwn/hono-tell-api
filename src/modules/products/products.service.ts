@@ -1,5 +1,5 @@
 import { eq, and, type SQL, ilike, like, asc, desc } from 'drizzle-orm'
-import { productsTable, productCategoriesTable } from '@/db/schemas'
+import { productsTable, productCategoriesTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateProductDto, UpdateProductDto, ProductDto } from '@/types'
 import { insertProductSchema, updateProductSchema } from './products.validation'
