@@ -1,7 +1,14 @@
 import { createSelectSchema, createInsertSchema } from 'drizzle-zod'
-import { customersTable, quotationsTable, productsTable, agenciesTable, labelsTable, watermarksTable, signalsTable } from '@/core/db/schemas'
+import {
+  customersTable,
+  quotationsTable,
+  productsTable,
+  agenciesTable,
+  labelsTable,
+  watermarksTable,
+  signalsTable,
+} from '@/core/db/schemas'
 import z from 'zod'
-import { itemQuotationSChema } from '@/dtos'
 
 export const quotationSchema = createSelectSchema(quotationsTable)
 export const insertQuotationSchema = createInsertSchema(quotationsTable, {
@@ -25,3 +32,13 @@ export const insertQuotationSchema = createInsertSchema(quotationsTable, {
     updatedAt: true,
   })
 export const updateQuotationSchema = insertQuotationSchema.partial()
+
+export const itemQuotationSChema = z.object({
+  id: z.string(),
+  price: z.number(),
+  qty: z.number(),
+  cost: z.number().optional().nullable(),
+  link: z.string().optional().nullable(),
+  unitSize: z.string(),
+  description: z.string(),
+})

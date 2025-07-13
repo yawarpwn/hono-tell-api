@@ -5,7 +5,7 @@ import { handleError } from '@/utils'
 import { setCookie, getCookie, deleteCookie } from 'hono/cookie'
 import { zValidator } from '@hono/zod-validator'
 import { jwt, verify, sign } from 'hono/jwt'
-import { loginSchema } from '@/dtos'
+import { loginSchema } from './auth.validation'
 import { z } from 'zod'
 
 const app = new Hono<App>()
