@@ -1,7 +1,7 @@
 import type { App } from '@/types'
 import { Hono } from 'hono'
 import { AuthService } from './auth.service'
-import { handleError } from '@/utils'
+import { handleError } from '@/core/utils'
 import { setCookie, getCookie, deleteCookie } from 'hono/cookie'
 import { zValidator } from '@hono/zod-validator'
 import { jwt, verify, sign } from 'hono/jwt'

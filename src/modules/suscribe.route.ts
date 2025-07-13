@@ -1,5 +1,5 @@
-import type { App } from '@/types'
 import { zValidator } from '@hono/zod-validator'
+import type { App } from '@/types'
 import { Hono } from 'hono'
 import { z } from 'zod'
 import { eq } from 'drizzle-orm'
