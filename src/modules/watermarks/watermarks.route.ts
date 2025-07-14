@@ -3,7 +3,7 @@ import { Hono } from 'hono'
 import { WatermarksService } from './watermarks.service'
 import { handleError } from '@/core/utils'
 import { zValidator } from '@hono/zod-validator'
-import { insertWatermarkSchema, updateWatermarkSchema } from './watermarks.validation'
+import { updateWatermarkSchema } from './watermarks.validation'
 // import { getClient } from '@/lib/cloudinary'
 
 export const app = new Hono<App>()
@@ -85,7 +85,7 @@ app.delete('/:id', async (c) => {
   const id = c.req.param('id')
   try {
     const watermark = await WatermarksService.getById(db, id)
-    const result = await WatermarksService.destroyImage(watermark.publicId, c.env.CLOUDINARY_API_SECRET)
+    await WatermarksService.destroyImage(watermark.publicId, c.env.CLOUDINARY_API_SECRET)
     // return c.json({ result })
     const results = await WatermarksService.delete(db, id)
     return c.json(results)

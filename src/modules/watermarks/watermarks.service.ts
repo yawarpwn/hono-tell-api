@@ -1,16 +1,16 @@
-import { eq, and, type SQL, ilike, like, desc } from 'drizzle-orm'
+import { eq, desc } from 'drizzle-orm'
 import { watermarksTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateWatermark, UpdateWatermark, Watermark } from './watermarks.validation'
 import type { DB } from '@/types'
 import { v2 } from 'cloudinary'
-import { getClient, getSignature } from '@/lib/cloudinary'
+import { getSignature } from '@/lib/cloudinary'
 import { API_REST_CLOUDINARY } from '@/core/constants'
 
 type UploadResponse = {
   secure_url: string
-  width: string
-  height: string
+  width: number
+  height: number
   format: string
   public_id: string
 }
@@ -90,7 +90,7 @@ export class WatermarksService {
   }
 
   static async destroyImage(publicId: string, apiSecret: string) {
-    const timestamp = Math.round(new Date().getTime() / 1000)
+    const timestamp = Math.round(Date.now() / 1000)
     const cloudName = 'tellsenales-cloud'
     const signature = v2.utils.api_sign_request(
       {

@@ -7,7 +7,7 @@ export function handleError(error: unknown, c: Context) {
   if (error instanceof ZodError) {
     return c.json({
       ok: false,
-      message: error.flatten().fieldErrors,
+      message: JSON.stringify(error.flatten().fieldErrors),
       statusCode: 400,
     })
   }

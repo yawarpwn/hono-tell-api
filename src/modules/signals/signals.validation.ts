@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import type { z } from 'zod'
 import { signalsTable } from '@/core/db/schemas'
 import { createSelectSchema, createInsertSchema } from 'drizzle-zod'
 
