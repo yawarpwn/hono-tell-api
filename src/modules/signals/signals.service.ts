@@ -1,5 +1,6 @@
 import { signalsTable, signalCategoriesTable } from '@/core/db/schemas'
-import type { CreateSignalDto, DB, UpdateSignalDto } from '@/types'
+import type { CreateSignal, UpdateSignal } from './signals.validation'
+import type { DB } from '@/types'
 import { desc, eq } from 'drizzle-orm'
 import { HTTPException } from 'hono/http-exception'
 
@@ -53,7 +54,7 @@ export class SignalsService {
   }
 
   //
-  static async create(db: DB, values: CreateSignalDto) {
+  static async create(db: DB, values: CreateSignal) {
     console.log({ values })
     try {
       const rows = await db.insert(signalsTable).values(values).returning()
@@ -66,7 +67,7 @@ export class SignalsService {
     }
   }
   //
-  static async update(db: DB, values: UpdateSignalDto, id: string) {
+  static async update(db: DB, values: UpdateSignal, id: string) {
     try {
       const rows = await db
         .update(signalsTable)

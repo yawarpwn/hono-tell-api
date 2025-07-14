@@ -1,7 +1,7 @@
-import { eq, and, type SQL, ilike, like, asc, desc, count, or } from 'drizzle-orm'
+import { eq, like, desc, count } from 'drizzle-orm'
 import { quotationsTable, customersTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
-import type { CreateQuotationDto, UpdateQuotationDto, QuotationDto, CreateCustomerDto, CustomerDto } from '@/types'
+import type { CreateQuotation, UpdateQuotation, Quotation } from './quotations.validation'
 import { insertQuotationSchema, updateQuotationSchema } from './quotations.validation'
 import type { DB } from '@/types'
 import { CustomersService } from '@/modules/customers/customers.service'
@@ -73,7 +73,7 @@ export class QuotationsService {
     }
   }
 
-  static async getById(db: DB, id: QuotationDto['id']) {
+  static async getById(db: DB, id: Quotation['id']) {
     const quotations = await db
       .select({
         id: quotationsTable.id,
@@ -108,7 +108,7 @@ export class QuotationsService {
     return quotations[0]
   }
 
-  static async getByNumber(db: DB, quotationNumber: QuotationDto['number']) {
+  static async getByNumber(db: DB, quotationNumber: Quotation['number']) {
     const quotations = await db
       .select({
         id: quotationsTable.id,
@@ -144,12 +144,16 @@ export class QuotationsService {
     return quotations[0]
   }
 
-  static async create(db: DB, dto: CreateQuotationDto) {
+  static async create(db: DB, dto: CreateQuotation) {
     let customerId = dto.customerId
 
-    if (!dto.customerId && dto?.customer?.name && dto?.customer?.ruc) {
+    if (!dto.customerId && dto.customer?.name && dto.customer?.ruc) {
       console.log('insert new customer to db')
-      const { insertedId } = await CustomersService.create(db, dto.customer)
+      const { insertedId } = await CustomersService.create(db, {
+        name: dto.customer.name,
+        ruc: dto.customer.ruc,
+        isRegular: false,
+      })
       customerId = insertedId
     }
 
@@ -159,7 +163,7 @@ export class QuotationsService {
     })
 
     if (!success) {
-      console.log(error.errors)
+      console.log(error.issues)
       throw new HTTPException(400, {
         message: 'Invalid quotation',
       })
@@ -196,11 +200,11 @@ export class QuotationsService {
     return quotation
   }
 
-  static async update(db: DB, id: QuotationDto['id'], dto: UpdateQuotationDto) {
-    const { data, success, error } = updateQuotationSchema.safeParse(dto)
+  static async update(db: DB, id: Quotation['id'], quotationData: UpdateQuotation) {
+    const { data, success, error } = updateQuotationSchema.safeParse(quotationData)
 
     if (!success) {
-      console.log(error.errors)
+      console.log(error.issues)
       throw new HTTPException(400, {
         message: 'Invalid quotation',
       })
@@ -212,12 +216,16 @@ export class QuotationsService {
       })
     }
 
-    let customerId = dto.customerId
+    let customerId = quotationData.customerId
 
-    if (!dto.customerId) {
-      if (dto.customer?.name && dto?.customer?.ruc) {
+    if (!quotationData.customerId) {
+      if (quotationData.customer?.name && quotationData?.customer?.ruc) {
         console.log('update  new customer to db')
-        const { insertedId } = await CustomersService.create(db, dto.customer)
+        const { insertedId } = await CustomersService.create(db, {
+          name: quotationData.customer.name,
+          ruc: quotationData.customer.ruc,
+          isRegular: quotationData.customer.isRegular,
+        })
         customerId = insertedId
       }
     }
@@ -240,7 +248,7 @@ export class QuotationsService {
     return results[0]
   }
 
-  static async delete(db: DB, quotationNumber: QuotationDto['number']) {
+  static async delete(db: DB, quotationNumber: Quotation['number']) {
     const results = await db.delete(quotationsTable).where(eq(quotationsTable.number, quotationNumber)).returning()
 
     if (results.length === 0) {

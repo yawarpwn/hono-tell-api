@@ -1,7 +1,7 @@
 import { eq, and, type SQL, ilike, like, desc } from 'drizzle-orm'
 import { watermarksTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
-import type { CreateWatermarkDto, UpdateWatermarkDto, WatermarkDto } from '@/types'
+import type { CreateWatermark, UpdateWatermark, Watermark } from './watermarks.validation'
 import type { DB } from '@/types'
 import { v2 } from 'cloudinary'
 import { getClient, getSignature } from '@/lib/cloudinary'
@@ -31,7 +31,7 @@ export class WatermarksService {
     }
   }
 
-  static async getById(db: DB, id: WatermarkDto['id']) {
+  static async getById(db: DB, id: Watermark['id']) {
     const [row] = await db.select().from(watermarksTable).where(eq(watermarksTable.id, id))
     if (!row) {
       throw new HTTPException(404, {
@@ -45,7 +45,7 @@ export class WatermarksService {
     }
   }
 
-  static async create(db: DB, data: CreateWatermarkDto) {
+  static async create(db: DB, data: CreateWatermark) {
     const rows = await db.insert(watermarksTable).values(data).returning({ insertedId: watermarksTable.id })
 
     if (rows.length === 0) {
@@ -114,7 +114,7 @@ export class WatermarksService {
     }).then((res) => res.json())
   }
 
-  static async update(db: DB, id: WatermarkDto['id'], data: UpdateWatermarkDto) {
+  static async update(db: DB, id: Watermark['id'], data: UpdateWatermark) {
     const results = await db.update(watermarksTable).set(data).where(eq(watermarksTable.id, id)).returning()
 
     if (results.length === 0) {
@@ -126,7 +126,7 @@ export class WatermarksService {
     return results[0]
   }
 
-  static async delete(db: DB, id: WatermarkDto['id']) {
+  static async delete(db: DB, id: Watermark['id']) {
     const results = await db.delete(watermarksTable).where(eq(watermarksTable.id, id)).returning()
 
     if (results.length === 0) {

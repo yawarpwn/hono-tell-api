@@ -1,4 +1,3 @@
-import type { ItemQuotation } from '@/types'
 import { sql } from 'drizzle-orm'
 import { integer, sqliteTable, text, real } from 'drizzle-orm/sqlite-core'
 import { productCategories, signalCategories, galleryCategories } from '@/core/constants'
@@ -81,7 +80,7 @@ export const quotationsTable = sqliteTable('quotations', {
     onUpdate: 'no action',
   }),
   isPaymentPending: integer('is_payment_pending', { mode: 'boolean' }).default(false),
-  items: text('items', { mode: 'json' }).$type<ItemQuotation[]>().notNull(),
+  items: text('items', { mode: 'json' }).notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
   updatedAt: integer('updated_at', { mode: 'timestamp' })
     .notNull()

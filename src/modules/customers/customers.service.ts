@@ -1,9 +1,9 @@
-import { eq, and, type SQL, ilike, like } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { customersTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
-import type { CreateCustomerDto, UpdateCustomerDto, CustomerDto } from '@/types'
 import { insertCustomerSchema, updateCustomerSchema } from './customers.validation'
 import type { DB } from '@/types'
+import type { Customer, CreateCustomer, UpdateCustomer } from './customers.validation'
 
 //TODO: implement type CustomerQueryParams
 // import type { CustomerQueryParams } from '@/routes'
@@ -131,7 +131,7 @@ export class CustomersService {
     }
   }
 
-  static async getByRuc(db: DB, ruc: CustomerDto['ruc']) {
+  static async getByRuc(db: DB, ruc: Customer['ruc']) {
     const customers = await db.select().from(customersTable).where(eq(customersTable.ruc, ruc))
     if (customers.length === 0) {
       throw new HTTPException(404, {
@@ -141,7 +141,7 @@ export class CustomersService {
     return customers[0]
   }
 
-  static async getById(db: DB, id: CustomerDto['id']) {
+  static async getById(db: DB, id: Customer['id']) {
     const customers = await db.select().from(customersTable).where(eq(customersTable.id, id))
     if (customers.length === 0) {
       throw new HTTPException(404, {
@@ -151,11 +151,11 @@ export class CustomersService {
     return customers[0]
   }
 
-  static async create(db: DB, dto: CreateCustomerDto) {
-    const { data, success, error } = insertCustomerSchema.safeParse(dto)
+  static async create(db: DB, customerData: CreateCustomer) {
+    const { data, success, error } = insertCustomerSchema.safeParse(customerData)
 
     if (!success) {
-      console.log(error.errors)
+      console.log(error.issues)
       throw new HTTPException(400, {
         message: 'Invalid customer',
       })
@@ -173,11 +173,11 @@ export class CustomersService {
     return customer
   }
 
-  static async update(db: DB, id: CustomerDto['id'], dto: UpdateCustomerDto) {
-    const { data, success, error } = updateCustomerSchema.safeParse(dto)
+  static async update(db: DB, id: Customer['id'], customerData: UpdateCustomer) {
+    const { data, success, error } = updateCustomerSchema.safeParse(customerData)
 
     if (!success) {
-      console.log(error.errors)
+      console.log(error.issues)
       throw new HTTPException(400, {
         message: 'Invalid customer',
       })
@@ -200,7 +200,7 @@ export class CustomersService {
     return results[0]
   }
 
-  static async delete(db: DB, id: CustomerDto['id']) {
+  static async delete(db: DB, id: Customer['id']) {
     const results = await db.delete(customersTable).where(eq(customersTable.id, id)).returning()
 
     if (results.length === 0) {

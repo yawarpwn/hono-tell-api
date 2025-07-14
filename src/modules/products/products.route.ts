@@ -1,10 +1,11 @@
-import type { App, ProductDto } from '@/types'
+import type { App } from '@/types'
 import { Hono } from 'hono'
 import { ProductsService } from './products.service'
 import { handleError } from '@/core/utils'
 
 const app = new Hono<App>()
 
+// Get all products
 app.get('/', async (c) => {
   const db = c.get('db')
   try {
@@ -15,6 +16,7 @@ app.get('/', async (c) => {
   }
 })
 
+// Get product by id
 app.get('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
@@ -26,6 +28,7 @@ app.get('/:id', async (c) => {
   }
 })
 
+// Create product route
 app.post('/', async (c) => {
   const db = c.get('db')
   const dto = await c.req.json()
@@ -37,6 +40,7 @@ app.post('/', async (c) => {
   }
 })
 
+// Update product
 app.put('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
@@ -49,6 +53,7 @@ app.put('/:id', async (c) => {
   }
 })
 
+// Delete product
 app.delete('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')

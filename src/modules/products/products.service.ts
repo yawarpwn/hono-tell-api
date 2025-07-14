@@ -1,7 +1,7 @@
-import { eq, and, type SQL, ilike, like, asc, desc } from 'drizzle-orm'
+import { eq, desc } from 'drizzle-orm'
 import { productsTable, productCategoriesTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
-import type { CreateProductDto, UpdateProductDto, ProductDto } from '@/types'
+import type { CreateProduct, UpdateProduct, Product } from './products.validation'
 import { insertProductSchema, updateProductSchema } from './products.validation'
 import type { DB } from '@/types'
 
@@ -38,7 +38,7 @@ export class ProductsService {
     }
   }
 
-  static async getById(db: DB, id: ProductDto['id']) {
+  static async getById(db: DB, id: Product['id']) {
     const products = await db
       .select({
         id: productsTable.id,
@@ -65,11 +65,11 @@ export class ProductsService {
     return products[0]
   }
 
-  static async create(db: DB, dto: CreateProductDto) {
+  static async create(db: DB, dto: CreateProduct) {
     const { data, success, error } = insertProductSchema.safeParse(dto)
 
     if (!success) {
-      console.log(error.errors)
+      console.log(error.issues)
       throw new HTTPException(404, {
         message: 'Invalid product',
       })
@@ -86,11 +86,11 @@ export class ProductsService {
     return product
   }
 
-  static async update(db: DB, id: ProductDto['id'], dto: UpdateProductDto) {
+  static async update(db: DB, id: Product['id'], dto: UpdateProduct) {
     const { data, success, error } = updateProductSchema.safeParse(dto)
 
     if (!success) {
-      console.log(error.errors)
+      console.log(error.issues)
       throw new HTTPException(404, {
         message: 'Invalid product',
       })
@@ -113,7 +113,7 @@ export class ProductsService {
     return results[0]
   }
 
-  static async delete(db: DB, id: ProductDto['id']) {
+  static async delete(db: DB, id: Product['id']) {
     const results = await db.delete(productsTable).where(eq(productsTable.id, id)).returning()
 
     if (results.length === 0) {

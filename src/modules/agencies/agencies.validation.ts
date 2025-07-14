@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { customersTable, quotationsTable, productsTable, agenciesTable, labelsTable, watermarksTable, signalsTable } from '@/core/db/schemas'
+import { agenciesTable } from '@/core/db/schemas'
 
 import { createSelectSchema, createInsertSchema } from 'drizzle-zod'
 
@@ -11,3 +11,7 @@ export const insertAgencySchema = createInsertSchema(agenciesTable).omit({
   createdAt: true,
 })
 export const updateAgencySchema = insertAgencySchema.partial()
+
+export type Agency = z.infer<typeof agencySchema>
+export type CreateAgency = z.infer<typeof insertAgencySchema>
+export type UpdateAgency = z.infer<typeof updateAgencySchema>

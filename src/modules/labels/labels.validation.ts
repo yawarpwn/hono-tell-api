@@ -1,9 +1,8 @@
 import { z } from 'zod'
-import { customersTable, quotationsTable, productsTable, agenciesTable, labelsTable, watermarksTable, signalsTable } from '@/core/db/schemas'
+import { labelsTable } from '@/core/db/schemas'
 
 import { createSelectSchema, createInsertSchema } from 'drizzle-zod'
 
-//----------------------------------Labels--------------------------------------\\
 export const labelSchema = createSelectSchema(labelsTable)
 export const insertLabelSchema = createInsertSchema(labelsTable).omit({
   id: true,
@@ -11,3 +10,7 @@ export const insertLabelSchema = createInsertSchema(labelsTable).omit({
   createdAt: true,
 })
 export const updateLabelSchema = insertLabelSchema.partial()
+
+export type Label = z.infer<typeof labelSchema>
+export type UpdateLabel = z.infer<typeof updateLabelSchema>
+export type CreateLabel = z.infer<typeof insertLabelSchema>

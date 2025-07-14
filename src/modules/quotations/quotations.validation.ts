@@ -1,37 +1,4 @@
-import { createSelectSchema, createInsertSchema } from 'drizzle-zod'
-import {
-  customersTable,
-  quotationsTable,
-  productsTable,
-  agenciesTable,
-  labelsTable,
-  watermarksTable,
-  signalsTable,
-} from '@/core/db/schemas'
 import z from 'zod'
-
-export const quotationSchema = createSelectSchema(quotationsTable)
-export const insertQuotationSchema = createInsertSchema(quotationsTable, {
-  items: () => z.array(itemQuotationSChema),
-})
-  .extend({
-    customer: z
-      .object({
-        name: z.string(),
-        ruc: z.string(),
-        address: z.string().optional().nullable(),
-        phone: z.string().optional().nullable(),
-      })
-      .optional()
-      .nullable(),
-  })
-  .omit({
-    id: true,
-    number: true,
-    createdAt: true,
-    updatedAt: true,
-  })
-export const updateQuotationSchema = insertQuotationSchema.partial()
 
 export const itemQuotationSChema = z.object({
   id: z.string(),
@@ -39,6 +6,47 @@ export const itemQuotationSChema = z.object({
   qty: z.number(),
   cost: z.number().optional().nullable(),
   link: z.string().optional().nullable(),
-  unitSize: z.string(),
+  unitSize: z.string({ message: 'unidad y medidad es requerido' }),
   description: z.string(),
 })
+
+export const quotationSchema = z.object({
+  id: z.string(),
+  number: z.number().positive(),
+  credit: z.number().positive().optional().nullable(),
+  includeIgv: z.boolean(),
+  deadline: z
+    .number({
+      message: 'Fecha de entrega debe ser mayor a 0',
+    })
+    .positive({
+      message: 'Fecha de entrega ser mayor a 0',
+    }),
+  isPaymentPending: z.boolean(),
+  customerId: z.string().optional().nullable(),
+  items: z.array(itemQuotationSChema),
+  customer: z
+    .object({
+      name: z.string().optional().nullable(),
+      ruc: z.string().optional().nullable(),
+      address: z.string().optional().nullable(),
+      isRegular: z.boolean().default(false),
+    })
+    .optional()
+    .nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+})
+
+export const insertQuotationSchema = quotationSchema.omit({
+  id: true,
+  number: true,
+  createdAt: true,
+  updatedAt: true,
+})
+
+export const updateQuotationSchema = insertQuotationSchema.partial()
+
+export type Quotation = z.infer<typeof quotationSchema>
+export type CreateQuotation = z.infer<typeof insertQuotationSchema>
+export type UpdateQuotation = z.infer<typeof updateQuotationSchema>

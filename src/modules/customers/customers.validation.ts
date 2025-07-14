@@ -1,13 +1,24 @@
-import { createSelectSchema, createInsertSchema } from 'drizzle-zod'
-import { customersTable, quotationsTable, productsTable, agenciesTable, labelsTable, watermarksTable, signalsTable } from '@/core/db/schemas'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 
 //--------------------------------- Customers---------------------------------\\
-export const customerSchema = createSelectSchema(customersTable)
-export const insertCustomerSchema = createInsertSchema(customersTable, {
-  ruc: () => z.coerce.string().length(11),
-  phone: () => z.coerce.string().length(9).nullable().optional(),
-}).omit({
+export const customerSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  ruc: z.string(),
+  phone: z.string().nullable().optional(),
+  address: z.string().nullable().optional(),
+  isRegular: z.boolean(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+})
+
+export const insertCustomerSchema = customerSchema.omit({
   id: true,
+  createdAt: true,
+  updatedAt: true,
 })
 export const updateCustomerSchema = insertCustomerSchema.partial()
+
+export type Customer = z.infer<typeof customerSchema>
+export type CreateCustomer = z.infer<typeof insertCustomerSchema>
+export type UpdateCustomer = z.infer<typeof updateCustomerSchema>

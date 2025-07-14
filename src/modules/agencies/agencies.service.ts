@@ -1,7 +1,7 @@
-import { eq, and, type SQL, ilike, like, desc } from 'drizzle-orm'
+import { eq, desc } from 'drizzle-orm'
 import { agenciesTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
-import type { CreateAgencyDto, UpdateAgencyDto, AgencyDto } from '@/types'
+import type { CreateAgency, UpdateAgency, Agency } from './agencies.validation'
 import type { DB } from '@/types'
 
 export class AgenciesService {
@@ -16,7 +16,7 @@ export class AgenciesService {
     }
   }
 
-  static async getById(db: DB, id: AgencyDto['id']) {
+  static async getById(db: DB, id: Agency['id']) {
     const result = await db.select().from(agenciesTable).where(eq(agenciesTable.id, id))
     if (result.length === 0) {
       throw new HTTPException(404, {
@@ -26,7 +26,7 @@ export class AgenciesService {
     return result[0]
   }
 
-  static async create(db: DB, dto: CreateAgencyDto) {
+  static async create(db: DB, dto: CreateAgency) {
     const results = await db.insert(agenciesTable).values(dto).returning({ insertedId: agenciesTable.id })
 
     if (results.length === 0) {
@@ -39,7 +39,7 @@ export class AgenciesService {
     return customer
   }
 
-  static async update(db: DB, id: AgencyDto['id'], dto: UpdateAgencyDto) {
+  static async update(db: DB, id: Agency['id'], dto: UpdateAgency) {
     const results = await db.update(agenciesTable).set(dto).where(eq(agenciesTable.id, id)).returning()
 
     if (results.length === 0) {
@@ -51,7 +51,7 @@ export class AgenciesService {
     return results[0]
   }
 
-  static async delete(db: DB, id: AgencyDto['id']) {
+  static async delete(db: DB, id: Agency['id']) {
     const results = await db.delete(agenciesTable).where(eq(agenciesTable.id, id)).returning()
 
     if (results.length === 0) {

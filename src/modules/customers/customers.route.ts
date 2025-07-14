@@ -6,6 +6,8 @@ import { HTTPException } from 'hono/http-exception'
 import { z } from 'zod'
 import { zValidator } from '@hono/zod-validator'
 
+import { insertCustomerSchema, updateCustomerSchema } from './customers.validation'
+
 const customerQueryParamsSchema = z.object({
   onlyRegular: z
     .string()
@@ -17,6 +19,7 @@ export type CustomerQueryParams = z.infer<typeof customerQueryParamsSchema>
 
 const app = new Hono<App>()
 
+//Get all
 app.get(
   '/',
   zValidator('query', customerQueryParamsSchema, (result, c) => {
@@ -39,6 +42,7 @@ app.get(
   },
 )
 
+//Get by dni/ruc
 app.get('/search/:dniruc', async (c) => {
   const db = c.get('db')
   const dniRuc = c.req.param('dniruc')
@@ -89,6 +93,7 @@ app.get('/search/:dniruc', async (c) => {
   }
 })
 
+//Get Customer by ruc route
 app.get('/ruc/:ruc', async (c) => {
   const db = c.get('db')
   const ruc = c.req.param('ruc')
@@ -101,6 +106,7 @@ app.get('/ruc/:ruc', async (c) => {
   }
 })
 
+//Get Customer by id route
 app.get('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
@@ -113,11 +119,12 @@ app.get('/:id', async (c) => {
   }
 })
 
-app.post('/', async (c) => {
+//Create Customer route
+app.post('/', zValidator('json', insertCustomerSchema), async (c) => {
   const db = c.get('db')
-  const dto = await c.req.json()
+  const data = c.req.valid('json')
   try {
-    const result = await CustomersService.create(db, dto)
+    const result = await CustomersService.create(db, data)
     return c.json({ ok: true, data: result }, 201)
   } catch (error) {
     return handleError(error, c)

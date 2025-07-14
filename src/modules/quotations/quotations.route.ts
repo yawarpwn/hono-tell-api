@@ -1,4 +1,5 @@
 import { QuotationsService } from './quotations.service'
+import { insertQuotationSchema, updateQuotationSchema } from './quotations.validation'
 import type { App } from '@/types'
 import { handleError } from '@/core/utils'
 import { Hono } from 'hono'
@@ -16,6 +17,7 @@ const querySchema = z.object({
 
 export type QueryQuotations = z.infer<typeof querySchema>
 
+//Get `Customers` Route
 app.get(
   '/',
   zValidator('query', querySchema, (result, c) => {
@@ -48,6 +50,7 @@ app.get(
   },
 )
 
+//Get `Quotation` by number Route
 app.get('/:number', async (c) => {
   const db = c.get('db')
   const number = c.req.param('number')
@@ -59,17 +62,28 @@ app.get('/:number', async (c) => {
   }
 })
 
-app.post('/', async (c) => {
-  const db = c.get('db')
-  const dto = await c.req.json()
-  try {
-    const result = await QuotationsService.create(db, dto)
-    return c.json(result, 200)
-  } catch (error) {
-    return handleError(error, c)
-  }
-})
+// Create `Quotation` Route
+app.post(
+  '/',
+  zValidator('json', insertQuotationSchema, (result, c) => {
+    if (!result.success) {
+      return handleError(result.error, c)
+    }
+  }),
+  async (c) => {
+    const db = c.get('db')
+    const data = c.req.valid('json')
+    console.log(data)
+    try {
+      const result = await QuotationsService.create(db, data)
+      return c.json(result, 200)
+    } catch (error) {
+      return handleError(error, c)
+    }
+  },
+)
 
+// Update `Quotation` Route
 app.put('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
@@ -83,6 +97,7 @@ app.put('/:id', async (c) => {
   }
 })
 
+// Delete `Customer` Route
 app.delete('/:number', async (c) => {
   const db = c.get('db')
   const quotationNumber = c.req.param('number')

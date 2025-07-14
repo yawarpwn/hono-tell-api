@@ -1,7 +1,7 @@
 import { eq, and, desc, type SQL, ilike, like } from 'drizzle-orm'
 import { labelsTable, agenciesTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
-import type { CreateLabelDto, UpdateLabelDto, LabelDto } from '@/types'
+import type { CreateLabel, UpdateLabel, Label } from './labels.validation'
 import type { DB } from '@/types'
 
 export class LabelsService {
@@ -37,7 +37,7 @@ export class LabelsService {
     }
   }
 
-  static async getById(db: DB, id: LabelDto['id']) {
+  static async getById(db: DB, id: Label['id']) {
     const customers = await db
       .select({
         id: labelsTable.id,
@@ -68,7 +68,7 @@ export class LabelsService {
     return customers[0]
   }
 
-  static async create(db: DB, dto: CreateLabelDto) {
+  static async create(db: DB, dto: CreateLabel) {
     const results = await db.insert(labelsTable).values(dto).returning({ insertedId: labelsTable.id })
 
     if (results.length === 0) {
@@ -81,7 +81,7 @@ export class LabelsService {
     return customer
   }
 
-  static async update(db: DB, id: LabelDto['id'], dto: UpdateLabelDto) {
+  static async update(db: DB, id: Label['id'], dto: UpdateLabel) {
     const results = await db.update(labelsTable).set(dto).where(eq(labelsTable.id, id)).returning()
 
     if (results.length === 0) {
@@ -93,7 +93,7 @@ export class LabelsService {
     return results[0]
   }
 
-  static async delete(db: DB, id: LabelDto['id']) {
+  static async delete(db: DB, id: Label['id']) {
     const results = await db.delete(labelsTable).where(eq(labelsTable.id, id)).returning()
 
     if (results.length === 0) {
