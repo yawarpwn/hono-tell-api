@@ -58,7 +58,7 @@ app.use('/v2/auth/*', async (c, next) => {
   await next()
 })
 
-app.use('/subscribe/*', async (c, next) => {
+app.use('/v2/subscribe/*', async (c, next) => {
   const db = drizzle(c.env.DB)
   c.set('db', db)
   await next()
