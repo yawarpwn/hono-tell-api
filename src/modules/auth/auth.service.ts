@@ -1,7 +1,7 @@
-import { eq, and, type SQL, ilike, like } from 'drizzle-orm'
-import { customersTable, usersTable } from '@/core/db/schemas'
+import { eq } from 'drizzle-orm'
+import { usersTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
-import type { CreateCustomerDto, UpdateCustomerDto, CustomerDto, LoginDto } from '@/types'
+import type { Login } from './auth.validation'
 import type { DB } from '@/types'
 import bcrypt from 'bcryptjs'
 
@@ -28,7 +28,7 @@ export class AuthService {
       email: user.email,
     }
   }
-  static async login(db: DB, user: LoginDto) {
+  static async login(db: DB, user: Login) {
     //Search user in db by email
     const [userFromDb] = await db.select().from(usersTable).where(eq(usersTable.email, user.email))
     console.log({ userFromDb })

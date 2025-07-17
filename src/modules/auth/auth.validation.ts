@@ -13,4 +13,5 @@ export const loginSchema = z.object({
   password: z.string(),
 })
 
-export type UserDto = z.infer<typeof UserSchema>
+export type User = z.infer<typeof UserSchema>
+export type Login = z.infer<typeof loginSchema>
