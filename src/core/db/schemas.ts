@@ -167,7 +167,7 @@ export const signalsTable = sqliteTable('signals', {
     .$onUpdate(() => new Date()),
 })
 
-export const galleryCategoriesTable = sqliteTable('gallery_category', {
+export const galleryCategoriesTable = sqliteTable('gallery_categories', {
   id: integer().primaryKey({ autoIncrement: true }),
   name: text({ enum: galleryCategories }).notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
