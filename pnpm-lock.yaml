@@ -20,6 +20,9 @@ importers:
       cloudinary:
         specifier: ^2.5.1
         version: 2.7.0
+      dotenv:
+        specifier: ^17.2.0
+        version: 17.2.0
       drizzle-orm:
         specifier: ^0.38.4
         version: 0.38.4(@cloudflare/workers-types@4.20250712.0)(postgres@3.4.5)(react@19.1.0)
@@ -51,9 +54,6 @@ importers:
       '@types/jsonwebtoken':
         specifier: ^9.0.8
         version: 9.0.10
-      '@types/pdfmake':
-        specifier: ^0.2.11
-        version: 0.2.11
       drizzle-kit:
         specifier: ^0.30.2
         version: 0.30.6
@@ -694,12 +694,6 @@ packages:
   '@types/node@24.0.13':
     resolution: {integrity: sha512-Qm9OYVOFHFYg3wJoTSrz80hoec5Lia/dPp84do3X7dZvLikQvM1YpmvTBEdIr/e+U8HTkFjLHLnl78K/qjf+jQ==}
 
-  '@types/pdfkit@0.17.0':
-    resolution: {integrity: sha512-krED/Otct47bF6yVQNWD34k2+bdyMt1isBvRoC/PubRO37uCNUg2FOtbjn+OPWEXb947QIhQ09q8SOWYXX8B1A==}
-
-  '@types/pdfmake@0.2.11':
-    resolution: {integrity: sha512-gglgMQhnG6C2kco13DJlvokqTxL+XKxHwCejElH8fSCNF9ZCkRK6Mzo011jQ0zuug+YlIgn6BpcpZrARyWdW3Q==}
-
   acorn-walk@8.3.2:
     resolution: {integrity: sha512-cjkyv4OtNCIeqhHrfS81QWXoCBPExR/J62oyEqepVw8WaQeSqpW2uhuLPh1m9eWhDuOo/jUXVTlifvesOWp/4A==}
     engines: {node: '>=0.4.0'}
@@ -781,6 +775,10 @@ packages:
 
   domutils@3.2.2:
     resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
+
+  dotenv@17.2.0:
+    resolution: {integrity: sha512-Q4sgBT60gzd0BB0lSyYD3xM4YxrXA9y4uBDof1JNYGzOXrQdQ6yX+7XIAqoFOGQFOTK1D3Hts5OllpxMDZFONQ==}
+    engines: {node: '>=12'}
 
   drizzle-kit@0.30.6:
     resolution: {integrity: sha512-U4wWit0fyZuGuP7iNmRleQyK2V8wCuv57vf5l3MnG4z4fzNTjY/U13M8owyQ5RavqvqxBifWORaR3wIUzlN64g==}
@@ -1577,15 +1575,6 @@ snapshots:
     dependencies:
       undici-types: 7.8.0
 
-  '@types/pdfkit@0.17.0':
-    dependencies:
-      '@types/node': 24.0.13
-
-  '@types/pdfmake@0.2.11':
-    dependencies:
-      '@types/node': 24.0.13
-      '@types/pdfkit': 0.17.0
-
   acorn-walk@8.3.2: {}
 
   acorn@8.14.0: {}
@@ -1659,6 +1648,8 @@ snapshots:
       dom-serializer: 2.0.0
       domelementtype: 2.3.0
       domhandler: 5.0.3
+
+  dotenv@17.2.0: {}
 
   drizzle-kit@0.30.6:
     dependencies:

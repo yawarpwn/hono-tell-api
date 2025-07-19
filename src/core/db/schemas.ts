@@ -79,6 +79,8 @@ export const quotationsTable = sqliteTable('quotations', {
     onDelete: 'set null',
     onUpdate: 'no action',
   }),
+  validityDays: integer('validity_days').notNull().default(15),
+  observations: text('observations'),
   isPaymentPending: integer('is_payment_pending', { mode: 'boolean' }).default(false),
   items: text('items', { mode: 'json' }).notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),

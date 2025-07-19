@@ -84,18 +84,27 @@ app.post(
 )
 
 // Update `Quotation` Route
-app.put('/:id', async (c) => {
-  const db = c.get('db')
-  const id = c.req.param('id')
+app.put(
+  '/:id',
+  zValidator('json', updateQuotationSchema, (result, c) => {
+    if (!result.success) {
+      return handleError(result.error, c)
+    }
+  }),
+  async (c) => {
+    const db = c.get('db')
+    const id = c.req.param('id')
 
-  try {
-    const dto = await c.req.json()
-    const results = await QuotationsService.update(db, id, dto)
-    return c.json(results)
-  } catch (error) {
-    return handleError(error, c)
-  }
-})
+    try {
+      const data = c.req.valid('json')
+      console.log('quotation update data: ', data)
+      const results = await QuotationsService.update(db, id, data)
+      return c.json(results)
+    } catch (error) {
+      return handleError(error, c)
+    }
+  },
+)
 
 // Delete `Customer` Route
 app.delete('/:number', async (c) => {

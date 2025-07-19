@@ -88,7 +88,7 @@ app.get('/', async (c) => {
 })
 
 // Routes
-app.route('/v2/api/apigallery', gallery)
+app.route('/v2/api/gallery', gallery)
 app.route('/v2/api/quotations', quotations)
 app.route('/v2/api/customers', customers)
 app.route('/v2/api/products', products)
