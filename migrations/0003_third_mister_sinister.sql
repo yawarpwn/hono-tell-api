@@ -1,0 +1,1 @@
+ALTER TABLE `quotations` ADD `standard_terms` text DEFAULT '["DESIGNS_APPROVAL"]';

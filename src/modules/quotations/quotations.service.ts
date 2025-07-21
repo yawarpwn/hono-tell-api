@@ -32,6 +32,7 @@ export class QuotationsService {
         isPaymentPending: quotationsTable.isPaymentPending,
         observations: quotationsTable.observations,
         validityDays: quotationsTable.validityDays,
+        standardTerms: quotationsTable.standardTerms,
         items: quotationsTable.items,
         createdAt: quotationsTable.createdAt,
         updatedAt: quotationsTable.updatedAt,
@@ -89,6 +90,7 @@ export class QuotationsService {
         items: quotationsTable.items,
         createdAt: quotationsTable.createdAt,
         updatedAt: quotationsTable.updatedAt,
+        standardTerms: quotationsTable.standardTerms,
         customer: {
           id: customersTable.id,
           name: customersTable.name,
@@ -123,6 +125,7 @@ export class QuotationsService {
         isPaymentPending: quotationsTable.isPaymentPending,
         observations: quotationsTable.observations,
         validityDays: quotationsTable.validityDays,
+        standardTerms: quotationsTable.standardTerms,
         items: quotationsTable.items,
         customerId: customersTable.id,
         customer: {

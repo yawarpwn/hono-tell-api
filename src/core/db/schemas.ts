@@ -66,6 +66,7 @@ export const labelsTable = sqliteTable('labels', {
     .$onUpdate(() => new Date()),
 })
 
+//Quotations
 export const quotationsTable = sqliteTable('quotations', {
   id: text('id')
     .primaryKey()
@@ -81,6 +82,7 @@ export const quotationsTable = sqliteTable('quotations', {
   }),
   validityDays: integer('validity_days').notNull().default(15),
   observations: text('observations'),
+  standardTerms: text('standard_terms', { mode: 'json' }).$type<string[]>().default(['DESIGNS_APPROVAL']),
   isPaymentPending: integer('is_payment_pending', { mode: 'boolean' }).default(false),
   items: text('items', { mode: 'json' }).notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
@@ -88,6 +90,19 @@ export const quotationsTable = sqliteTable('quotations', {
     .notNull()
     .$onUpdate(() => new Date()),
 })
+
+// export const quotationTermsTable = sqliteTable('quotation_terms', {
+//   id: integer().primaryKey({ autoIncrement: true }),
+//   key: text().notNull(),
+//   value: text().notNull(),
+//   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+// })
+//
+// // Relación muchos-a-muchos entre quotations y terms
+// export const quotationToTermsTable = sqliteTable('quotation_to_terms', {
+//   quotationId: text('quotation_id').references(() => quotationsTable.id),
+//   termId: text('term_id').references(() => quotationTermsTable.id),
+// })
 
 export const productsTable = sqliteTable('products', {
   id: text('id')

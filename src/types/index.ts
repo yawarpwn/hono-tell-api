@@ -1,6 +1,7 @@
 import type { DrizzleD1Database } from 'drizzle-orm/d1'
+import type * as schema from '@/core/db/schemas'
 
-export type DB = DrizzleD1Database
+export type DB = DrizzleD1Database<typeof schema>
 
 type Bindings = {
   POSTGRES_URL: string
