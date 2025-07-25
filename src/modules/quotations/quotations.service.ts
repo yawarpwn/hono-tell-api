@@ -153,21 +153,22 @@ export class QuotationsService {
     return quotations[0]
   }
 
-  static async create(db: DB, dto: CreateQuotation) {
-    let customerId = dto.customerId
+  static async create(db: DB, quoData: CreateQuotation) {
+    let customerId = quoData.customerId
 
-    if (!dto.customerId && dto.customer?.name && dto.customer?.ruc) {
+    if (!quoData.customerId && quoData.customer?.name && quoData.customer?.ruc) {
       console.log('insert new customer to db')
       const { insertedId } = await CustomersService.create(db, {
-        name: dto.customer.name,
-        ruc: dto.customer.ruc,
+        name: quoData.customer.name,
+        ruc: quoData.customer.ruc,
+        address: quoData.customer?.address || null,
         isRegular: false,
       })
       customerId = insertedId
     }
 
     const { data, success, error } = insertQuotationSchema.safeParse({
-      ...dto,
+      ...quoData,
       customerId,
     })
 
@@ -234,6 +235,7 @@ export class QuotationsService {
           name: quotationData.customer.name,
           ruc: quotationData.customer.ruc,
           isRegular: quotationData.customer.isRegular,
+          address: quotationData.customer?.address || null,
         })
         customerId = insertedId
       }
