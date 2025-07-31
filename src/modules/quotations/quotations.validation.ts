@@ -18,6 +18,7 @@ export const quotationSchema = z.object({
   validityDays: z.number().positive().optional().nullable(),
   observations: z.string().optional().nullable(),
   standardTerms: z.array(z.string()),
+  paymentCodition: z.enum(['ADVANCE_50', 'ADVANCE_20', 'ADVANCE_80', 'FULL_PREPAYMENT', 'CREDIT']),
   deadline: z
     .number({
       message: 'Fecha de entrega debe ser mayor a 0',

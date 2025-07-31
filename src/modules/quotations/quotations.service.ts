@@ -37,6 +37,7 @@ export class QuotationsService {
         createdAt: quotationsTable.createdAt,
         updatedAt: quotationsTable.updatedAt,
         customerId: customersTable.id,
+        paymentCodition: quotationsTable.paymentCodition,
         customer: {
           id: customersTable.id,
           name: customersTable.name,
@@ -91,6 +92,7 @@ export class QuotationsService {
         createdAt: quotationsTable.createdAt,
         updatedAt: quotationsTable.updatedAt,
         standardTerms: quotationsTable.standardTerms,
+        paymentCodition: quotationsTable.paymentCodition,
         customer: {
           id: customersTable.id,
           name: customersTable.name,
@@ -126,6 +128,7 @@ export class QuotationsService {
         observations: quotationsTable.observations,
         validityDays: quotationsTable.validityDays,
         standardTerms: quotationsTable.standardTerms,
+        paymentCodition: quotationsTable.paymentCodition,
         items: quotationsTable.items,
         customerId: customersTable.id,
         customer: {
@@ -154,6 +157,7 @@ export class QuotationsService {
   }
 
   static async create(db: DB, quoData: CreateQuotation) {
+    //TODO: validar si se seleciona paymentCodition =  `CREDITO` , credit  debe ser mayor a 0
     let customerId = quoData.customerId
 
     if (!quoData.customerId && quoData.customer?.name && quoData.customer?.ruc) {

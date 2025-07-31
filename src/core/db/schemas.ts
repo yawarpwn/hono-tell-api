@@ -78,11 +78,17 @@ export const quotationsTable = sqliteTable('quotations', {
   includeIgv: integer('include_igv', { mode: 'boolean' }).default(false),
   customerId: text('customer_id').references(() => customersTable.id, {
     onDelete: 'set null',
-    onUpdate: 'no action',
+    onUpdate: 'cascade',
   }),
   validityDays: integer('validity_days').notNull().default(15),
   observations: text('observations'),
-  standardTerms: text('standard_terms', { mode: 'json' }).$type<string[]>().default(['DESIGNS_APPROVAL']),
+  standardTerms: text('standard_terms', { mode: 'json' }).$type<string[]>(),
+  paymentCodition: text('payment_codition', {
+    mode: 'text',
+    enum: ['ADVANCE_50', 'ADVANCE_20', 'ADVANCE_80', 'FULL_PREPAYMENT', 'CREDIT'],
+  })
+    .notNull()
+    .default('ADVANCE_50'),
   isPaymentPending: integer('is_payment_pending', { mode: 'boolean' }).default(false),
   items: text('items', { mode: 'json' }).notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
