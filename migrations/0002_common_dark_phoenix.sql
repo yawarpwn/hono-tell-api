@@ -1,1 +1,0 @@
-ALTER TABLE `quotations` ADD `observations` text;

@@ -1,1 +1,0 @@
-ALTER TABLE `quotations` ADD `validity_days` integer DEFAULT 15 NOT NULL;
