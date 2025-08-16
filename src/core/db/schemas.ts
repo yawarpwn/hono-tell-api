@@ -137,22 +137,6 @@ export const productCategoriesTable = sqliteTable('product_categories', {
   createdAt: integer('created_at', { mode: 'timestamp' }).default(sql`(unixepoch())`),
 })
 
-export const watermarksTable = sqliteTable('watermarks', {
-  id: text('id')
-    .primaryKey()
-    .notNull()
-    .$defaultFn(() => crypto.randomUUID()),
-  width: integer('width').notNull(),
-  height: integer('height').notNull(),
-  url: text('url').notNull(),
-  publicId: text('public_id').notNull(),
-  format: text('format').notNull(),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
-    .notNull()
-    .$onUpdate(() => new Date()),
-})
-
 export const subscribersTable = sqliteTable('subscribers', {
   id: text('id')
     .primaryKey()
@@ -184,6 +168,26 @@ export const signalsTable = sqliteTable('signals', {
     .notNull(),
   description: text('description'),
   format: text('format').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$onUpdate(() => new Date()),
+})
+
+export const watermarksTable = sqliteTable('watermarks', {
+  id: text('id')
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => crypto.randomUUID()),
+
+  title: text('title'),
+  width: integer('width').notNull(),
+  height: integer('height').notNull(),
+  url: text('url').notNull(),
+  publicId: text('public_id').notNull(),
+  categoryId: integer('category_id').references(() => galleryCategoriesTable.id),
+  format: text('format').notNull(),
+  isFavorite: integer('is_favorite', { mode: 'boolean' }).default(false),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
   updatedAt: integer('updated_at', { mode: 'timestamp' })
     .notNull()

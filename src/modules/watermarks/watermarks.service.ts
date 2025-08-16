@@ -16,7 +16,7 @@ type UploadResponse = {
 }
 export class WatermarksService {
   static async getAll(db: DB) {
-    const rows = await db.select().from(watermarksTable).orderBy(desc(watermarksTable.updatedAt))
+    const rows = await db.select().from(watermarksTable).orderBy(desc(watermarksTable.createdAt))
     const mappedRows = rows.map((row) => ({
       ...row,
       thumbUrl: row.url.replace(/upload/, 'upload/c_thumb,w_200'),

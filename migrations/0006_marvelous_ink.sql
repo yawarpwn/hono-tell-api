@@ -1,0 +1,1 @@
+ALTER TABLE `watermarks` ADD `is_favorite` integer DEFAULT false;
