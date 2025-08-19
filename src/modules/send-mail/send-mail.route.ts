@@ -18,30 +18,38 @@ type EmailSchema = z.infer<typeof emailSchema>
 export function EmailTemplate({ email, name, message, phone, ruc }: EmailSchema) {
   console.log({ phone, email, name, message, ruc })
   return `
-<div className="container">
-<div className="header">
-<h1>Nuevo Mensaje de Contacto</h1>
-<p>Has recibido un nuevo mensaje desde tu página web.</p>
-</div>
-<div className="content">
-<p>
-<span className="label font-bold ">Nombre:</span> ${name}
-</p>
-<p>
-<span className="label font-bold ">Ruc:</span> ${ruc ?? ''}
-</p>
-<p>
-<span className="label font-bold">Correo Electrónico:</span> ${email}
-</p>
-<p>
-<span className="label font-bold">Teléfono:</span> ${phone ?? ''}
-</p>
-<p>
-<span className="label font-bold">Mensaje:</span>
-</p>
-<p>${message}</p>
-</div>
-</div>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px;">
+    <div style="background-color: #222; color: #ffffff; padding: 20px; text-align: center;">
+      <h1 style="font-size: 24px; margin: 0; font-weight: bold;">Nuevo Mensaje de Contacto</h1>
+      <p style="font-size: 14px; margin: 8px 0 0; opacity: 0.9;">Hemos recibido una nueva solicitud desde tu sitio web.</p>
+    </div>
+    <div style="padding: 20px; color: #333333;">
+      <p style="margin: 0 0 12px;">
+        <span style="font-weight: bold; color: #222;">Nombre:</span>  ${name}
+      </p>
+      <p style="margin: 0 0 12px;">
+        <span style="font-weight: bold; color: #222;">RUC:</span> ${ruc}
+      </p>
+      <p style="margin: 0 0 12px;">
+        <span style="font-weight: bold; color: #222;">Correo Electrónico:</span> ${email} 
+      </p>
+      <p style="margin: 0 0 12px;">
+        <span style="font-weight: bold; color: #222;">Teléfono:</span> +51 ${phone} 
+      </p>
+      <p style="margin: 0 0 12px;">
+        <span style="font-weight: bold; color: #222;">Mensaje:</span>
+      </p>
+      <p style="margin: 0 0 20px; padding-left: 15px; border-left: 4px solid #222; font-style: italic;">
+      ${message}
+      </p>
+      <a href="mailto:${email}" style="display: inline-block; padding: 10px 20px; background-color: #222; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold;">Responder al Cliente</a>
+    </div>
+    <div style="background-color: #f4f4f9; padding: 15px; text-align: center; font-size: 12px; color: #666666; border-top: 1px solid #e0e0e0;">
+      <p style="margin: 0;">Este mensaje fue enviado desde tu sitio web <a href="https://tellsenales.com.pe/" style="color: #222; text-decoration: underline;">tellsenales.com.pe</a>.</p>
+    </div>
+  </div>
+</body>
 `
 }
 
@@ -61,8 +69,8 @@ app.post(
     try {
       const { data, error } = await resend.emails.send({
         from: `${name} <ventas@tellsenales.com>`,
-        to: ['ventas@tellsenales.com'],
-        subject: 'Cliente desde la WEB',
+        to: ['ventas@tellsenales.com.pe'],
+        subject: `Solicito Cotización - ${name} - ${ruc}`,
         html: EmailTemplate({ email, name, message, ruc, phone }),
       })
 
