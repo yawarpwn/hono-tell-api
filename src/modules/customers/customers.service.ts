@@ -88,10 +88,12 @@ export class CustomersService {
     // https://dniruc.apisperu.com/api/v1/ruc/20131312955?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5leWRhLm1pbGkxMUBnbWFpbC5jb20ifQ.UtiFRViVJrO2YGQ5H3alRcFBhnSwuE5yKU9PYuojgq0
     const url = `${API_URL}/ruc/${ruc}?token=${TOKEN}`
 
-    const response = await fetch(url)
-    if (!response.ok) throw new Error('Network response was not ok')
+    const res = await fetch(url)
 
-    const data = (await response.json()) as ApiRucResponse
+    if (!res.ok) throw new Error(`ERROR: ${res.status}: ${res.statusText}`)
+
+    const data = (await res.json()) as ApiRucResponse
+    console.log(data)
 
     if (!isApiRucResponseSuccess(data)) {
       throw new Error(data.message)

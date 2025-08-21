@@ -11,14 +11,18 @@
   "dependencies": {
     "@hono/hello": "^0.1.1",
     "@hono/zod-validator": "^0.4.2",
+    "@js-temporal/polyfill": "^0.5.1",
+    "@types/xml2js": "^0.4.14",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.1",
     "dotenv": "^17.2.0",
     "drizzle-orm": "^0.38.4",
     "drizzle-zod": "0.5.1",
+    "fast-xml-parser": "^5.2.5",
     "hono": "^4.6.19",
     "jsonwebtoken": "^9.0.2",
     "resend": "^4.2.0",
+    "xml2js": "^0.6.2",
     "zod": "^3.24.1",
     "zod-validator": "^1.0.1"
   },

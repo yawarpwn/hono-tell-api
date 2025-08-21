@@ -10,6 +10,8 @@ export const itemQuotationSChema = z.object({
   description: z.string(),
 })
 
+export type QuotationItem = z.infer<typeof itemQuotationSChema>
+
 export const quotationSchema = z.object({
   id: z.string(),
   number: z.number().positive(),

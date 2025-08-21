@@ -16,6 +16,7 @@ import watermarks from '@/modules/watermarks/watermarks.route'
 import auth from '@/modules/auth/auth.route'
 import signals from '@/modules/signals/signals.route'
 import signalCategories from '@/modules/signal-categories/signal-categories.route'
+import invoices from '@/modules/invoices/invoices.route'
 
 import sendMail from '@/modules/send-mail/send-mail.route'
 import suscribe from '@/modules/suscribe.route'
@@ -90,6 +91,7 @@ app.get('/', async (c) => {
 // Routes
 app.route('/v2/api/gallery', gallery)
 app.route('/v2/api/quotations', quotations)
+app.route('/v2/api/invoices', invoices)
 app.route('/v2/api/customers', customers)
 app.route('/v2/api/products', products)
 app.route('/v2/api/product-categories', productCategories)
