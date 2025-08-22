@@ -1,6 +1,6 @@
-import { Invoice, XmlInvoice } from '@/types'
-import { Quotation } from '../quotations/quotations.validation'
+import { XmlInvoice } from '@/types'
 import { numberToLetters, formatDateToLocal, extractDataFromXml, extractInvoiceData } from '@/core/utils'
+import type { CreateInvoice, InvoiceItem } from './invoices.route'
 
 type SunatResponse = {
   xml: string
@@ -29,7 +29,13 @@ type InvoceData = {
   fechaEmision: string
 }
 
-function calcTaxes(items: Quotation['items']) {
+type Item = {
+  price: number
+  qty: number
+  unitSize: string
+  description: string
+}
+function calcTaxes(items: Item[]) {
   // Calcular el total (suma de precio * cantidad de todos los items)
   const total = items.reduce((sum, item) => sum + item.price * item.qty, 0)
 
@@ -48,7 +54,7 @@ function calcTaxes(items: Quotation['items']) {
 
 const fixDigits = (num: number) => parseFloat(num.toFixed(4))
 
-function getDetails(items: Quotation['items']) {
+function getDetails(items: InvoiceItem[]) {
   return items.map((item) => {
     const mtoValorUnitario = fixDigits(item.price / 1.18)
     const igv = fixDigits(mtoValorUnitario * 0.18)
@@ -85,13 +91,13 @@ export class InvoicesService {
     return extractInvoiceData(xmlObject)
   }
 
-  static async generateInvoice(quotation: Quotation) {
+  static async generateInvoice(invoiceDto: CreateInvoice) {
     const client = {
       tipoDoc: '6',
-      numDoc: Number(quotation.customer.ruc),
-      rznSocial: quotation.customer.name,
+      numDoc: Number(invoiceDto.customer.documentNumber),
+      rznSocial: invoiceDto.customer.companyName,
       address: {
-        direccion: quotation.customer?.address,
+        direccion: invoiceDto.customer.address,
         provincia: null,
         departamento: null,
         distrito: null,
@@ -115,7 +121,7 @@ export class InvoicesService {
     const fecVencimiento = fechaEmision
     const correlativo = '01'
 
-    const { igv, subTotal: operacionGravada, total } = calcTaxes(quotation.items)
+    const { igv, subTotal: operacionGravada, total } = calcTaxes(invoiceDto.items)
 
     const invoice = {
       ublVersion: '2.1',
@@ -150,7 +156,7 @@ export class InvoicesService {
       valorVenta: operacionGravada,
       subTotal: total,
       mtoImpVenta: total,
-      details: getDetails(quotation.items),
+      details: getDetails(invoiceDto.items),
       legends: [
         {
           code: '1000',
