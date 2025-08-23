@@ -30,11 +30,17 @@ export type InvoiceItem = z.infer<typeof invoiceItemSchema>
 const app = new Hono<App>()
 
 // Obtner facturas
-app.get('/', (c) => {
-  const data = InvoicesService.extractDataFromXml(xml)
-  const invoice = InvoicesService.extractInvoiceData(data)
-
-  return c.json(invoice)
+app.get('/', async (c) => {
+  const db = c.get('db')
+  try {
+    const invoices = await InvoicesService.getAll(db)
+    return c.json(invoices)
+  } catch (error) {
+    return c.json({
+      ok: false,
+      message: 'Error al obtener las facturas',
+    })
+  }
 })
 
 // Get by invoice by id
@@ -55,13 +61,15 @@ app.post(
     }
   }),
   async (c) => {
+    const db = c.get('db')
     try {
       const invoiceData = c.req.valid('json')
 
       // Generar la factura con api externa
-      const result = await InvoicesService.generateInvoice(invoiceData)
+      const { xml, hash } = await InvoicesService.generateInvoice(invoiceData)
 
       // Guardar el xml, hash en la base de datos
+      await InvoicesService.create(db, { xml, hash })
 
       // Retornar un mensaje al cliente
       return c.json({ ok: true, message: 'Factura creada exitosamente' })

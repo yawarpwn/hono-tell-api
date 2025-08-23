@@ -219,3 +219,13 @@ export const galleryTable = sqliteTable('gallery', {
     .notNull()
     .$onUpdate(() => new Date()),
 })
+
+export const invoicesTables = sqliteTable('invoices', {
+  id: text('id')
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => crypto.randomUUID()),
+  xml: text().notNull(),
+  hash: text().notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+})

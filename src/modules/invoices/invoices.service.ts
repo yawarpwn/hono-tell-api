@@ -1,6 +1,7 @@
-import { XmlInvoice } from '@/types'
-import { numberToLetters, formatDateToLocal, extractDataFromXml, extractInvoiceData } from '@/core/utils'
+import type { DB, XmlInvoice } from '@/types'
 import type { CreateInvoice, InvoiceItem } from './invoices.route'
+import { numberToLetters, formatDateToLocal, extractDataFromXml, extractInvoiceData } from '@/core/utils'
+import { invoicesTables } from '@/core/db/schemas'
 
 type SunatResponse = {
   xml: string
@@ -91,6 +92,17 @@ export class InvoicesService {
     return extractInvoiceData(xmlObject)
   }
 
+  static async create(db: DB, data: { xml: string; hash: string }) {
+    const result = await db.insert(invoicesTables).values({
+      hash: data.hash,
+      xml: data.xml,
+    })
+  }
+
+  static async getAll(db: DB) {
+    return db.select().from(invoicesTables).all()
+  }
+
   static async generateInvoice(invoiceDto: CreateInvoice) {
     const client = {
       tipoDoc: '6',
@@ -102,18 +114,6 @@ export class InvoicesService {
         departamento: null,
         distrito: null,
         ubigueo: null,
-      },
-    }
-    const clientExample = {
-      tipoDoc: '6',
-      numDoc: 20000000002,
-      rznSocial: 'Cliente',
-      address: {
-        direccion: 'Direccion cliente',
-        provincia: 'LIMA',
-        departamento: 'LIMA',
-        distrito: 'LIMA',
-        ubigueo: '150101',
       },
     }
 
