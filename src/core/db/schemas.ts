@@ -229,3 +229,25 @@ export const invoicesTables = sqliteTable('invoices', {
   hash: text().notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
 })
+
+export const fireExtinguerCertificatesTable = sqliteTable('fire_extinguisher_certificates', {
+  id: text('id')
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => crypto.randomUUID()),
+  emissionDate: text('emission_date').notNull(),
+  type: text('type', {
+    mode: 'text',
+    enum: ['PQS', 'CO2'],
+  }).notNull(),
+  capacity: text('capacity').notNull(),
+  serie: text('serie').notNull(),
+  ruc: text('ruc'),
+  companyName: text('company_name'),
+  address: text('address'),
+  model: text('model', {
+    mode: 'text',
+    enum: ['Nacional', 'Importado'],
+  }).notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+})

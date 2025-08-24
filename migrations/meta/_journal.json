@@ -8,7 +8,13 @@
       "when": 1755870028375,
       "tag": "0007_slippery_darkhawk",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1755993551198,
+      "tag": "0008_lonely_sersi",
+      "breakpoints": true
     }
   ]
 }
-
