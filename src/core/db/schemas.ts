@@ -241,7 +241,7 @@ export const fireExtinguerCertificatesTable = sqliteTable('fire_extinguisher_cer
     enum: ['PQS', 'CO2'],
   }).notNull(),
   capacity: text('capacity').notNull(),
-  serie: text('serie').notNull(),
+  serie: text('serie').notNull().unique(),
   ruc: text('ruc'),
   companyName: text('company_name'),
   address: text('address'),

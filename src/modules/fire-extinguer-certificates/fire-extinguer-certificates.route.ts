@@ -27,7 +27,30 @@ app.get('/', async (c) => {
     const data = await FireExtinguerCertificateService.getAll(db)
     return c.json(
       {
-        success: true,
+        ok: true,
+        data,
+      },
+      200,
+    )
+  } catch (error) {
+    return handleError(error, c)
+  }
+})
+
+//get by id
+app.get('/:id', async (c) => {
+  const db = c.get('db')
+  const id = c.req.param('id')
+
+  if (!id) {
+    return c.json({ ok: false, message: 'id is required' }, 400)
+  }
+
+  try {
+    const data = await FireExtinguerCertificateService.getById(db, id)
+    return c.json(
+      {
+        ok: true,
         data,
       },
       200,
@@ -49,8 +72,8 @@ app.post(
     const db = c.get('db')
     const data = c.req.valid('json')
     try {
-      const result = await FireExtinguerCertificateService.create(db, data)
-      return c.json({ ok: true, data: result }, 201)
+      await FireExtinguerCertificateService.create(db, data)
+      return c.json({ ok: true, message: 'Certificado creado exitosamente' }, 201)
     } catch (error) {
       return handleError(error, c)
     }
@@ -62,6 +85,20 @@ app.put('/:id', async (c) => {
   return c.json({
     todo: true,
   })
+})
+
+app.delete('/:id', async (c) => {
+  const db = c.get('db')
+  const id = c.req.param('id')
+  try {
+    const { deletedId } = await FireExtinguerCertificateService.delete(db, id)
+    return c.json({
+      ok: true,
+      deletedId,
+    })
+  } catch (error) {
+    return handleError(error, c)
+  }
 })
 
 export default app
