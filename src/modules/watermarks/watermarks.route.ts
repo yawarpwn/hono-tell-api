@@ -40,7 +40,9 @@ app.post(
     try {
       const formdata = await c.req.formData()
       const files = formdata.getAll('files[]') as File[]
-
+      const title = formdata.get('title') as string
+      const isFavorite = Boolean(formdata.get('isFavorite'))
+      const categoryId = Number(formdata.get('categoryId'))
       const db = c.get('db')
 
       for (const file of files) {
@@ -51,11 +53,14 @@ app.post(
           height: response.height,
           format: response.format,
           publicId: response.public_id,
+          title: title,
+          isFavorite: isFavorite,
+          categoryId: categoryId,
         })
 
-        console.log({ result })
+        console.log({ 'cloudflare result': result })
       }
-      return c.json({ message: `inserted ${files.length} images success` }, 201)
+      return c.json({ ok: true, message: `inserted ${files.length} images success` }, 201)
     } catch (error) {
       return handleError(error, c)
     }
@@ -65,15 +70,20 @@ app.post(
 app.put(
   '/:id',
   zValidator('json', updateWatermarkSchema, async (result, c) => {
-    if (!result.success) return c.json({ ok: false, message: 'invalid' }, 400)
+    if (!result.success) {
+      return c.json({ ok: false, message: 'invalid schema' }, 400)
+    }
   }),
   async (c) => {
     const db = c.get('db')
     const id = c.req.param('id')
     const data = await c.req.json()
     try {
-      const results = await WatermarksService.update(db, id, data)
-      return c.json(results)
+      await WatermarksService.update(db, id, data)
+      return c.json({
+        ok: true,
+        message: 'Watermark updated successfully',
+      })
     } catch (error) {
       return handleError(error, c)
     }
@@ -86,9 +96,11 @@ app.delete('/:id', async (c) => {
   try {
     const watermark = await WatermarksService.getById(db, id)
     await WatermarksService.destroyImage(watermark.publicId, c.env.CLOUDINARY_API_SECRET)
-    // return c.json({ result })
     const results = await WatermarksService.delete(db, id)
-    return c.json(results)
+    return c.json({
+      ok: true,
+      message: `Photo with id ${id} deleted successfully`,
+    })
   } catch (error) {
     return handleError(error, c)
   }

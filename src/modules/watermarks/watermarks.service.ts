@@ -59,7 +59,7 @@ export class WatermarksService {
   }
 
   static async uploadImage(file: File, apiSecret: string) {
-    const transformation = 'c_limit,w_1000,h_1000'
+    const transformation = 'c_limit,w_1200,h_1200'
     const format = 'webp'
     const folder = 'watermarked'
 
@@ -79,14 +79,15 @@ export class WatermarksService {
     formData.append('format', format)
     // formData.append('eager', eager)
 
-    return fetch(`${API_REST_CLOUDINARY}/${cloudName}/image/upload`, {
+    const res = await fetch(`${API_REST_CLOUDINARY}/${cloudName}/image/upload`, {
       method: 'POST',
       body: formData,
-    }).then((res) => {
-      console.log(res)
-      // if (!res.ok) throw new Error('Network response was not ok')
-      return res.json<UploadResponse>()
     })
+
+    if (!res.ok) throw new Error(`Error uploading image: ${res.statusText}`)
+    const data = await res.json<UploadResponse>()
+    console.log({ 'cloudflare response': data })
+    return data
   }
 
   static async destroyImage(publicId: string, apiSecret: string) {
@@ -116,14 +117,7 @@ export class WatermarksService {
 
   static async update(db: DB, id: Watermark['id'], data: UpdateWatermark) {
     const results = await db.update(watermarksTable).set(data).where(eq(watermarksTable.id, id)).returning()
-
-    if (results.length === 0) {
-      throw new HTTPException(404, {
-        message: `Watermk with id ${id} not found`,
-      })
-    }
-
-    return results[0]
+    console.log(results)
   }
 
   static async delete(db: DB, id: Watermark['id']) {
