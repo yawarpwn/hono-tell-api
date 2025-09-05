@@ -1,12 +1,10 @@
 import type { App } from '@/types'
 import { Hono } from 'hono'
 import { CustomersService } from './customers.service'
-import { handleError } from '@/core/utils'
 import { HTTPException } from 'hono/http-exception'
 import { z } from 'zod'
 import { zValidator } from '@hono/zod-validator'
-
-import { insertCustomerSchema } from './customers.validation'
+import { insertCustomerSchema, updateCustomerSchema } from './customers.validation'
 
 const customerQueryParamsSchema = z.object({
   onlyRegular: z
@@ -25,6 +23,7 @@ app.get(
   zValidator('query', customerQueryParamsSchema, (result, c) => {
     if (!result.success) {
       return c.json({
+        success: false,
         message: 'Invalid query params',
       })
     }
@@ -33,63 +32,47 @@ app.get(
     const db = c.get('db')
     const { onlyRegular } = c.req.valid('query')
 
-    try {
-      const customers = await CustomersService.getAll(db, { onlyRegular })
-      return c.json(customers, 200)
-    } catch (error) {
-      return handleError(error, c)
-    }
+    const customers = await CustomersService.getAll(db, { onlyRegular })
+    return c.json(customers, 200)
   },
 )
 
-//Get by dni/ruc
 app.get('/search/:dniruc', async (c) => {
   const db = c.get('db')
   const dniRuc = c.req.param('dniruc')
 
   //Buscar en base de datos si existe el cliente
+  if (!dniRuc)
+    throw new HTTPException(400, {
+      message: 'dni/Ruc is invalid',
+    })
 
-  try {
-    if (!dniRuc)
-      throw new HTTPException(400, {
-        message: 'dni/Ruc is invalid',
-      })
+  if (dniRuc.length === 11) {
+    //buscar por ruc en base de datos
+    const customerFromDb = await CustomersService.getByRuc(db, dniRuc)
 
-    if (dniRuc.length === 11) {
-      try {
-        //buscar por ruc en base de datos
-        const customerFromDb = await CustomersService.getByRuc(db, dniRuc)
-        return c.json(
-          {
-            id: customerFromDb.id,
-            name: customerFromDb.name,
-            ruc: customerFromDb.ruc,
-            isRegular: customerFromDb.isRegular,
-            address: customerFromDb.address,
-          },
-          200,
-        )
-      } catch (error) {
-        //buscar por ruc en sunat
-        const customerFromSunat = await CustomersService.getByRucFromSunat(dniRuc)
-        return c.json({ ...customerFromSunat, isRegular: false }, 200)
-      }
-    }
-
-    if (dniRuc.length === 8) {
-      //buscar por dni en sunat
-      const customerFromSunat = await CustomersService.getByDniFromSunat(dniRuc)
+    if (customerFromDb) {
+      return c.json(
+        {
+          id: customerFromDb.id,
+          name: customerFromDb.name,
+          ruc: customerFromDb.ruc,
+          isRegular: customerFromDb.isRegular,
+          address: customerFromDb.address,
+        },
+        200,
+      )
+    } else {
+      //buscar por ruc en api sunat
+      const customerFromSunat = await CustomersService.getByRucFromSunat(dniRuc)
       return c.json({ ...customerFromSunat, isRegular: false }, 200)
     }
+  }
 
-    return c.json(
-      {
-        message: 'dni/ruc not found',
-      },
-      400,
-    )
-  } catch (error) {
-    return handleError(error, c)
+  if (dniRuc.length === 8) {
+    //buscar por dni en sunat
+    const customerFromSunat = await CustomersService.getByDniFromSunat(dniRuc)
+    return c.json({ ...customerFromSunat, isRegular: false }, 200)
   }
 })
 
@@ -98,12 +81,8 @@ app.get('/ruc/:ruc', async (c) => {
   const db = c.get('db')
   const ruc = c.req.param('ruc')
 
-  try {
-    const customer = await CustomersService.getByRuc(db, ruc)
-    return c.json(customer)
-  } catch (error) {
-    return handleError(error, c)
-  }
+  const customer = await CustomersService.getByRuc(db, ruc)
+  return c.json(customer)
 })
 
 //Get Customer by id route
@@ -111,55 +90,43 @@ app.get('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
 
-  try {
-    const customer = await CustomersService.getById(db, id)
-    return c.json(customer)
-  } catch (error) {
-    return handleError(error, c)
-  }
+  const customer = await CustomersService.getById(db, id)
+  return c.json(customer, 200)
 })
 
 //Create Customer route
 app.post(
   '/',
-  zValidator('json', insertCustomerSchema, (result, c) => {
-    if (!result.success) {
-      return handleError(result.error, c)
-    }
+  zValidator('json', insertCustomerSchema, (result) => {
+    if (!result.success) throw result.error
   }),
   async (c) => {
     const db = c.get('db')
     const data = c.req.valid('json')
-    try {
-      const result = await CustomersService.create(db, data)
-      return c.json({ ok: true, data: result }, 201)
-    } catch (error) {
-      return handleError(error, c)
-    }
+    const result = await CustomersService.create(db, data)
+    return c.json(result, 201)
   },
 )
 
-app.put('/:id', async (c) => {
-  const db = c.get('db')
-  const id = c.req.param('id')
-  const dto = await c.req.json()
-  try {
-    const results = await CustomersService.update(db, id, dto)
-    return c.json(results)
-  } catch (error) {
-    return handleError(error, c)
-  }
-})
+app.put(
+  '/:id',
+  zValidator('json', updateCustomerSchema, (result) => {
+    if (!result.success) throw result.error
+  }),
+  async (c) => {
+    const db = c.get('db')
+    const id = c.req.param('id')
+    const dto = c.req.valid('json')
+    const result = await CustomersService.update(db, id, dto)
+    return c.json(result, 200)
+  },
+)
 
 app.delete('/:id', async (c) => {
-  const db = c.get('db')
   const id = c.req.param('id')
-  try {
-    const results = await CustomersService.delete(db, id)
-    return c.json(results)
-  } catch (error) {
-    return handleError(error, c)
-  }
+  const db = c.get('db')
+  const results = await CustomersService.delete(db, id)
+  return c.json(results, 200)
 })
 
 export default app

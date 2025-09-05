@@ -36,3 +36,17 @@ export function handleError(error: unknown, c: Context) {
     500,
   )
 }
+
+export function handleSqlError(err: unknown) {
+  if (err instanceof Error) {
+    throw new HTTPException(400, {
+      message: err.message,
+    })
+  }
+  // if (err instanceof Error && err.message.includes('UNIQUE constraint failed')) {
+  //   throw new HTTPException(400, {
+  //     message: `UNIQUE Key violation`,
+  //   })
+  // }
+  throw err
+}

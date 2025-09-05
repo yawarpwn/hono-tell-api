@@ -21,6 +21,9 @@ import invoices from '@/modules/invoices/invoices.route'
 
 import sendMail from '@/modules/send-mail/send-mail.route'
 import suscribe from '@/modules/suscribe.route'
+import z from 'zod'
+import { DatabaseError } from './core/errors'
+import { HTTPException } from 'hono/http-exception'
 
 const app = new Hono<App>()
 
@@ -114,16 +117,59 @@ app.notFound((c) =>
     {
       message: 'ENOENT: Endpoint Not Found',
       ok: false,
-      statusCode: 404,
     },
     404,
   ),
 )
 
 // Error handling
-// app.onError((err, c) => {
-//   console.log(`${err}`);
-//   return c.text("custom erorr ", 500);
-// });
+app.onError((err, c) => {
+  console.log('Error: ', err)
+  if (err instanceof z.ZodError) {
+    return c.json(
+      {
+        success: false,
+        error: 'Datos de entrada inválidos',
+        details: err.errors.map((e) => ({
+          field: e.path.join('.'),
+          message: e.message,
+        })),
+      },
+      400,
+    )
+  }
+
+  if (err instanceof HTTPException) {
+    return c.json(
+      {
+        success: false,
+        message: err.message,
+      },
+      err.status,
+    )
+  }
+
+  if (err instanceof DatabaseError) {
+    return c.json({
+      success: false,
+      message: err.message,
+    })
+  }
+
+  if (err instanceof Error) {
+    return c.json({
+      success: false,
+      message: err.message,
+    })
+  }
+
+  return c.json(
+    {
+      success: false,
+      error: 'Error interno del servidor',
+    },
+    500,
+  )
+})
 
 export default app

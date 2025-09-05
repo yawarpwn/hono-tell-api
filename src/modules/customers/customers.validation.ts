@@ -3,8 +3,16 @@ import { z } from 'zod'
 export const customerSchema = z.object({
   id: z.string(),
   name: z.string(),
-  ruc: z.string(),
-  phone: z.string().nullable().optional(),
+  ruc: z.string().regex(/^(20|10|15)[0-9]{9}$/, {
+    message: 'Invalid RUC',
+  }),
+  phone: z
+    .string()
+    .regex(/^9\d{8}$/, {
+      message: 'Phone number is invalid',
+    })
+    .nullish(),
+  email: z.string().email().nullish(),
   address: z.string().nullable().optional(),
   isRegular: z.boolean().default(false),
   createdAt: z.date(),
