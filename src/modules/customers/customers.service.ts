@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { asc, count, desc, eq, ilike, like, or, sql } from 'drizzle-orm'
 import { customersTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { DB } from '@/types'
@@ -15,14 +15,56 @@ type Company = {
 }
 
 export class CustomersService {
-  static async getAll(db: DB, { onlyRegular }: CustomerQueryParams) {
-    const rows = await db
-      .select()
-      .from(customersTable)
-      .where(onlyRegular ? eq(customersTable.isRegular, true) : undefined)
-    // .limit(pageSize)
-    // .offset((page - 1) * pageSize)
-    return rows
+  static async getAll(db: DB, queryParms: CustomerQueryParams) {
+    const { onlyRegular, page, limit, search, sortBy, sortOrder } = queryParms
+
+    console.log({ onlyRegular, page, limit, search, sortBy, sortOrder })
+
+    // Construir condicion where
+    let whereCodition = []
+
+    if (onlyRegular) {
+      whereCodition.push(eq(customersTable.isRegular, true))
+    }
+
+    if (search) {
+      whereCodition.push(or(like(customersTable.name, `%${search}%`), like(customersTable.ruc, `%${search}%`)))
+    }
+
+    // Cambiar codicion
+    const whereClause =
+      whereCodition.length > 0
+        ? sql`${whereCodition.reduce((acc, codition, index) => (index === 0 ? codition : sql`${acc} AND ${codition}`))}`
+        : undefined
+
+    // Configurar ordenamiento
+    const orderClause = sortOrder === 'asc' ? asc(customersTable[sortBy]) : desc(customersTable[sortBy])
+
+    // Obtener total de registros
+    const [totalResult] = await db.select({ count: count() }).from(customersTable).where(whereClause)
+
+    const total = totalResult.count
+
+    // Calcular offset
+    const offset = (page - 1) * limit
+
+    // Obtener registros paginados
+    const customers = await db.select().from(customersTable).where(whereClause).orderBy(orderClause).limit(limit).offset(offset)
+
+    // Calcular informacion de paginacion
+    const totalPages = Math.ceil(total / limit)
+
+    return {
+      data: customers,
+      pagintation: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNextPage: page < totalPages,
+        pasPrevPages: page > 1,
+      },
+    }
   }
 
   static async getByRucFromSunat(ruc: string): Promise<Company> {

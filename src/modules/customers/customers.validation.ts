@@ -33,8 +33,28 @@ export type UpdateCustomer = z.infer<typeof updateCustomerSchema>
 export const customerQueryParamsSchema = z.object({
   onlyRegular: z
     .string()
-    .transform((str) => str === 'true')
+    .transform((val) => val === 'true')
+    .optional()
     .default('false'),
+  page: z
+    .string()
+    .optional()
+    .default('1')
+    .transform((val) => {
+      const num = parseInt(val)
+      return Number.isNaN(num) || num < 1 ? 1 : num
+    }),
+  limit: z
+    .string()
+    .optional()
+    .default('10')
+    .transform((val) => {
+      const num = parseInt(val)
+      return Number.isNaN(num) || num < 1 ? 10 : Math.min(num, 100) // Máximo 100 items por página
+    }),
+  search: z.string().optional(),
+  sortBy: z.enum(['name', 'createdAt', 'updatedAt']).optional().default('createdAt'),
+  sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 })
 
 export type CustomerQueryParams = z.infer<typeof customerQueryParamsSchema>

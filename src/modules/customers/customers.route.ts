@@ -17,9 +17,9 @@ app.get(
   }),
   async (c) => {
     const db = c.get('db')
-    const { onlyRegular } = c.req.valid('query')
+    const queryParams = c.req.valid('query')
 
-    const customers = await CustomersService.getAll(db, { onlyRegular })
+    const customers = await CustomersService.getAll(db, queryParams)
     return c.json(customers, 200)
   },
 )
