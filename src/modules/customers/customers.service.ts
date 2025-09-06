@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm'
 import { customersTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { DB } from '@/types'
-import type { Customer, CreateCustomer, UpdateCustomer } from './customers.validation'
+import type { Customer, CreateCustomer, UpdateCustomer, CustomerQueryParams } from './customers.validation'
 import { getCustomerByDni, getCustomerByRuc } from '@/lib/sunat'
 
 //TODO: implement type CustomerQueryParams
@@ -15,7 +15,7 @@ type Company = {
 }
 
 export class CustomersService {
-  static async getAll(db: DB, { onlyRegular }: any) {
+  static async getAll(db: DB, { onlyRegular }: CustomerQueryParams) {
     const rows = await db
       .select()
       .from(customersTable)
@@ -48,7 +48,7 @@ export class CustomersService {
 
     if (customers.length === 0) {
       throw new HTTPException(404, {
-        message: `Customer with ruc: ${id} not found`,
+        message: `Customer with id: ${id} not found`,
       })
     }
     return customers[0]

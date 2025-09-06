@@ -2,30 +2,17 @@ import type { App } from '@/types'
 import { Hono } from 'hono'
 import { CustomersService } from './customers.service'
 import { HTTPException } from 'hono/http-exception'
-import { z } from 'zod'
 import { zValidator } from '@hono/zod-validator'
-import { insertCustomerSchema, updateCustomerSchema } from './customers.validation'
-
-const customerQueryParamsSchema = z.object({
-  onlyRegular: z
-    .string()
-    .transform((str) => str === 'true')
-    .default('false'),
-})
-
-export type CustomerQueryParams = z.infer<typeof customerQueryParamsSchema>
+import { insertCustomerSchema, updateCustomerSchema, customerQueryParamsSchema } from './customers.validation'
 
 const app = new Hono<App>()
 
-//Get all
+// Get all customers Route
 app.get(
   '/',
-  zValidator('query', customerQueryParamsSchema, (result, c) => {
+  zValidator('query', customerQueryParamsSchema, (result) => {
     if (!result.success) {
-      return c.json({
-        success: false,
-        message: 'Invalid query params',
-      })
+      throw result.error
     }
   }),
   async (c) => {
@@ -37,46 +24,42 @@ app.get(
   },
 )
 
+// Get customer by dni/ruc
 app.get('/search/:dniruc', async (c) => {
   const db = c.get('db')
   const dniRuc = c.req.param('dniruc')
 
-  //Buscar en base de datos si existe el cliente
+  // Buscar en base de datos si existe el cliente
   if (!dniRuc)
     throw new HTTPException(400, {
       message: 'dni/Ruc is invalid',
     })
 
   if (dniRuc.length === 11) {
-    //buscar por ruc en base de datos
+    // buscar por ruc en base de datos
     const customerFromDb = await CustomersService.getByRuc(db, dniRuc)
 
-    if (customerFromDb) {
-      return c.json(
-        {
-          id: customerFromDb.id,
-          name: customerFromDb.name,
-          ruc: customerFromDb.ruc,
-          isRegular: customerFromDb.isRegular,
-          address: customerFromDb.address,
-        },
-        200,
-      )
-    } else {
-      //buscar por ruc en api sunat
+    if (!customerFromDb) {
+      // buscar por ruc en api sunat
       const customerFromSunat = await CustomersService.getByRucFromSunat(dniRuc)
       return c.json({ ...customerFromSunat, isRegular: false }, 200)
     }
+
+    return c.json(customerFromDb, 200)
   }
 
   if (dniRuc.length === 8) {
-    //buscar por dni en sunat
+    // buscar por dni en sunat
     const customerFromSunat = await CustomersService.getByDniFromSunat(dniRuc)
     return c.json({ ...customerFromSunat, isRegular: false }, 200)
   }
+
+  throw new HTTPException(400, {
+    message: 'ruc must be 11 digits or dni must be 8 digits',
+  })
 })
 
-//Get Customer by ruc route
+// Get Customer by ruc route
 app.get('/ruc/:ruc', async (c) => {
   const db = c.get('db')
   const ruc = c.req.param('ruc')
@@ -85,7 +68,7 @@ app.get('/ruc/:ruc', async (c) => {
   return c.json(customer)
 })
 
-//Get Customer by id route
+// Get Customer by id route
 app.get('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
@@ -94,7 +77,7 @@ app.get('/:id', async (c) => {
   return c.json(customer, 200)
 })
 
-//Create Customer route
+// Create Customer route
 app.post(
   '/',
   zValidator('json', insertCustomerSchema, (result) => {
@@ -108,6 +91,7 @@ app.post(
   },
 )
 
+// Update Customer Route
 app.put(
   '/:id',
   zValidator('json', updateCustomerSchema, (result) => {
@@ -122,6 +106,7 @@ app.put(
   },
 )
 
+// Delete Customer Route
 app.delete('/:id', async (c) => {
   const id = c.req.param('id')
   const db = c.get('db')

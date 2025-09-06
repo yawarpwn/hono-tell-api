@@ -29,3 +29,12 @@ export const updateCustomerSchema = insertCustomerSchema.partial()
 export type Customer = z.infer<typeof customerSchema>
 export type CreateCustomer = z.infer<typeof insertCustomerSchema>
 export type UpdateCustomer = z.infer<typeof updateCustomerSchema>
+
+export const customerQueryParamsSchema = z.object({
+  onlyRegular: z
+    .string()
+    .transform((str) => str === 'true')
+    .default('false'),
+})
+
+export type CustomerQueryParams = z.infer<typeof customerQueryParamsSchema>

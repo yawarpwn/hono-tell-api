@@ -42,29 +42,10 @@ app.use('*', async (c, next) => {
   c.header('X-Response-Time', `${ms}ms`)
 })
 
-app.use('*', async (c, next) => {
-  console.log(`${c.req.method}:${c.req.url}`)
-  const now = Date.now()
-  await next()
-  c.header('X-Response-Time', `${Date.now() - now}ms`)
-  console.log(`${c.res.statusText}`)
-})
-
 //DatabaseMiddleware
-app.use('/v2/api/*', async (c, next) => {
+app.use('/v2/*', async (c, next) => {
   const db = drizzle(c.env.DB)
-  c.set('db', db)
-  await next()
-})
-
-app.use('/v2/auth/*', async (c, next) => {
-  const db = drizzle(c.env.DB)
-  c.set('db', db)
-  await next()
-})
-
-app.use('/v2/subscribe/*', async (c, next) => {
-  const db = drizzle(c.env.DB)
+  // @ts-ignore
   c.set('db', db)
   await next()
 })
@@ -86,7 +67,7 @@ app.use('/v2/api/*', async (c, next) => {
   // return jwtMiddleware(c, next)
 })
 
-//-------------------------------------Routes---------------------------- //
+//---------------------------------------Routes---------------------------- //
 
 app.get('/', async (c) => {
   return c.json({ message: 'api is running' })
