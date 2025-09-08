@@ -1,68 +1,62 @@
 import type { App } from '@/types'
 import { Hono } from 'hono'
 import { ProductsService } from './products.service'
-import { handleError } from '@/core/utils'
+import { insertProductSchema } from './products.validation'
+import { zValidator } from '@hono/zod-validator'
+import { updateProductSchema } from '@/core/dtos'
 
 const app = new Hono<App>()
 
 // Get all products
 app.get('/', async (c) => {
   const db = c.get('db')
-  try {
-    const products = await ProductsService.getAll(db)
-    return c.json(products, 200)
-  } catch (error) {
-    return handleError(error, c)
-  }
+  const products = await ProductsService.getAll(db)
+  return c.json(products, 200)
 })
 
 // Get product by id
 app.get('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
-  try {
-    const results = await ProductsService.getById(db, id)
-    return c.json(results)
-  } catch (error) {
-    return handleError(error, c)
-  }
+  const results = await ProductsService.getById(db, id)
+  return c.json(results)
 })
 
 // Create product route
-app.post('/', async (c) => {
-  const db = c.get('db')
-  const dto = await c.req.json()
-  try {
+app.post(
+  '/',
+  zValidator('json', insertProductSchema, (result) => {
+    if (!result.success) throw result.error
+  }),
+  async (c) => {
+    const db = c.get('db')
+    const dto = c.req.valid('json')
     const result = await ProductsService.create(db, dto)
     return c.json(result, 201)
-  } catch (error) {
-    return handleError(error, c)
-  }
-})
+  },
+)
 
 // Update product
-app.put('/:id', async (c) => {
-  const db = c.get('db')
-  const id = c.req.param('id')
-  const dto = await c.req.json()
-  try {
+app.put(
+  '/:id',
+  zValidator('json', updateProductSchema, (result) => {
+    if (!result.success) throw result.error
+  }),
+  async (c) => {
+    const db = c.get('db')
+    const id = c.req.param('id')
+    const dto = c.req.valid('json')
     const results = await ProductsService.update(db, id, dto)
     return c.json(results)
-  } catch (error) {
-    return handleError(error, c)
-  }
-})
+  },
+)
 
 // Delete product
 app.delete('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
-  try {
-    const results = await ProductsService.delete(db, id)
-    return c.json(results)
-  } catch (error) {
-    return handleError(error, c)
-  }
+  const results = await ProductsService.delete(db, id)
+  return c.json(results)
 })
 
 export default app
