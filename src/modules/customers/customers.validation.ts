@@ -31,11 +31,7 @@ export type CreateCustomer = z.infer<typeof insertCustomerSchema>
 export type UpdateCustomer = z.infer<typeof updateCustomerSchema>
 
 export const customerQueryParamsSchema = z.object({
-  onlyRegular: z
-    .string()
-    .transform((val) => val === 'true')
-    .optional()
-    .default('false'),
+  filter: z.enum(['onlyRegular', 'onlyRuc10']).optional(),
   page: z
     .string()
     .optional()
@@ -50,7 +46,7 @@ export const customerQueryParamsSchema = z.object({
     .default('10')
     .transform((val) => {
       const num = parseInt(val)
-      return Number.isNaN(num) || num < 1 ? 10 : Math.min(num, 100) // Máximo 100 items por página
+      return Number.isNaN(num) || num < 1 ? 10 : Math.min(num, 500) // Máximo 100 items por página
     }),
   search: z.string().optional(),
   sortBy: z.enum(['name', 'createdAt', 'updatedAt']).optional().default('createdAt'),

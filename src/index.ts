@@ -110,7 +110,7 @@ app.onError((err, c) => {
     return c.json(
       {
         success: false,
-        error: 'Datos de entrada inválidos',
+        message: 'Datos de entrada inválidos',
         details: err.errors.map((e) => ({
           field: e.path.join('.'),
           message: e.message,

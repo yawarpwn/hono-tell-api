@@ -1,4 +1,4 @@
-import { asc, count, desc, eq, ilike, like, or, sql } from 'drizzle-orm'
+import { asc, count, desc, eq, like, or, sql } from 'drizzle-orm'
 import { customersTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { DB } from '@/types'
@@ -16,15 +16,18 @@ type Company = {
 
 export class CustomersService {
   static async getAll(db: DB, queryParms: CustomerQueryParams) {
-    const { onlyRegular, page, limit, search, sortBy, sortOrder } = queryParms
-
-    console.log({ onlyRegular, page, limit, search, sortBy, sortOrder })
+    const { filter, page, limit, search, sortBy, sortOrder } = queryParms
+    console.log({ filter })
 
     // Construir condicion where
     let whereCodition = []
 
-    if (onlyRegular) {
+    if (filter === 'onlyRegular') {
       whereCodition.push(eq(customersTable.isRegular, true))
+    }
+
+    if (filter === 'onlyRuc10') {
+      whereCodition.push(like(customersTable.ruc, '10%'))
     }
 
     if (search) {
@@ -56,13 +59,13 @@ export class CustomersService {
 
     return {
       data: customers,
-      pagintation: {
+      pagination: {
         page,
         limit,
         total,
         totalPages,
         hasNextPage: page < totalPages,
-        pasPrevPages: page > 1,
+        hasPrevPage: page > 1,
       },
     }
   }
@@ -98,6 +101,7 @@ export class CustomersService {
 
   static async create(db: DB, customerToCreate: CreateCustomer) {
     const results = await db.insert(customersTable).values(customerToCreate).returning()
+    console.log({ results })
     return results[0]
   }
 
