@@ -162,13 +162,13 @@ export class QuotationsService {
 
     if (!quoData.customerId && quoData.customer?.name && quoData.customer?.ruc) {
       console.log('insert new customer to db')
-      const { insertedId } = await CustomersService.create(db, {
+      const insertedCustomer = await CustomersService.create(db, {
         name: quoData.customer.name,
         ruc: quoData.customer.ruc,
         address: quoData.customer?.address || null,
         isRegular: false,
       })
-      customerId = insertedId
+      customerId = insertedCustomer.id
     }
 
     const { data, success, error } = insertQuotationSchema.safeParse({
@@ -235,13 +235,13 @@ export class QuotationsService {
     if (!quotationData.customerId) {
       if (quotationData.customer?.name && quotationData?.customer?.ruc) {
         console.log('update  new customer to db')
-        const { insertedId } = await CustomersService.create(db, {
+        const insertedCustomer = await CustomersService.create(db, {
           name: quotationData.customer.name,
           ruc: quotationData.customer.ruc,
           isRegular: quotationData.customer.isRegular,
           address: quotationData.customer?.address || null,
         })
-        customerId = insertedId
+        customerId = insertedCustomer.id
       }
     }
 
