@@ -11,11 +11,8 @@ export class ProductsService {
   }
 
   static async getById(db: DB, id: Product['id']) {
-    const products = await db
-      .select()
-      .from(productsTable)
-      .where(eq(productsTable.id, id))
-      .leftJoin(productCategoriesTable, eq(productsTable.categoryId, productCategoriesTable.id))
+    const products = await db.select().from(productsTable).where(eq(productsTable.id, id))
+
     if (products.length === 0) {
       throw new HTTPException(404, {
         message: `product with id ${id} not found`,
@@ -26,6 +23,7 @@ export class ProductsService {
 
   static async create(db: DB, newCustomer: CreateProduct) {
     const rows = await db.insert(productsTable).values(newCustomer).returning()
+    console.log('inserting product service, ', { rows })
 
     if (rows.length === 0) {
       throw new HTTPException(404, {

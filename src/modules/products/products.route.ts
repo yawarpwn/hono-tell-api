@@ -25,7 +25,8 @@ app.get('/:id', async (c) => {
 // Create product route
 app.post(
   '/',
-  zValidator('json', insertProductSchema, (result) => {
+  zValidator('json', insertProductSchema, async (result, c) => {
+    console.log('create product', await c.req.json())
     if (!result.success) throw result.error
   }),
   async (c) => {

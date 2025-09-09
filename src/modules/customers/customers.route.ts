@@ -81,9 +81,6 @@ app.get('/:id', async (c) => {
 app.post(
   '/',
   zValidator('json', insertCustomerSchema, async (result, c) => {
-    const json = await c.req.json()
-    const parsed = insertCustomerSchema.safeParse(json)
-    console.log({ parsed })
     if (!result.success) throw result.error
   }),
   async (c) => {
