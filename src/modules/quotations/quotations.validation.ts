@@ -1,5 +1,27 @@
 import z from 'zod'
 
+export const quotationQueryParamsSchema = z.object({
+  page: z
+    .string()
+    .optional()
+    .default('1')
+    .transform((val) => {
+      const num = parseInt(val)
+      return Number.isNaN(num) || num < 1 ? 1 : num
+    }),
+  limit: z
+    .string()
+    .optional()
+    .default('10')
+    .transform((val) => {
+      const num = parseInt(val)
+      return Number.isNaN(num) || num < 1 ? 10 : num
+    }),
+  query: z.string().optional(),
+})
+
+export type QuotationQueryParams = z.infer<typeof quotationQueryParamsSchema>
+
 export const itemQuotationSChema = z.object({
   id: z.string(),
   price: z.number(),

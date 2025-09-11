@@ -3,50 +3,25 @@ import { insertQuotationSchema, updateQuotationSchema } from './quotations.valid
 import type { App } from '@/types'
 import { handleError } from '@/core/utils'
 import { Hono } from 'hono'
+import { zValidator } from '@hono/zod-validator'
+import { quotationQueryParamsSchema } from './quotations.validation'
 
 const app = new Hono<App>()
 
-import { zValidator } from '@hono/zod-validator'
-import { z } from 'zod'
-
-const querySchema = z.object({
-  page: z.coerce.number().optional(),
-  limit: z.coerce.number().optional(),
-  q: z.string().optional(),
-})
-
-export type QueryQuotations = z.infer<typeof querySchema>
-
-//Get `Customers` Route
+// Obtener todas las cotizaciones
 app.get(
   '/',
-  zValidator('query', querySchema, (result, c) => {
+  zValidator('query', quotationQueryParamsSchema, (result) => {
     if (!result.success) {
-      return c.json({
-        ok: false,
-        message: 'Invalid query params',
-        statusCode: 400,
-      })
+      throw result.error
     }
   }),
   async (c) => {
     const db = c.get('db')
-    const { page, limit, q } = c.req.valid('query')
+    const queryParams = c.req.valid('query')
 
-    console.log('page', page)
-    console.log('limit', limit)
-    console.log('q', q)
-
-    try {
-      const result = await QuotationsService.getAll(db, {
-        page,
-        limit,
-        q,
-      })
-      return c.json(result, 200)
-    } catch (error) {
-      return handleError(error, c)
-    }
+    const result = await QuotationsService.getAll(db, queryParams)
+    return c.json(result, 200)
   },
 )
 

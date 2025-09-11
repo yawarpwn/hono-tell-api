@@ -110,8 +110,8 @@ app.put(
 app.delete('/:id', async (c) => {
   const id = c.req.param('id')
   const db = c.get('db')
-  const results = await CustomersService.delete(db, id)
-  return c.json(results, 200)
+  await CustomersService.delete(db, id)
+  return c.json(`Customer with id ${id} deleted`, 200)
 })
 
 export default app

@@ -1,28 +1,51 @@
-import { eq, like, desc, count } from 'drizzle-orm'
+import { eq, like, desc, count, or, sql, SQL } from 'drizzle-orm'
 import { quotationsTable, customersTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateQuotation, UpdateQuotation, Quotation } from './quotations.validation'
-import { insertQuotationSchema, updateQuotationSchema } from './quotations.validation'
+import { insertQuotationSchema, updateQuotationSchema, type QuotationQueryParams } from './quotations.validation'
 import type { DB } from '@/types'
 import { CustomersService } from '@/modules/customers/customers.service'
 
 export class QuotationsService {
-  static async getAll(db: DB, { page = 1, limit, q }: any) {
-    const search = (query: string | undefined) => {
-      if (!query) return undefined
+  static async getAll(db: DB, queryParams: QuotationQueryParams) {
+    const { page, limit, query } = queryParams
 
-      if (query.length === 11 && !Number.isNaN(Number(query))) {
-        return eq(customersTable.ruc, query)
+    console.log({ page, limit, query })
+
+    // Construir condicion where
+    let whereCondition: SQL | undefined
+
+    // En caso de buscar por query
+    if (query) {
+      const num = parseInt(query)
+      if (Number.isNaN(num)) {
+        // Buscar por Nombre
+        whereCondition = like(customersTable.name, `%${query}%`)
+      } else if (num.toString().length === 11) {
+        // buscar por ruc
+        whereCondition = eq(customersTable.ruc, query)
+      } else {
+        // buscar por  numero de cotizacion
+        whereCondition = eq(quotationsTable.number, num)
       }
-      const isNumber = !Number.isNaN(Number(query))
-      if (isNumber) {
-        const queryNumber = Number(query)
-        return eq(quotationsTable.number, queryNumber)
-      }
-      return like(customersTable.name, `%${query}%`)
     }
+    // TODO: implement filters
 
-    let query = db
+    const whereClause = whereCondition
+
+    // Obtener el total de cotizaciones con la clausula where
+    const [totalResult] = await db
+      .select({ count: count() })
+      .from(quotationsTable)
+      .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
+      .where(whereClause)
+
+    const total = totalResult.count
+
+    const offset = (page - 1) * limit
+
+    // Obtener cotizaciones paginadas
+    const quotations = await db
       .select({
         id: quotationsTable.id,
         number: quotationsTable.number,
@@ -52,28 +75,24 @@ export class QuotationsService {
       })
       .from(quotationsTable)
       .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
-      .where(search(q))
-      // .where(query ? eq(quotationsTable.number, 7050) : undefined)
+      .where(whereClause)
       .orderBy(desc(quotationsTable.updatedAt))
-    if (limit !== undefined) {
-      //@ts-ignore
-      query = query.limit(limit).offset((page - 1) * limit)
-    }
+      .limit(limit)
+      .offset(offset)
+      .all()
 
-    const quotations = await query
-
-    const rows = await db
-      .select({ total: count(quotationsTable.id) })
-      .from(quotationsTable)
-      .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
-      .where(search(q))
+    const totalPages = Math.ceil(total / limit)
 
     return {
-      items: quotations,
-      meta: {
-        totalItems: rows[0].total,
+      data: quotations,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
       },
-      links: {},
     }
   }
 
