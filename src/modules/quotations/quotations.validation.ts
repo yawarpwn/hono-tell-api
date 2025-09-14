@@ -1,3 +1,5 @@
+import { quotationsTable } from '@/core/db/schemas'
+import { createInsertSchema } from 'drizzle-zod'
 import z from 'zod'
 
 export const quotationQueryParamsSchema = z.object({
@@ -66,11 +68,23 @@ export const quotationSchema = z.object({
   updatedAt: z.string(),
 })
 
-export const insertQuotationSchema = quotationSchema.omit({
+// export const insertQuotationSchema = quotationSchema.omit({
+//   id: true,
+//   number: true,
+//   createdAt: true,
+//   updatedAt: true,
+// })
+//
+
+export const insertQuotationSchema = createInsertSchema(quotationsTable, {
+  items: z.array(itemQuotationSChema),
+  deadline: z.number().positive(),
+  standardTerms: z.array(z.enum(['DESIGNS_APPROVAL', 'PREPAID_SHIPPING', 'WARRANTY_3M'])),
+}).omit({
   id: true,
   number: true,
-  createdAt: true,
   updatedAt: true,
+  createdAt: true,
 })
 
 export const updateQuotationSchema = insertQuotationSchema.partial()

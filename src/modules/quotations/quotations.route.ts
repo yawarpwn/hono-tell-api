@@ -25,59 +25,45 @@ app.get(
   },
 )
 
-//Get `Quotation` by number Route
+// Obtener por número de cotización
 app.get('/:number', async (c) => {
   const db = c.get('db')
   const number = c.req.param('number')
-  try {
-    const results = await QuotationsService.getByNumber(db, Number(number))
-    return c.json(results)
-  } catch (error) {
-    return handleError(error, c)
-  }
+  const results = await QuotationsService.getByNumber(db, Number(number))
+  return c.json(results)
 })
 
 // Create `Quotation` Route
 app.post(
   '/',
-  zValidator('json', insertQuotationSchema, (result, c) => {
+  zValidator('json', insertQuotationSchema, (result) => {
     if (!result.success) {
-      return handleError(result.error, c)
+      throw result.error
     }
   }),
   async (c) => {
     const db = c.get('db')
     const data = c.req.valid('json')
-    console.log(data)
-    try {
-      const result = await QuotationsService.create(db, data)
-      return c.json(result, 200)
-    } catch (error) {
-      return handleError(error, c)
-    }
+    const result = await QuotationsService.create(db, data)
+    return c.json(result, 200)
   },
 )
 
 // Update `Quotation` Route
 app.put(
-  '/:id',
-  zValidator('json', updateQuotationSchema, (result, c) => {
+  '/:number',
+  zValidator('json', updateQuotationSchema, (result) => {
     if (!result.success) {
-      return handleError(result.error, c)
+      throw result.error
     }
   }),
   async (c) => {
     const db = c.get('db')
-    const id = c.req.param('id')
+    const quotationNumber = Number(c.req.param('number'))
 
-    try {
-      const data = c.req.valid('json')
-      console.log('quotation update data: ', data)
-      const results = await QuotationsService.update(db, id, data)
-      return c.json(results)
-    } catch (error) {
-      return handleError(error, c)
-    }
+    const data = c.req.valid('json')
+    const results = await QuotationsService.update(db, quotationNumber, data)
+    return c.json(results)
   },
 )
 

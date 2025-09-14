@@ -66,6 +66,8 @@ export const labelsTable = sqliteTable('labels', {
     .$onUpdate(() => new Date()),
 })
 
+export type StandardTerm = 'DESIGNS_APPROVAL' | 'PREPAID_SHIPPING' | 'WARRANTY_3M'
+
 //Quotations
 export const quotationsTable = sqliteTable('quotations', {
   id: text('id')
@@ -82,7 +84,9 @@ export const quotationsTable = sqliteTable('quotations', {
   }),
   validityDays: integer('validity_days').notNull().default(15),
   observations: text('observations'),
-  standardTerms: text('standard_terms', { mode: 'json' }).$type<string[]>(),
+  standardTerms: text('standard_terms', {
+    mode: 'json',
+  }).$type<StandardTerm[]>(),
   paymentCodition: text('payment_codition', {
     mode: 'text',
     enum: ['ADVANCE_50', 'ADVANCE_20', 'ADVANCE_80', 'FULL_PREPAYMENT', 'CREDIT'],

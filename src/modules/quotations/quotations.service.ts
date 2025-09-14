@@ -2,9 +2,8 @@ import { eq, like, desc, count, or, sql, SQL } from 'drizzle-orm'
 import { quotationsTable, customersTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateQuotation, UpdateQuotation, Quotation } from './quotations.validation'
-import { insertQuotationSchema, updateQuotationSchema, type QuotationQueryParams } from './quotations.validation'
+import { type QuotationQueryParams } from './quotations.validation'
 import type { DB } from '@/types'
-import { CustomersService } from '@/modules/customers/customers.service'
 
 export class QuotationsService {
   static async getAll(db: DB, queryParams: QuotationQueryParams) {
@@ -175,107 +174,38 @@ export class QuotationsService {
     return quotations[0]
   }
 
-  static async create(db: DB, quoData: CreateQuotation) {
-    //TODO: validar si se seleciona paymentCodition =  `CREDITO` , credit  debe ser mayor a 0
-    let customerId = quoData.customerId
-
-    if (!quoData.customerId && quoData.customer?.name && quoData.customer?.ruc) {
-      console.log('insert new customer to db')
-      const insertedCustomer = await CustomersService.create(db, {
-        name: quoData.customer.name,
-        ruc: quoData.customer.ruc,
-        address: quoData.customer?.address || null,
-        isRegular: false,
-      })
-      customerId = insertedCustomer.id
-    }
-
-    const { data, success, error } = insertQuotationSchema.safeParse({
-      ...quoData,
-      customerId,
-    })
-
-    if (!success) {
-      console.log(error.issues)
-      throw new HTTPException(400, {
-        message: 'Invalid quotation',
-      })
-    }
-
+  static async create(db: DB, newQuotation: CreateQuotation) {
     let lastQuotationNumber = 0
 
+    // Obtener el ultimo numero de cotizacion existente
     const quotations = await db
       .select({ lastQuotationNumber: quotationsTable.number })
       .from(quotationsTable)
       .orderBy(desc(quotationsTable.number))
       .limit(1)
 
+    // Si existen cotizaciones, obtener el ultimo numero
     if (quotations.length > 0) {
       lastQuotationNumber = quotations[0].lastQuotationNumber
     }
 
-    const results = await db
+    const rows = await db
       .insert(quotationsTable)
-      .values({ ...data, number: lastQuotationNumber + 1 || 0 })
-      .returning({
-        insertedId: quotationsTable.id,
-        insertedNumber: quotationsTable.number,
+      .values({
+        ...newQuotation,
+        number: lastQuotationNumber + 1,
       })
+      .returning()
 
-    if (results.length === 0) {
-      throw new HTTPException(400, {
-        message: 'Failed to create quotation',
-      })
-    }
-
-    const [quotation] = results
-    console.log({ quotation })
-    return quotation
+    return rows[0]
   }
 
-  static async update(db: DB, id: Quotation['id'], quotationData: UpdateQuotation) {
-    const { data, success, error } = updateQuotationSchema.safeParse(quotationData)
-
-    if (!success) {
-      console.log(error.issues)
-      throw new HTTPException(400, {
-        message: 'Invalid quotation',
-      })
-    }
-
-    if (Object.values(data).length === 0) {
-      throw new HTTPException(400, {
-        message: 'Invalid quotation',
-      })
-    }
-
-    let customerId = quotationData.customerId
-
-    if (!quotationData.customerId) {
-      if (quotationData.customer?.name && quotationData?.customer?.ruc) {
-        console.log('update  new customer to db')
-        const insertedCustomer = await CustomersService.create(db, {
-          name: quotationData.customer.name,
-          ruc: quotationData.customer.ruc,
-          isRegular: quotationData.customer.isRegular,
-          address: quotationData.customer?.address || null,
-        })
-        customerId = insertedCustomer.id
-      }
-    }
-
-    const results = await db
-      .update(quotationsTable)
-      .set({
-        ...data,
-        customerId,
-      })
-      .where(eq(quotationsTable.id, id))
-      .returning()
+  static async update(db: DB, quotationNumber: Quotation['number'], quotationToUpdate: UpdateQuotation) {
+    const results = await db.update(quotationsTable).set(quotationToUpdate).where(eq(quotationsTable.number, quotationNumber)).returning()
 
     if (results.length === 0) {
       throw new HTTPException(404, {
-        message: `quotation with id ${id} not found`,
+        message: `quotation ${quotationNumber} not found`,
       })
     }
 
