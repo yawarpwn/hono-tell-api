@@ -32,6 +32,7 @@ export const itemQuotationSChema = z.object({
   link: z.string().optional().nullable(),
   unitSize: z.string({ message: 'unidad y medidad es requerido' }),
   description: z.string(),
+  productId: z.string().optional().nullable(),
 })
 
 export type QuotationItem = z.infer<typeof itemQuotationSChema>
