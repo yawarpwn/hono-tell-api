@@ -30,6 +30,7 @@ export const itemQuotationSChema = z.object({
   qty: z.number(),
   cost: z.number().optional().nullable(),
   link: z.string().optional().nullable(),
+  image: z.string().optional().nullable(),
   unitSize: z.string({ message: 'unidad y medidad es requerido' }),
   code: z.string().optional(),
   description: z.string(),
