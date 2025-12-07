@@ -35,6 +35,7 @@ export const itemQuotationSChema = z.object({
   code: z.string().optional(),
   description: z.string(),
   productId: z.string().optional().nullable(),
+  discount: z.number().optional().default(0),
 })
 
 export type QuotationItem = z.infer<typeof itemQuotationSChema>

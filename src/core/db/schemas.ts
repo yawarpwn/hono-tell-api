@@ -130,6 +130,7 @@ export const productsTable = sqliteTable('products', {
   price: real('price').notNull(), //must be 1, 2,  0.5, 5.5
   cost: real('cost').notNull(), //must be 1, 2, 0.5. 55
   image: text('image'),
+  notes: text('notes'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
   updatedAt: integer('updated_at', { mode: 'timestamp' })
     .notNull()

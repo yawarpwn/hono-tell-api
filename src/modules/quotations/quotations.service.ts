@@ -177,6 +177,8 @@ export class QuotationsService {
   static async create(db: DB, newQuotation: CreateQuotation) {
     let lastQuotationNumber = 0
 
+    console.log({ newQuotation })
+
     // Obtener el ultimo numero de cotizacion existente
     const quotations = await db
       .select({ lastQuotationNumber: quotationsTable.number })

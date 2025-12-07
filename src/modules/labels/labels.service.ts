@@ -6,7 +6,7 @@ import type { DB } from '@/types'
 
 export class LabelsService {
   static async getAll(db: DB) {
-    const customers = await db
+    const labels = await db
       .select({
         id: labelsTable.id,
         recipient: labelsTable.recipient,
@@ -29,16 +29,16 @@ export class LabelsService {
       .leftJoin(agenciesTable, eq(labelsTable.agencyId, agenciesTable.id))
       .orderBy(desc(labelsTable.updatedAt))
     return {
-      items: customers,
+      items: labels,
       meta: {
-        totalItems: customers.length,
+        totalItems: labels.length,
       },
       links: {},
     }
   }
 
   static async getById(db: DB, id: Label['id']) {
-    const customers = await db
+    const labels = await db
       .select({
         id: labelsTable.id,
         recipient: labelsTable.recipient,
@@ -60,12 +60,12 @@ export class LabelsService {
       .from(labelsTable)
       .leftJoin(agenciesTable, eq(labelsTable.agencyId, agenciesTable.id))
       .where(eq(labelsTable.id, id))
-    if (customers.length === 0) {
+    if (labels.length === 0) {
       throw new HTTPException(404, {
         message: `Customer with ruc: ${id} not found`,
       })
     }
-    return customers[0]
+    return labels[0]
   }
 
   static async create(db: DB, dto: CreateLabel) {

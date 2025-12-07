@@ -22,12 +22,8 @@ app.get('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
 
-  try {
-    const result = await AgenciesService.getById(db, id)
-    return c.json(result)
-  } catch (error) {
-    return handleError(error, c)
-  }
+  const results = await AgenciesService.getById(db, id)
+  return c.json(results, 200)
 })
 
 app.post(
@@ -38,12 +34,8 @@ app.post(
   async (c) => {
     const db = c.get('db')
     const dto = c.req.valid('json')
-    try {
-      const result = await AgenciesService.create(db, dto)
-      return c.json({ ok: true, data: result }, 201)
-    } catch (error) {
-      return handleError(error, c)
-    }
+    const results = await AgenciesService.create(db, dto)
+    return c.json(results, 201)
   },
 )
 
@@ -56,24 +48,16 @@ app.put(
     const db = c.get('db')
     const id = c.req.param('id')
     const dto = await c.req.json()
-    try {
-      const results = await AgenciesService.update(db, id, dto)
-      return c.json(results)
-    } catch (error) {
-      return handleError(error, c)
-    }
+    const results = await AgenciesService.update(db, id, dto)
+    return c.json(results, 200)
   },
 )
 
 app.delete('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')
-  try {
-    const results = await AgenciesService.delete(db, id)
-    return c.json(results)
-  } catch (error) {
-    return handleError(error, c)
-  }
+  const results = await AgenciesService.delete(db, id)
+  return c.json(results, 200)
 })
 
 export default app
