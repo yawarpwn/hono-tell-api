@@ -59,7 +59,7 @@ export class WatermarksService {
   }
 
   static async uploadImage(file: File, apiSecret: string) {
-    const transformation = 'c_limit,w_1200,h_1200'
+    const transformation = 'c_limit,w_1500,h_1500'
     const format = 'webp'
     const folder = 'watermarked'
 
