@@ -16,7 +16,7 @@ MY_VAR = "my-variable"
 binding = "DB"
 database_name = "tellapp-db"
 database_id = "d0b07f27-00ed-426d-8ae4-692e970da855"
-migrations_dir = "migrations"
+migrations_dir = "./migrations"
 
 [observability.logs]
 enabled = true

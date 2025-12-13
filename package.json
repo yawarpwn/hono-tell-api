@@ -6,7 +6,7 @@
     "format": "bunx biome format --write src/**/*.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "wrangler d1 migrations apply --local DB",
-    "db:migrate-production": "drizzle-kit migrate"
+    "db:migrate-production": "wrangler d1 migrations apply tellapp-db --remote"
   },
   "dependencies": {
     "@hono/hello": "^0.1.1",
