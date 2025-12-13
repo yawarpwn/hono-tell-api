@@ -37,8 +37,10 @@ app.get('/search/:dniruc', async (c) => {
 
   if (dniRuc.length === 11) {
     // buscar por ruc en base de datos
+    console.log('[CUSTOMER]: buscando en DB, ruc', dniRuc)
     const customerFromDb = await CustomersService.getByRuc(db, dniRuc)
 
+    console.log('[CUSTOMER]: buscando en Api Sunat Terceros')
     if (!customerFromDb) {
       // buscar por ruc en api sunat
       const customerFromSunat = await CustomersService.getByRucFromSunat(dniRuc)

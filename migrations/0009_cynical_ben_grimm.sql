@@ -1,1 +1,0 @@
-CREATE UNIQUE INDEX `fire_extinguisher_certificates_serie_unique` ON `fire_extinguisher_certificates` (`serie`);

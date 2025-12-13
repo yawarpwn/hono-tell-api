@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "8a061981-4ae7-4a43-923a-77600dec5b68",
-  "prevId": "1647058a-4b41-43ca-9b8b-e8d7400989ef",
+  "id": "e36bd968-fabc-4902-ab86-3d3ca7693e1a",
+  "prevId": "6d6c44e7-a834-4453-9549-fc6febfcb42b",
   "tables": {
     "agencies": {
       "name": "agencies",
@@ -167,6 +167,95 @@
           "name": "customers_email_unique",
           "columns": [
             "email"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "fire_extinguisher_certificates": {
+      "name": "fire_extinguisher_certificates",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "emission_date": {
+          "name": "emission_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "capacity": {
+          "name": "capacity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "serie": {
+          "name": "serie",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "ruc": {
+          "name": "ruc",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "company_name": {
+          "name": "company_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "model": {
+          "name": "model",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        }
+      },
+      "indexes": {
+        "fire_extinguisher_certificates_serie_unique": {
+          "name": "fire_extinguisher_certificates_serie_unique",
+          "columns": [
+            "serie"
           ],
           "isUnique": true
         }
@@ -534,6 +623,20 @@
           "type": "real",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "created_at": {
@@ -927,6 +1030,22 @@
           "notNull": true,
           "autoincrement": false,
           "default": "'user'"
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'Raquel'"
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'Maldonado R.'"
         }
       },
       "indexes": {

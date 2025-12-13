@@ -61,26 +61,46 @@ export async function getCustomerByRuc(ruc: string) {
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im5leWRhLm1pbGkxMUBnbWFpbC5jb20ifQ.UtiFRViVJrO2YGQ5H3alRcFBhnSwuE5yKU9PYuojgq0'
   const url = `${API_URL}/ruc/${ruc}?token=${TOKEN}`
 
-  const res = await fetch(url)
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 segundos
 
-  if (!res.ok) {
-    throw new HTTPException(res.status as ContentfulStatusCode, {
-      message: `HTTP Error: ${res.statusText}`,
+  try {
+    const res = await fetch(url, {
+      signal: controller.signal,
     })
-  }
-  const data = (await res.json()) as ApiRucResponse
 
-  //Check if the response is success
-  if (!isApiRucResponseSuccess(data)) {
-    throw new HTTPException(404, {
-      message: data.message,
-    })
-  }
+    clearTimeout(timeoutId) // limpiar timeout si la respuesta llega antes
 
-  return {
-    ruc: data.ruc,
-    name: data.razonSocial,
-    address: data.direccion,
+    if (!res.ok) {
+      throw new HTTPException(res.status as ContentfulStatusCode, {
+        message: `HTTP Error: ${res.statusText}`,
+      })
+    }
+
+    const data = (await res.json()) as ApiRucResponse
+
+    //Check if the response is success
+    if (!isApiRucResponseSuccess(data)) {
+      throw new HTTPException(404, {
+        message: data.message,
+      })
+    }
+
+    return {
+      ruc: data.ruc,
+      name: data.razonSocial,
+      address: data.direccion,
+    }
+  } catch (error) {
+    clearTimeout(timeoutId) // Asegurarse de limpiar el timeout si ocurre un error
+
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new HTTPException(408, {
+        message: 'La solicitud excedió el tiempo máximo de espera (5 segundos)',
+      })
+    }
+
+    throw error
   }
 }
 
