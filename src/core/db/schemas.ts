@@ -11,8 +11,8 @@ export const usersTable = sqliteTable('users', {
   email: text().notNull().unique(),
   password: text().notNull(),
   role: text({ enum: userRoles }).notNull().default('user'),
-  firstName: text('first_name').default('Raquel'),
-  lastName: text('last_name').default('Maldonado R.'),
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
 })
 
 export const customersTable = sqliteTable('customers', {

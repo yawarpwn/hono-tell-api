@@ -15,6 +15,7 @@ import agencies from '@/modules/agencies/agencies.route'
 import watermarks from '@/modules/watermarks/watermarks.route'
 import auth from '@/modules/auth/auth.route'
 import signals from '@/modules/signals/signals.route'
+import users from '@/modules/users/users.route'
 import signalCategories from '@/modules/signal-categories/signal-categories.route'
 import fireExtinguerCertificates from '@/modules/fire-extinguer-certificates/fire-extinguer-certificates.route'
 import invoices from '@/modules/invoices/invoices.route'
@@ -86,6 +87,7 @@ app.route('/v2/api/watermarks', watermarks)
 app.route('/v2/api/signals', signals)
 app.route('/v2/api/signal-categories', signalCategories)
 app.route('/v2/api/fire-extinguer-certificates', fireExtinguerCertificates)
+app.route('/v2/api/users', users)
 
 app.route('/send-mail', sendMail)
 app.route('/suscribe', suscribe)

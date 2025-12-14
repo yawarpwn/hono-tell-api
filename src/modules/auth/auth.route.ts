@@ -26,7 +26,7 @@ app.get('/verify', async (c) => {
     }
   }
 
-  console.log({ token })
+  console.log('[AUTH]: token: ', token)
   if (!token) {
     throw new HTTPException(401, {
       message: 'Credentials no included in request',
@@ -59,33 +59,78 @@ app.post(
   '/login',
   zValidator('json', loginSchema, async (result, c) => {
     if (!result.success) {
-      return c.json('invalid', 400)
+      return c.json({ message: 'Contraseña y correo son requeridos' }, 400)
     }
   }),
   async (c) => {
-    const user = c.req.valid('json')
+    const { password, email } = c.req.valid('json')
     const db = c.get('db')
 
-    try {
-      const { email, id } = await AuthService.validateCredentials(db, user)
-      const token = await sign({ id, email }, c.env.JWT_SECRET)
+    const user = await AuthService.validateCredentials(db, {
+      password,
+      email,
+    })
 
-      setCookie(c, 'auth_token', token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 60 * 60 * 24, // 1 day
-      })
+    const accessToken = await sign(
+      {
+        id: user.id,
+        role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
+      c.env.JWT_SECRET,
+    )
 
-      return c.json({
-        token,
-      })
-    } catch (error) {
-      return handleError(error, c)
-    }
+    const refreshToken = await sign(
+      {
+        userId: user.id,
+      },
+      c.env.JWT_SECRET,
+    )
+
+    // setCookie(c, 'auth_token', accessToken, {
+    //   httpOnly: true,
+    //   secure: false,
+    //   sameSite: 'lax',
+    //   path: '/',
+    //   maxAge: 60 * 60 * 24, // 1 day
+    // })
+
+    return c.json({
+      accessToken,
+      refreshToken,
+      user,
+    })
   },
 )
+
+app.post('/logout', async (c) => {
+  // Agregar token a blacklist si usas una
+  return c.json({
+    message: 'Logout existoso',
+  })
+})
+
+app.post('/refesh', async (c) => {
+  const { refreshToken } = await c.req.json()
+
+  //Verificar refreshToken
+  const payload = await verify(refreshToken, c.env.JWT_SECRET)
+
+  const newAccessToken = await sign(
+    {
+      id: payload.userId,
+      role: payload.role,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+    },
+    c.env.JWT_SECRET,
+  )
+
+  return c.json({
+    accessToken: newAccessToken,
+  })
+})
 
 app.post(
   '/reset-password',

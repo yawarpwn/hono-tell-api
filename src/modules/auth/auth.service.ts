@@ -7,9 +7,8 @@ import bcrypt from 'bcryptjs'
 import { verify } from 'hono/jwt'
 
 export class AuthService {
-  static async validateCredentials(db: DB, { email, password }: { email: string; password: string }) {
+  static async validateCredentials(db: DB, { email, password }: Login): Promise<User> {
     const users = await db.select().from(usersTable).where(eq(usersTable.email, email))
-    console.log({ users })
     if (users.length === 0) {
       throw new HTTPException(403, {
         message: 'User not found',
@@ -24,10 +23,7 @@ export class AuthService {
       })
     }
 
-    return {
-      id: user.id,
-      email: user.email,
-    }
+    return user
   }
 
   static async login(db: DB, user: Login) {
