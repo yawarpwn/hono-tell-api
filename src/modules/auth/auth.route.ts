@@ -4,11 +4,52 @@ import { AuthService } from './auth.service'
 import { handleError } from '@/core/utils'
 import { setCookie, getCookie, deleteCookie } from 'hono/cookie'
 import { zValidator } from '@hono/zod-validator'
-import { jwt, verify, sign } from 'hono/jwt'
+import { jwt, verify, sign, decode } from 'hono/jwt'
 import { loginSchema } from './auth.validation'
 import { z } from 'zod'
+import { HTTPException } from 'hono/http-exception'
 
 const app = new Hono<App>()
+
+app.get('/verify', async (c) => {
+  const credentials = c.req.header('Authorization')
+
+  let token: null | string = null
+  if (credentials) {
+    const parts = credentials.split(/\s+/)
+    if (parts.length !== 2) {
+      throw new HTTPException(401, {
+        message: 'Invalid credentials',
+      })
+    } else {
+      token = parts[1]
+    }
+  }
+
+  console.log({ token })
+  if (!token) {
+    throw new HTTPException(401, {
+      message: 'Credentials no included in request',
+    })
+  }
+
+  let payload: any
+  let cause: any
+
+  try {
+    payload = await verify(token, c.env.JWT_SECRET)
+  } catch (error) {
+    cause = error
+  }
+
+  if (!payload) {
+    throw new HTTPException(401, {
+      message: cause,
+    })
+  }
+
+  return c.json(payload)
+})
 
 app.get('/', async (c) => {
   return c.json({ message: 'auth path' })

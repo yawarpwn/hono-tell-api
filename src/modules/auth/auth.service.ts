@@ -1,9 +1,10 @@
 import { eq } from 'drizzle-orm'
 import { usersTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
-import type { Login } from './auth.validation'
+import type { Login, User } from './auth.validation'
 import type { DB } from '@/types'
 import bcrypt from 'bcryptjs'
+import { verify } from 'hono/jwt'
 
 export class AuthService {
   static async validateCredentials(db: DB, { email, password }: { email: string; password: string }) {
@@ -28,6 +29,7 @@ export class AuthService {
       email: user.email,
     }
   }
+
   static async login(db: DB, user: Login) {
     //Search user in db by email
     const [userFromDb] = await db.select().from(usersTable).where(eq(usersTable.email, user.email))
@@ -41,6 +43,7 @@ export class AuthService {
 
     return userFromDb
   }
+
   static async hashPassword(password: string) {
     const salt = bcrypt.genSaltSync(10)
     const hash = bcrypt.hashSync(password, salt)
@@ -51,5 +54,10 @@ export class AuthService {
     const hashedPassword = await AuthService.hashPassword(password)
     const rows = await db.update(usersTable).set({ password: hashedPassword }).where(eq(usersTable.email, email))
     if (!rows.success) throw new HTTPException(500, { message: 'Error updating user' })
+  }
+
+  static async verifyToken(token: string, secret: string): User {
+    const payload = await verify(token, secret)
+    console.log({ payload })
   }
 }

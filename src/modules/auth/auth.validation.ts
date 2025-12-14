@@ -6,6 +6,8 @@ const UserSchema = z.object({
   email: z.string(),
   password: z.string(),
   role: z.enum(['user', 'admin']),
+  firstName: z.string(),
+  lastName: z.string(),
 })
 
 export const loginSchema = z.object({
