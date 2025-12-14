@@ -59,6 +59,7 @@ export class QuotationsService {
         createdAt: quotationsTable.createdAt,
         updatedAt: quotationsTable.updatedAt,
         customerId: customersTable.id,
+        userId: quotationsTable.userId,
         paymentCodition: quotationsTable.paymentCodition,
         customer: {
           id: customersTable.id,
@@ -111,6 +112,8 @@ export class QuotationsService {
         updatedAt: quotationsTable.updatedAt,
         standardTerms: quotationsTable.standardTerms,
         paymentCodition: quotationsTable.paymentCodition,
+        customerId: customersTable.id,
+        userId: quotationsTable.userId,
         customer: {
           id: customersTable.id,
           name: customersTable.name,
@@ -149,6 +152,7 @@ export class QuotationsService {
         paymentCodition: quotationsTable.paymentCodition,
         items: quotationsTable.items,
         customerId: customersTable.id,
+        userId: quotationsTable.userId,
         customer: {
           id: customersTable.id,
           name: customersTable.name,

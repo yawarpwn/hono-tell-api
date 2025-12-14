@@ -13,6 +13,8 @@ export const usersTable = sqliteTable('users', {
   role: text({ enum: userRoles }).notNull().default('user'),
   firstName: text('first_name').notNull(),
   lastName: text('last_name').notNull(),
+  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+  avatar: text('avatar').default('https://gravatar.com/avatar/27205e5c51cb03f862138b22bcb5dc20f94a342e744ff6df1b8dc8af3c865109'),
 })
 
 export const customersTable = sqliteTable('customers', {
@@ -83,6 +85,10 @@ export const quotationsTable = sqliteTable('quotations', {
   customerId: text('customer_id').references(() => customersTable.id, {
     onDelete: 'set null',
     onUpdate: 'cascade',
+  }),
+  userId: text('user_id').references(() => usersTable.id, {
+    onDelete: 'restrict', // No permite borrar usuario con cotizaciones
+    onUpdate: 'cascade', // Si cambias el Id , actualiza automaticamente
   }),
   validityDays: integer('validity_days').notNull().default(15),
   observations: text('observations'),
