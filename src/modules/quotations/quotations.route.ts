@@ -33,7 +33,7 @@ app.get('/:number', async (c) => {
   return c.json(results)
 })
 
-// Create `Quotation` Route
+// Ruta para crear `Quotation`
 app.post(
   '/',
   zValidator('json', insertQuotationSchema, (result) => {

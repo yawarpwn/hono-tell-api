@@ -29,6 +29,20 @@
       "when": 1765744162696,
       "tag": "0004_slimy_callisto",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1765749748989,
+      "tag": "0005_smart_swarm",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1765752404868,
+      "tag": "0006_rapid_skrulls",
+      "breakpoints": true
     }
   ]
 }

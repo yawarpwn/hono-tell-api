@@ -1,0 +1,1 @@
+ALTER TABLE `quotations` ADD `updated_by` text REFERENCES users(id);

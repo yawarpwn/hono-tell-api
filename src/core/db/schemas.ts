@@ -86,9 +86,15 @@ export const quotationsTable = sqliteTable('quotations', {
     onDelete: 'set null',
     onUpdate: 'cascade',
   }),
-  userId: text('user_id').references(() => usersTable.id, {
-    onDelete: 'restrict', // No permite borrar usuario con cotizaciones
-    onUpdate: 'cascade', // Si cambias el Id , actualiza automaticamente
+  userId: text('user_id')
+    .notNull()
+    .references(() => usersTable.id, {
+      onDelete: 'restrict', // No permite borrar usuario con cotizaciones
+      onUpdate: 'cascade', // Si cambias el Id , actualiza automaticamente
+    }),
+  updatedBy: text('updated_by').references(() => usersTable.id, {
+    onDelete: 'set null',
+    onUpdate: 'cascade',
   }),
   validityDays: integer('validity_days').notNull().default(15),
   observations: text('observations'),
@@ -104,9 +110,7 @@ export const quotationsTable = sqliteTable('quotations', {
   isPaymentPending: integer('is_payment_pending', { mode: 'boolean' }).default(false),
   items: text('items', { mode: 'json' }).notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
-    .notNull()
-    .$onUpdate(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).$onUpdateFn(() => new Date()),
 })
 
 // export const quotationTermsTable = sqliteTable('quotation_terms', {

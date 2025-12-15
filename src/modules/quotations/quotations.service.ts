@@ -1,5 +1,5 @@
 import { eq, like, desc, count, or, sql, SQL } from 'drizzle-orm'
-import { quotationsTable, customersTable } from '@/core/db/schemas'
+import { quotationsTable, customersTable, usersTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateQuotation, UpdateQuotation, Quotation } from './quotations.validation'
 import { type QuotationQueryParams } from './quotations.validation'
@@ -61,20 +61,13 @@ export class QuotationsService {
         customerId: customersTable.id,
         userId: quotationsTable.userId,
         paymentCodition: quotationsTable.paymentCodition,
-        customer: {
-          id: customersTable.id,
-          name: customersTable.name,
-          ruc: customersTable.ruc,
-          phone: customersTable.phone,
-          address: customersTable.address,
-          email: customersTable.email,
-          isRegular: customersTable.isRegular,
-          createdAt: customersTable.createdAt,
-          updatedAt: customersTable.updatedAt,
-        },
+        user: usersTable,
+        customer: customersTable,
+        updatedBy: quotationsTable.updatedBy,
       })
       .from(quotationsTable)
       .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
+      .leftJoin(usersTable, eq(quotationsTable.userId, usersTable.id))
       .where(whereClause)
       .orderBy(desc(quotationsTable.updatedAt))
       .limit(limit)
@@ -114,21 +107,14 @@ export class QuotationsService {
         paymentCodition: quotationsTable.paymentCodition,
         customerId: customersTable.id,
         userId: quotationsTable.userId,
-        customer: {
-          id: customersTable.id,
-          name: customersTable.name,
-          ruc: customersTable.ruc,
-          phone: customersTable.phone,
-          address: customersTable.address,
-          email: customersTable.email,
-          isRegular: customersTable.isRegular,
-          createdAt: customersTable.createdAt,
-          updatedAt: customersTable.updatedAt,
-        },
+        updatedBy: quotationsTable.updatedBy,
+        user: usersTable,
+        customer: customersTable,
       })
       .from(quotationsTable)
       .where(eq(quotationsTable.id, id))
       .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
+      .leftJoin(usersTable, eq(quotationsTable.userId, usersTable.id))
     if (quotations.length === 0) {
       throw new HTTPException(404, {
         message: `Cotizacion con id ${id},No encontrada`,
@@ -151,25 +137,18 @@ export class QuotationsService {
         standardTerms: quotationsTable.standardTerms,
         paymentCodition: quotationsTable.paymentCodition,
         items: quotationsTable.items,
-        customerId: customersTable.id,
         userId: quotationsTable.userId,
-        customer: {
-          id: customersTable.id,
-          name: customersTable.name,
-          ruc: customersTable.ruc,
-          phone: customersTable.phone,
-          address: customersTable.address,
-          email: customersTable.email,
-          isRegular: customersTable.isRegular,
-          createdAt: customersTable.createdAt,
-          updatedAt: customersTable.updatedAt,
-        },
+        user: usersTable,
+        customerId: customersTable.id,
+        updatedBy: quotationsTable.updatedBy,
+        customer: customersTable,
         createdAt: quotationsTable.createdAt,
         updatedAt: quotationsTable.updatedAt,
       })
       .from(quotationsTable)
       .where(eq(quotationsTable.number, quotationNumber))
       .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
+      .leftJoin(usersTable, eq(quotationsTable.userId, usersTable.id))
     if (quotations.length === 0) {
       throw new HTTPException(404, {
         message: `Cotización con Numero: ${quotationNumber}, No encontrada`,
@@ -199,6 +178,7 @@ export class QuotationsService {
       .insert(quotationsTable)
       .values({
         ...newQuotation,
+        updatedAt: null,
         number: lastQuotationNumber + 1,
       })
       .returning()
