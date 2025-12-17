@@ -57,9 +57,7 @@ app.post(
   '/',
   zValidator('json', emailSchema, async (result, c) => {
     if (!result.success) {
-      return c.json({
-        message: 'invalid',
-      })
+      throw result.error
     }
   }),
   async (c) => {
@@ -68,7 +66,7 @@ app.post(
 
     try {
       const { data, error } = await resend.emails.send({
-        from: `${name} <ventas@tellsenales.com>`,
+        from: `${name} <contacto_web@tellsenales.com.pe>`,
         to: ['ventas@tellsenales.com.pe'],
         subject: `Solicito Cotización - ${name} - ${ruc}`,
         html: EmailTemplate({ email, name, message, ruc, phone }),
