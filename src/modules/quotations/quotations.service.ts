@@ -69,7 +69,7 @@ export class QuotationsService {
       .leftJoin(customersTable, eq(quotationsTable.customerId, customersTable.id))
       .leftJoin(usersTable, eq(quotationsTable.userId, usersTable.id))
       .where(whereClause)
-      .orderBy(desc(quotationsTable.updatedAt))
+      .orderBy(desc(quotationsTable.createdAt))
       .limit(limit)
       .offset(offset)
       .all()
