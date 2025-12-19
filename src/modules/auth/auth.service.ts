@@ -1,22 +1,30 @@
 import { eq } from 'drizzle-orm'
 import { usersTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
-import type { Login, User } from './auth.validation'
+import type { Login } from './auth.validation'
+import type { User } from '../users/users.validation.ts'
 import type { DB } from '@/types'
+import { UsersService } from '../users/users.service'
 import bcrypt from 'bcryptjs'
-import { verify } from 'hono/jwt'
+import { verify, sign } from 'hono/jwt'
+
+const ACCESS_TOKEN_EXPIRY = 60 * 60 // 1 hour
+const REFRESH_TOKEN_EXPIRY = 60 * 60 * 24 * 7 // 7 days
 
 export class AuthService {
-  static async validateCredentials(db: DB, { email, password }: Login): Promise<User> {
-    const users = await db.select().from(usersTable).where(eq(usersTable.email, email))
+  static async validateCredentials(db: DB, login: Login): Promise<User> {
+    //Search user in db by email
+    const users = await db.select().from(usersTable).where(eq(usersTable.email, login.email))
     if (users.length === 0) {
       throw new HTTPException(403, {
-        message: 'User not found',
+        message: 'Usuario no encontrado',
       })
     }
 
     const [user] = users
-    const isValidPassword = bcrypt.compareSync(password, user.password)
+
+    // check password
+    const isValidPassword = bcrypt.compareSync(login.password, user.password)
     if (!isValidPassword) {
       throw new HTTPException(403, {
         message: 'Invalid password',
@@ -26,18 +34,35 @@ export class AuthService {
     return user
   }
 
-  static async login(db: DB, user: Login) {
+  static async login(db: DB, login: Login, secret: string) {
     //Search user in db by email
-    const [userFromDb] = await db.select().from(usersTable).where(eq(usersTable.email, user.email))
-    console.log({ userFromDb })
+    const user = await AuthService.validateCredentials(db, login)
 
-    if (!userFromDb) {
-      throw new HTTPException(404, {
-        message: 'User not found',
-      })
+    const accessToken = await sign(
+      {
+        id: user.id,
+        role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        avatar: user.avatar,
+        exp: Math.floor(Date.now() / 1000) + ACCESS_TOKEN_EXPIRY,
+      },
+      secret,
+    )
+
+    //TODO: Guardar refreshtoken en `DB`
+    const refreshToken = await sign(
+      {
+        userId: user.id,
+        exp: Math.floor(Date.now() / 1000) + REFRESH_TOKEN_EXPIRY,
+      },
+      secret,
+    )
+
+    return {
+      accessToken,
+      refreshToken,
     }
-
-    return userFromDb
   }
 
   static async hashPassword(password: string) {
@@ -46,14 +71,71 @@ export class AuthService {
     return hash
   }
 
-  static async resetPassword(db: DB, email: string, password: string) {
-    const hashedPassword = await AuthService.hashPassword(password)
-    const rows = await db.update(usersTable).set({ password: hashedPassword }).where(eq(usersTable.email, email))
-    if (!rows.success) throw new HTTPException(500, { message: 'Error updating user' })
+  static async verifyToken(token: string, secret: string) {
+    try {
+      const payload = await verify(token, secret)
+      return payload
+    } catch (error) {
+      if (error instanceof Error && error.name === 'JwtTokenExpired') {
+        console.log('TokenExpiredError')
+        throw new HTTPException(401, {
+          message: error.message,
+        })
+      } else if (error instanceof Error && error.name === 'JsonWebTokenError') {
+        console.log('JsonWebTokenError')
+        throw new HTTPException(401, {
+          message: error.message,
+        })
+      } else {
+        throw new HTTPException(401, {
+          message: 'Invalid token',
+        })
+      }
+    }
   }
 
-  static async verifyToken(token: string, secret: string): User {
-    const payload = await verify(token, secret)
-    console.log({ payload })
+  static async refreshToken(db: DB, refreshToken: string, secret: string) {
+    try {
+      //Verificar refreshToken
+      //TODO: utilizar un JWT_REFRESH_SECRET
+      const payload = await verify(refreshToken, secret)
+
+      const user = await UsersService.getById(db, payload.userId as string)
+
+      if (!user) {
+        throw new HTTPException(401, {
+          message: 'Invalid token',
+        })
+      }
+
+      const newAccessToken = await sign(
+        {
+          id: user.id,
+          role: user.role,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          avatar: user.avatar,
+          exp: Math.floor(Date.now() / 1000) + ACCESS_TOKEN_EXPIRY,
+        },
+        secret,
+      )
+
+      console.log('refresh token', { newAccessToken })
+      return newAccessToken
+    } catch (error) {
+      if (error instanceof Error && error.name === 'TokenExpiredError') {
+        throw new HTTPException(401, {
+          message: error.message,
+        })
+      } else if (error instanceof Error && error.name === 'JsonWebTokenError') {
+        throw new HTTPException(401, {
+          message: error.message,
+        })
+      } else {
+        throw new HTTPException(401, {
+          message: 'Invalid token',
+        })
+      }
+    }
   }
 }
