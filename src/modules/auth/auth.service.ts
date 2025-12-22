@@ -8,7 +8,7 @@ import { UsersService } from '../users/users.service'
 import bcrypt from 'bcryptjs'
 import { verify, sign } from 'hono/jwt'
 
-const ACCESS_TOKEN_EXPIRY = 60 * 60 // 1 hour
+const ACCESS_TOKEN_EXPIRY = 60 * 60 * 24 // day
 const REFRESH_TOKEN_EXPIRY = 60 * 60 * 24 * 7 // 7 days
 
 export class AuthService {
