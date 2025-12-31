@@ -83,7 +83,7 @@ export const quotationSchema = z.object({
 export const insertQuotationSchema = createInsertSchema(quotationsTable, {
   items: z.array(itemQuotationSChema),
   deadline: z.number().positive(),
-  standardTerms: z.array(z.enum(['DESIGNS_APPROVAL', 'PREPAID_SHIPPING', 'WARRANTY_3M', 'LAM_CHINA'])),
+  standardTerms: z.array(z.enum(['DESIGNS_APPROVAL', 'PREPAID_SHIPPING', 'WARRANTY_3M', 'CHINA_SHEET'])),
 }).omit({
   id: true,
   number: true,
