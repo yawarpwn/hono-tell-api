@@ -8,7 +8,7 @@ export const quotationQueryParamsSchema = z.object({
     .optional()
     .default('1')
     .transform((val) => {
-      const num = parseInt(val)
+      const num = parseInt(val, 10)
       return Number.isNaN(num) || num < 1 ? 1 : num
     }),
   limit: z
@@ -16,7 +16,7 @@ export const quotationQueryParamsSchema = z.object({
     .optional()
     .default('10')
     .transform((val) => {
-      const num = parseInt(val)
+      const num = parseInt(val, 10)
       return Number.isNaN(num) || num < 1 ? 10 : num
     }),
   query: z.string().optional(),
@@ -83,7 +83,9 @@ export const quotationSchema = z.object({
 export const insertQuotationSchema = createInsertSchema(quotationsTable, {
   items: z.array(itemQuotationSChema),
   deadline: z.number().positive(),
-  standardTerms: z.array(z.enum(['DESIGNS_APPROVAL', 'PREPAID_SHIPPING', 'WARRANTY_3M', 'CHINA_SHEET'])),
+  standardTerms: z.array(
+    z.enum(['DESIGNS_APPROVAL', 'PREPAID_SHIPPING', 'WARRANTY_3M', 'CHINA_SHEET', 'HP_INK']),
+  ),
 }).omit({
   id: true,
   number: true,

@@ -48,7 +48,9 @@ function isApiDniresponseSuccess(apiResponse: ApiDniReponse): apiResponse is Api
 
 type ApiRucResponse = ApiRucSuccessResponse | ApiRucErrorResponse
 
-function isApiRucResponseSuccess(apiResponse: ApiRucResponse): apiResponse is ApiRucSuccessResponse {
+function isApiRucResponseSuccess(
+  apiResponse: ApiRucResponse,
+): apiResponse is ApiRucSuccessResponse {
   return !('success' in apiResponse) || apiResponse.success !== false
 }
 

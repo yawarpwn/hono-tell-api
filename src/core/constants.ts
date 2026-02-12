@@ -52,7 +52,13 @@ export const SIGNALS_CATEGORIES = {
   Fotoluminiscentes: 'fotoluminicentes',
 } as const
 
-export const signalCategories = ['viales', 'seguridad', 'decorativas', 'obras', 'fotoluminicentes'] as const
+export const signalCategories = [
+  'viales',
+  'seguridad',
+  'decorativas',
+  'obras',
+  'fotoluminicentes',
+] as const
 export const galleryCategories = [
   'Señales Viales',
   'Señales Obras',

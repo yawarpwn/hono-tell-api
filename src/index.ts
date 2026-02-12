@@ -4,7 +4,6 @@ import { Hono } from 'hono'
 import type { App } from './types'
 
 // Routes import
-import gallery from '@/modules/gallery/gallery.route'
 import customers from '@/modules/customers/customers.route'
 import quotations from '@/modules/quotations/quotations.route'
 import products from '@/modules/products/products.route'
@@ -50,7 +49,6 @@ app.get('/', async (c) => {
 })
 
 // Routes protegidas
-app.route('/v2/api/gallery', gallery)
 app.route('/v2/api/quotations', quotations)
 app.route('/v2/api/invoices', invoices)
 app.route('/v2/api/customers', customers)

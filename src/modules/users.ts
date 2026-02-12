@@ -69,7 +69,10 @@ usersRoute.post(
     const hashedPassword = await AuthModel.hashPassword(user.newPassword)
 
     //Actualizar en base datos
-    const rows = await db.update(usersTable).set({ password: hashedPassword }).where(eq(usersTable.email, email))
+    const rows = await db
+      .update(usersTable)
+      .set({ password: hashedPassword })
+      .where(eq(usersTable.email, email))
     if (!rows.success) return c.json({ ok: false, message: 'error updating user' }, 401)
 
     return c.json({

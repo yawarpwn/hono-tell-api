@@ -24,7 +24,11 @@ app.post(
     try {
       const { email } = c.req.valid('json')
       //Revisar si el correo ya esta suscrito
-      const existing = await db.select().from(subscribersTable).limit(1).where(eq(subscribersTable.email, email))
+      const existing = await db
+        .select()
+        .from(subscribersTable)
+        .limit(1)
+        .where(eq(subscribersTable.email, email))
 
       //TODO: Verificar si el correo existe en la vida real con servicios como `kickbox`
 

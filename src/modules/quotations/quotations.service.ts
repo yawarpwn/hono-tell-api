@@ -1,8 +1,8 @@
-import { eq, like, desc, count, or, sql, SQL } from 'drizzle-orm'
+import { eq, like, desc, count, type SQL } from 'drizzle-orm'
 import { quotationsTable, customersTable, usersTable } from '@/core/db/schemas'
 import { HTTPException } from 'hono/http-exception'
 import type { CreateQuotation, UpdateQuotation, Quotation } from './quotations.validation'
-import { type QuotationQueryParams } from './quotations.validation'
+import type { QuotationQueryParams } from './quotations.validation'
 import type { DB } from '@/types'
 
 export class QuotationsService {
@@ -16,7 +16,7 @@ export class QuotationsService {
 
     // En caso de buscar por query
     if (query) {
-      const num = parseInt(query)
+      const num = parseInt(query, 10)
       if (Number.isNaN(num)) {
         // Buscar por Nombre
         whereCondition = like(customersTable.name, `%${query}%`)
@@ -186,8 +186,16 @@ export class QuotationsService {
     return rows[0]
   }
 
-  static async update(db: DB, quotationNumber: Quotation['number'], quotationToUpdate: UpdateQuotation) {
-    const results = await db.update(quotationsTable).set(quotationToUpdate).where(eq(quotationsTable.number, quotationNumber)).returning()
+  static async update(
+    db: DB,
+    quotationNumber: Quotation['number'],
+    quotationToUpdate: UpdateQuotation,
+  ) {
+    const results = await db
+      .update(quotationsTable)
+      .set(quotationToUpdate)
+      .where(eq(quotationsTable.number, quotationNumber))
+      .returning()
 
     if (results.length === 0) {
       throw new HTTPException(404, {
@@ -199,7 +207,10 @@ export class QuotationsService {
   }
 
   static async delete(db: DB, quotationNumber: Quotation['number']) {
-    const results = await db.delete(quotationsTable).where(eq(quotationsTable.number, quotationNumber)).returning()
+    const results = await db
+      .delete(quotationsTable)
+      .where(eq(quotationsTable.number, quotationNumber))
+      .returning()
 
     if (results.length === 0) {
       throw new HTTPException(404, {

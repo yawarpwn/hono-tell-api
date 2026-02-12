@@ -69,7 +69,10 @@ export class LabelsService {
   }
 
   static async create(db: DB, dto: CreateLabel) {
-    const results = await db.insert(labelsTable).values(dto).returning({ insertedId: labelsTable.id })
+    const results = await db
+      .insert(labelsTable)
+      .values(dto)
+      .returning({ insertedId: labelsTable.id })
 
     if (results.length === 0) {
       throw new HTTPException(400, {
