@@ -31,7 +31,7 @@ app.post(
     const files = formdata.getAll('files[]') as File[]
     const title = formdata.get('title') as string
     const isFavorite = Boolean(formdata.get('isFavorite'))
-    const categoryId = Number(formdata.get('categoryId'))
+    const categoryId = Number(formdata.get('categoryId')) || 1
     const db = c.get('db')
 
     for (const file of files) {

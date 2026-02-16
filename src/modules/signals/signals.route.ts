@@ -13,7 +13,7 @@ const signalSchema = z.object({
   code: z.string(),
   description: z.string().optional().nullable(),
   categoryId: z.coerce.number(),
-  file: z.any(),
+  image: z.any(),
 })
 
 app.get('/', async (c) => {
@@ -56,8 +56,17 @@ app.post('/', zValidator('form', signalSchema), async (c) => {
     const data = c.req.valid('form')
     const db = c.get('db')
 
+    if (!data.image) {
+      return c.json(
+        {
+          error: 'file is required',
+        },
+        404,
+      )
+    }
+
     //Subir la foto a cloudinary
-    const res = await uploadImage(c.env.CLOUDINARY_API_SECRET, data.file, {
+    const res = await uploadImage(c.env.CLOUDINARY_API_SECRET, data.image, {
       transformation: 'c_limit,w_500,h_500',
       folder: 'signals',
     })
@@ -91,13 +100,13 @@ app.put('/:id', zValidator('form', signalSchema), async (c) => {
 
   try {
     let uploadedResponse
-    if (data.file) {
+    if (data.image) {
       //borrar foto antigua
       const signal = await SignalsService.getById(db, id)
       await destroyImage(signal.publicId, c.env.CLOUDINARY_API_SECRET)
 
       //Subir la nueva foto
-      const res = await uploadImage(c.env.CLOUDINARY_API_SECRET, data.file, {
+      const res = await uploadImage(c.env.CLOUDINARY_API_SECRET, data.image, {
         transformation: 'c_limit,w_500,h_500',
         folder: 'signals',
       })
@@ -124,7 +133,7 @@ app.put('/:id', zValidator('form', signalSchema), async (c) => {
     return handleError(error, c)
   }
 })
-//
+
 app.delete('/:id', async (c) => {
   const db = c.get('db')
   const id = c.req.param('id')

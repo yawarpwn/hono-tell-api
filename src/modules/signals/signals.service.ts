@@ -53,7 +53,6 @@ export class SignalsService {
     }
   }
 
-  //
   static async create(db: DB, values: CreateSignal) {
     console.log({ values })
     try {
@@ -66,7 +65,7 @@ export class SignalsService {
       })
     }
   }
-  //
+
   static async update(db: DB, values: UpdateSignal, id: string) {
     try {
       const rows = await db
