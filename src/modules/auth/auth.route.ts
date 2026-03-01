@@ -39,12 +39,20 @@ app.post(
     const { password, email } = c.req.valid('json')
     const db = c.get('db')
 
-    const { accessToken, refreshToken } = await AuthService.login(db, { email, password }, c.env.JWT_SECRET)
+    const { accessToken, refreshToken, user } = await AuthService.login(
+      db,
+      { email, password },
+      {
+        access: c.env.JWT_SECRET,
+        refresh: c.env.JWT_REFRESH_SECRET,
+      },
+    )
 
     return c.json({
       success: true,
       accessToken,
       refreshToken,
+      user,
     })
   },
 )
@@ -60,11 +68,12 @@ app.post('/refresh', async (c) => {
   const { refreshToken } = await c.req.json()
   const db = c.get('db')
 
-  const newAccessToken = await AuthService.refreshToken(db, refreshToken, c.env.JWT_SECRET)
-
-  return c.json({
-    accessToken: newAccessToken,
+  const authData = await AuthService.refreshToken(db, refreshToken, {
+    access: c.env.JWT_SECRET,
+    refresh: c.env.JWT_REFRESH_SECRET,
   })
+
+  return c.json(authData)
 })
 
 export default app

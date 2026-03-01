@@ -14,7 +14,11 @@ export const usersTable = sqliteTable('users', {
   firstName: text('first_name').notNull(),
   lastName: text('last_name').notNull(),
   isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
-  avatar: text('avatar').default('https://gravatar.com/avatar/27205e5c51cb03f862138b22bcb5dc20f94a342e744ff6df1b8dc8af3c865109'),
+  avatar: text('avatar')
+    .notNull()
+    .default(
+      'https://gravatar.com/avatar/27205e5c51cb03f862138b22bcb5dc20f94a342e744ff6df1b8dc8af3c865109',
+    ),
 })
 
 export const customersTable = sqliteTable('customers', {

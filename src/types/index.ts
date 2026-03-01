@@ -7,6 +7,7 @@ export type DB = DrizzleD1Database<typeof schema>
 type Bindings = {
   POSTGRES_URL: string
   JWT_SECRET: string
+  JWT_REFRESH_SECRET: string
   TELL_API_KEY: string
   RESEND_API_KEY: string
   CLOUDINARY_API_SECRET: string
