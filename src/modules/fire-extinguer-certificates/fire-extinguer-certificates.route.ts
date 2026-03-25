@@ -7,7 +7,7 @@ import { zValidator } from '@hono/zod-validator'
 import { FireExtinguerCertificateService } from './fire-extinguer-certificates.service'
 const insertfireExtinguerCertificateSchema = z.object({
   emissionDate: z.string(),
-  type: z.enum(['PQS', 'CO2']),
+  type: z.enum(['PQS', 'CO2', 'K']),
   capacity: z.string(),
   serie: z.string(),
   ruc: z.string().nullish(),
@@ -68,15 +68,13 @@ app.post(
       return handleError(result.error, c)
     }
   }),
+
   async (c) => {
     const db = c.get('db')
     const data = c.req.valid('json')
-    try {
-      await FireExtinguerCertificateService.create(db, data)
-      return c.json({ ok: true, message: 'Certificado creado exitosamente' }, 201)
-    } catch (error) {
-      return handleError(error, c)
-    }
+    console.log({ data })
+    await FireExtinguerCertificateService.create(db, data)
+    return c.json({ ok: true, message: 'Certificado creado exitosamente' }, 201)
   },
 )
 

@@ -11,13 +11,21 @@ export class FireExtinguerCertificateService {
   }
 
   static async getById(db: DB, id: string) {
-    const rows = await db.select().from(fireExtinguerCertificatesTable).where(eq(fireExtinguerCertificatesTable.id, id))
+    const rows = await db
+      .select()
+      .from(fireExtinguerCertificatesTable)
+      .where(eq(fireExtinguerCertificatesTable.id, id))
     console.log({ rows, id })
     return rows[0]
   }
 
   static async create(db: DB, insertData: InsertFireExtinguerCertificate) {
-    return db.insert(fireExtinguerCertificatesTable).values(insertData).returning({ insertedId: fireExtinguerCertificatesTable.id })
+    try {
+      const result = await db.insert(fireExtinguerCertificatesTable).values(insertData)
+      console.log(result)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   //TODO: implementar actualizacion

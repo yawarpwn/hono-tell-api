@@ -260,7 +260,7 @@ export const fireExtinguerCertificatesTable = sqliteTable('fire_extinguisher_cer
   emissionDate: text('emission_date').notNull(),
   type: text('type', {
     mode: 'text',
-    enum: ['PQS', 'CO2'],
+    enum: ['PQS', 'CO2', 'K'],
   }).notNull(),
   capacity: text('capacity').notNull(),
   serie: text('serie').notNull().unique(),
