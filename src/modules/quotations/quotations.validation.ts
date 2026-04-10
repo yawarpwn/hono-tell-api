@@ -65,6 +65,8 @@ export const quotationSchema = z.object({
       ruc: z.string().optional().nullable(),
       address: z.string().optional().nullable(),
       isRegular: z.boolean().default(false),
+      phone: z.string().optional().nullable(),
+      email: z.string().email().optional().nullable(),
     })
     .optional()
     .nullable(),

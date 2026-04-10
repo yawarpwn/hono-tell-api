@@ -3,7 +3,11 @@ import { Hono } from 'hono'
 import { CustomersService } from './customers.service'
 import { HTTPException } from 'hono/http-exception'
 import { zValidator } from '@hono/zod-validator'
-import { insertCustomerSchema, updateCustomerSchema, customerQueryParamsSchema } from './customers.validation'
+import {
+  insertCustomerSchema,
+  updateCustomerSchema,
+  customerQueryParamsSchema,
+} from './customers.validation'
 
 const app = new Hono<App>()
 

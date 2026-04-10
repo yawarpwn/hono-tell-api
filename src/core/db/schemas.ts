@@ -38,6 +38,18 @@ export const customersTable = sqliteTable('customers', {
     .$onUpdate(() => new Date()),
 })
 
+// export const emails = sqliteTable('emails', {
+//   id: text('id')
+//     .primaryKey()
+//     .notNull()
+//     .$defaultFn(() => crypto.randomUUID()),
+//   customerId: text('customer_id')
+//     .notNull()
+//     .references(() => customersTable.id),
+//   email: text('email').notNull(),
+//   isPrimary: integer('is_primary', { mode: 'boolean' }).notNull().default(false),
+// })
+
 export const agenciesTable = sqliteTable('agencies', {
   id: text('id')
     .primaryKey()
